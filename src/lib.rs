@@ -5,6 +5,6 @@ extern crate dotenv;
 pub mod telegrams;
 pub mod schema;
 pub mod stations;
-pub mod receiver;
-pub mod measurement;
+pub mod receivers;
+pub mod measurements;
 
