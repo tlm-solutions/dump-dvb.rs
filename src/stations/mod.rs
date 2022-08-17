@@ -11,7 +11,7 @@ use std::fs::File;
 use std::io::Write;
 use std::fmt;
 
-
+/// Enum for different telegram format
 #[derive(Debug, PartialEq, Clone)]
 pub enum R09Types {
     R14 = 14,
@@ -19,6 +19,10 @@ pub enum R09Types {
     R18 = 18,
 }
 
+/// There are 4 different telegrams which can be send from one location
+/// the first one is sent approximetly 150m before the traffic light the registration
+/// telegram is send when the vehicle reaces the traffic light and deregistration is send 
+/// when the bus leaves the stop.
 #[derive(Debug, PartialEq, Clone)]
 pub enum TelegramType {
     PreRegistration = 0,
@@ -27,17 +31,19 @@ pub enum TelegramType {
     DoorClosed = 3,
 }
 
+/// This is used in stops json to define accurate positions
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct TransmissionPosition {
     #[serde(alias = "DHID")]
     pub dhid: Option<String>,
     pub name: Option<String>,
     pub telegram_type: TelegramType,
-    pub direction: u8,
+    pub direction: i16,
     pub lat: f64,
     pub lon: f64,
 }
 
+/// Meta inforamtion about region which then can be used to configure radio receivers
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct RegionMetaInformation {
     pub frequency: Option<u64>,
@@ -45,6 +51,7 @@ pub struct RegionMetaInformation {
     pub type_r09: Option<R09Types>,
 }
 
+/// Meta infomration about stops json 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct DocumentMetaInformation {
     pub schema_version: String,
@@ -53,21 +60,20 @@ pub struct DocumentMetaInformation {
     pub generator_version: Option<String>,
 }
 
-pub type RegionalTransmissionPositions = HashMap<u32, Vec<TransmissionPosition>>;
+pub type RegionalTransmissionPositions = HashMap<i32, Vec<TransmissionPosition>>;
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+pub struct InterRegional {
+    pub document: DocumentMetaInformation,
+    pub data: HashMap<i32, RegionalTransmissionPositions>,
+    pub meta: HashMap<i32, RegionMetaInformation>,
+}
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct Region {
     pub traffic_lights: RegionalTransmissionPositions,
     pub meta: RegionMetaInformation,
 }
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-pub struct InterRegional {
-    pub document: DocumentMetaInformation,
-    pub data: HashMap<u32, RegionalTransmissionPositions>,
-    pub meta: HashMap<u32, RegionMetaInformation>,
-}
-
 
 impl InterRegional {
     pub fn from(file: &str) -> Option<InterRegional> {
@@ -92,7 +98,7 @@ impl InterRegional {
             .expect("cannot write to file!");
     }
 
-    pub fn extract(&self, region_id: &u32) -> Option<Region> {
+    pub fn extract(&self, region_id: &i32) -> Option<Region> {
         let data = self.data.get(region_id);
         let meta = self.meta.get(region_id);
 
@@ -108,8 +114,8 @@ impl InterRegional {
 
     pub fn look_up(
         &self,
-        region_id: &u32,
-        traffic_light: &u32,
+        region_id: &i32,
+        traffic_light: &i32,
     ) -> Option<Vec<TransmissionPosition>> {
         match self.data.get(region_id) {
             Some(region) => {
@@ -121,8 +127,8 @@ impl InterRegional {
 
     pub fn get_approximate_position(
         &self,
-        region_id: &u32,
-        traffic_light: &u32,
+        region_id: &i32,
+        traffic_light: &i32,
     ) -> Option<TransmissionPosition> {
         let stop_list = self.look_up(region_id, traffic_light);
 
@@ -260,12 +266,24 @@ impl Serialize for TelegramType {
     }
 }
 
+impl TelegramType {
+    pub fn from_i16(value: i16) -> Option<TelegramType> {
+        match value {
+            0 => Some(TelegramType::PreRegistration),
+            1 => Some(TelegramType::Registration),
+            2 => Some(TelegramType::DeRegistration),
+            3 => Some(TelegramType::DoorClosed),
+            _ => None,
+        }
+    }
+}
+
 impl Hash for R09Types {
     fn hash<H: Hasher>(&self, state: &mut H) {
         match self {
-            R09Types::R14 => { 14u32.hash(state); }
-            R09Types::R16 => { 16u32.hash(state); }
-            R09Types::R18 => { 18u32.hash(state); }
+            R09Types::R14 => { 14i32.hash(state); }
+            R09Types::R16 => { 16i32.hash(state); }
+            R09Types::R18 => { 18i32.hash(state); }
         }
     }
 }

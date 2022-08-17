@@ -1,6 +1,5 @@
 use crate::stations::{TransmissionPosition, R09Types};
 
-use super::R09GrpcTelegram;
 use super::super::schema::r09_telegrams;
 use super::{AuthenticationMeta, TelegramMetaInformation};
 
@@ -16,11 +15,29 @@ use std::fs::File;
 use std::hash::Hash;
 use std::hash::Hasher;
 
+mod dvb_dump {
+    tonic::include_proto!("dvbdump");
+}
+
+pub use dvb_dump::receives_telegrams_client::ReceivesTelegramsClient;
+pub use dvb_dump::receives_telegrams_server::ReceivesTelegrams;
+pub use dvb_dump::receives_telegrams_server::ReceivesTelegramsServer;
+pub use dvb_dump::{R09GrpcTelegram, ReturnCode};
+
+
+/// The R09Telegram is the heart piece it hold the raw information from the received
+/// radio-telegram. The goal was of this struct is to be the smallest denominator 
+/// of all different telegram formats (**R09.14**, **R09.16**, **R09.18**).
+///
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct R09Telegram {
+    /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
     pub telegram_type: R09Types,
+    /// delay of the vehicle can range from -9 min to +9 mins
     pub delay: Option<i32>,
+    /// TODO: marenz
     pub reporting_point: u32,
+    /// TODO: marenz
     pub junction: u32,      //derived from  reporting_point
     pub direction: u8,      //derived from reporting_point
     pub request_status: u8, //derived from reporting_point
@@ -34,6 +51,10 @@ pub struct R09Telegram {
     pub operator: Option<u8>,
 }
 
+
+/// R09SaveTelegram is how R09Telegrams are saved in the database or csv. Furthermore 
+/// it is enriched with meta information about the receiver that caught this telegram
+/// first or at which time this telegram was transmitted.
 #[derive(Deserialize, Serialize, Debug, Queryable, Insertable, Clone, PartialEq)]
 #[table_name = "r09_telegrams"]
 pub struct R09SaveTelegram {
@@ -69,6 +90,8 @@ pub struct R09SaveTelegram {
     pub operator: Option<i16>,
 }
 
+/// This Telegram is what the **data-hoarder** service expects when submitting new telegrams.
+/// It is enrichted with data for authentication like your secret token or the station identifier.
 #[derive(Deserialize, Serialize, Debug, Queryable, Clone)]
 pub struct R09ReceiveTelegram {
     #[serde(flatten)]
