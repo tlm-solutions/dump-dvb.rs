@@ -5,10 +5,10 @@ use chrono::NaiveDateTime;
 
 #[derive(Deserialize, Serialize, Clone)]
 pub struct MeasurementInterval {
-    start: Option<NaiveDateTime>,
-    stop: Option<NaiveDateTime>,
-    line: Option<i32>,
-    run: Option<i32>,
+    pub start: Option<NaiveDateTime>,
+    pub stop: Option<NaiveDateTime>,
+    pub line: Option<i32>,
+    pub run: Option<i32>,
 }
 
 /// The FinishedMeasurementInterval struct is primarly used in **Wartrammer-40k** and **lofi**.
@@ -16,10 +16,10 @@ pub struct MeasurementInterval {
 /// recorded.
 #[derive(Deserialize, Serialize, Clone)]
 pub struct FinishedMeasurementInterval {
-    start: NaiveDateTime,
-    stop: NaiveDateTime,
-    line: i32,
-    run: i32,
+    pub start: NaiveDateTime,
+    pub stop: NaiveDateTime,
+    pub line: i32,
+    pub run: i32,
 }
 
 impl FinishedMeasurementInterval {
