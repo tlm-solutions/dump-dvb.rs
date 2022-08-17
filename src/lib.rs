@@ -6,5 +6,5 @@ pub mod telegrams;
 pub mod schema;
 pub mod stations;
 pub mod receiver;
-pub mod run;
+pub mod measurement;
 
