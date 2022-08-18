@@ -35,7 +35,10 @@ impl FinishedMeasurementInterval {
 
     // Checks if a given Telegram was recorded in this time intervall
     pub fn fits(&self, telegram: &R09SaveTelegram) -> bool {
-        assert!(telegram.line.is_none() || telegram.run_number.is_none(), "Cannot operate on data that doesn't have lines or runs");
+        if telegram.line.is_none() || telegram.run_number.is_none() {
+            return false;
+        }
+
         self.start < telegram.time
             && telegram.time < self.stop
             && telegram.line.unwrap() == self.line
