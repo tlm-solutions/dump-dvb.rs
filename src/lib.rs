@@ -7,4 +7,3 @@ pub mod schema;
 pub mod stations;
 pub mod receivers;
 pub mod measurements;
-

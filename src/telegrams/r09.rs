@@ -93,7 +93,7 @@ pub struct R09SaveTelegram {
 
 /// This Telegram is what the **data-hoarder** service expects when submitting new telegrams.
 /// It is enrichted with data for authentication like your secret token or the station identifier.
-#[derive(Deserialize, Serialize, Debug, Queryable, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct R09ReceiveTelegram {
     #[serde(flatten)]
     pub auth: AuthenticationMeta,

@@ -1,7 +1,8 @@
 pub mod r09;
+pub mod raw;
 
 use chrono::NaiveDateTime;
-
+use std::hash::{Hasher, Hash};
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -21,6 +22,7 @@ pub struct AuthenticationMeta {
 
 
 /// All the different Telegram flawors
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum TelegramType {
     R00 = 0,
     R01 = 1,
@@ -55,3 +57,11 @@ pub enum TelegramType {
     C14 = 30,
     C15 = 31
 }
+
+
+impl Hash for TelegramType {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        (self.clone() as u8).hash(state);
+    }
+}
+

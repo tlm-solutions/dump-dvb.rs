@@ -20,3 +20,13 @@ table! {
         operator -> Nullable<SmallInt>,
     }
 }
+table! {
+    raw_telegrams (id) {
+        id -> BigSerial,
+        time -> Timestamp,
+        station -> Uuid,
+        region -> Integer,
+        telegram_type -> SmallInt,
+        data -> Binary,
+    }
+}
