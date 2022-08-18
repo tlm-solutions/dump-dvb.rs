@@ -9,6 +9,7 @@ use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use csv;
+use struct_field_names_as_array::FieldNamesAsArray;
 
 use std::fmt;
 use std::fs::File;
@@ -55,7 +56,7 @@ pub struct R09Telegram {
 /// R09SaveTelegram is how R09Telegrams are saved in the database or csv. Furthermore 
 /// it is enriched with meta information about the receiver that caught this telegram
 /// first or at which time this telegram was transmitted.
-#[derive(Deserialize, Serialize, Debug, Queryable, Insertable, Clone, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, Queryable, Insertable, Clone, PartialEq, FieldNamesAsArray)]
 #[table_name = "r09_telegrams"]
 pub struct R09SaveTelegram {
     #[serde(deserialize_with = "csv::invalid_option")]
