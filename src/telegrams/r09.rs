@@ -111,7 +111,7 @@ pub struct R09WebSocketTelegram {
     pub meta_data: TransmissionPosition,
 }
 
-impl AbstractTelegram for R09Telegram {
+impl AbstractTelegram<'_> for R09Telegram {
     fn get_type(&self) -> TelegramType {
         TelegramType::R09
     }

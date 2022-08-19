@@ -37,7 +37,7 @@ pub struct RawReceiveTelegram {
     pub data: RawTelegram
 }
 
-impl AbstractTelegram for RawTelegram {
+impl AbstractTelegram<'_> for RawTelegram {
     fn get_type(&self) -> TelegramType {
         self.telegram_type.clone()
     }

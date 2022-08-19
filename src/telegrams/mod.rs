@@ -1,9 +1,10 @@
 pub mod r09;
 pub mod raw;
 
-use chrono::NaiveDateTime;
 use std::hash::{Hasher, Hash};
+use core::fmt::Debug;
 
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -65,8 +66,7 @@ impl Hash for TelegramType {
     }
 }
 
-
-pub trait AbstractTelegram {
+pub trait AbstractTelegram<'a>: Deserialize<'a> + Deserialize<'a> + Debug + Clone {
     fn get_type(self: &Self) -> TelegramType;
 }
 
