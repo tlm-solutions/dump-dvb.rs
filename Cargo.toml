@@ -18,6 +18,9 @@ prost = "0.10"
 
 csv = "1.1"
 struct-field-names-as-array = "0.1"
+num-traits = "0.2"
+num-derive = "0.3"
+num = "*"
 
 [build-dependencies]
 tonic-build = "0.7"

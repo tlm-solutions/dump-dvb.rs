@@ -7,6 +7,7 @@ use core::fmt::Debug;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use num_derive::FromPrimitive;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TelegramMetaInformation {
@@ -23,7 +24,7 @@ pub struct AuthenticationMeta {
 
 
 /// All the different Telegram flawors
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, FromPrimitive, Debug, Clone)]
 pub enum TelegramType {
     R00 = 0,
     R01 = 1,
@@ -66,8 +67,7 @@ impl Hash for TelegramType {
     }
 }
 
-pub trait AbstractTelegram<'a>: Deserialize<'a> + Deserialize<'a> + Debug + Clone + Sized {
-    fn get_type(self: &Self) -> TelegramType;
+pub trait GetTelegramType {
+    fn get_type(self: &Self) -> TelegramType where Self: Sized;
 }
-
 

@@ -1,4 +1,4 @@
-use super::{TelegramType, AuthenticationMeta, TelegramMetaInformation, AbstractTelegram};
+use super::{TelegramType, AuthenticationMeta, TelegramMetaInformation, GetTelegramType };
 use super::super::schema::raw_telegrams;
 
 use std::fmt;
@@ -37,7 +37,7 @@ pub struct RawReceiveTelegram {
     pub data: RawTelegram
 }
 
-impl AbstractTelegram<'_> for RawTelegram {
+impl GetTelegramType for RawTelegram {
     fn get_type(&self) -> TelegramType {
         self.telegram_type.clone()
     }

@@ -1,7 +1,7 @@
 use crate::stations::{TransmissionPosition, R09Types};
 
 use super::super::schema::r09_telegrams;
-use super::{AuthenticationMeta, TelegramMetaInformation, TelegramType, AbstractTelegram};
+use super::{AuthenticationMeta, TelegramMetaInformation, TelegramType, GetTelegramType };
 
 use chrono::NaiveDateTime;
 use diesel::{Insertable, Queryable};
@@ -111,7 +111,7 @@ pub struct R09WebSocketTelegram {
     pub meta_data: TransmissionPosition,
 }
 
-impl AbstractTelegram<'_> for R09Telegram {
+impl GetTelegramType for R09Telegram {
     fn get_type(&self) -> TelegramType {
         TelegramType::R09
     }
