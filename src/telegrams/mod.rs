@@ -65,3 +65,9 @@ impl Hash for TelegramType {
     }
 }
 
+
+pub trait AbstractTelegram {
+    fn get_type(self: &Self) -> TelegramType;
+}
+
+
