@@ -66,7 +66,7 @@ impl Hash for TelegramType {
     }
 }
 
-pub trait AbstractTelegram<'a>: Deserialize<'a> + Deserialize<'a> + Debug + Clone {
+pub trait AbstractTelegram<'a>: Deserialize<'a> + Deserialize<'a> + Debug + Clone + Sized {
     fn get_type(self: &Self) -> TelegramType;
 }
 
