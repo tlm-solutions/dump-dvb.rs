@@ -20,6 +20,7 @@ pub struct TelegramMetaInformation {
 pub struct AuthenticationMeta {
     pub station: Uuid,
     pub token: String,
+    pub time: NaiveDateTime
 }
 
 
