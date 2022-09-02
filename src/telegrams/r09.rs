@@ -1,7 +1,8 @@
-use crate::stations::{TransmissionPosition, R09Types};
+use crate::locations::{TransmissionPosition, R09Types};
+use crate::management::Station;
 
-use super::super::schema::r09_telegrams;
-use super::{AuthenticationMeta, TelegramMetaInformation, TelegramType, GetTelegramType };
+use crate::schema::r09_telegrams;
+use crate::telegrams::{AuthenticationMeta, TelegramMetaInformation, TelegramType, GetTelegramType };
 
 use chrono::NaiveDateTime;
 use diesel::{Insertable, Queryable};
@@ -56,15 +57,15 @@ pub struct R09Telegram {
 /// R09SaveTelegram is how R09Telegrams are saved in the database or csv. Furthermore 
 /// it is enriched with meta information about the receiver that caught this telegram
 /// first or at which time this telegram was transmitted.
-#[derive(Deserialize, Serialize, Debug, Queryable, Insertable, Clone, PartialEq, FieldNamesAsArray)]
+#[derive(Clone, PartialEq, Debug, Deserialize, Serialize, Queryable, Insertable, Associations, FieldNamesAsArray)]
 #[table_name = "r09_telegrams"]
+#[belongs_to(Station, foreign_key = "station")]
 pub struct R09SaveTelegram {
     #[serde(deserialize_with = "csv::invalid_option")]
     pub id: Option<i64>,
 
     pub time: NaiveDateTime,
     pub station: Uuid,
-    pub region: i32, // foreign key references regions
 
     pub telegram_type: i16,
     #[serde(deserialize_with = "csv::invalid_option")]
@@ -124,7 +125,6 @@ impl R09SaveTelegram {
 
             time: meta.time,
             station: meta.station,
-            region: meta.region,
 
             telegram_type: telegram.telegram_type as i16,
             delay: telegram.delay,
@@ -161,45 +161,6 @@ impl R09SaveTelegram {
         Ok(collection)
     }
 }
-
-/*impl<'de> serde::Deserialize<'de> for R09SaveTelegram {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct TelegramTypeVisitor;
-
-        impl<'de> serde::de::Visitor<'de> for TelegramTypeVisitor {
-            type Value = TelegramType;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                write!(formatter, "an integer or string representing a R09Type")
-            }
-            fn visit_u64<E: serde::de::Error>(self, n: u64) -> Result<TelegramType, E> {
-                let duration_from_epoch = Duration::from_milis(n, 0);
-
-                Ok(match n {
-                    0 => TelegramType::PreRegistration,
-                    1 => TelegramType::Registration,
-                    2 => TelegramType::DeRegistration,
-                    3 => TelegramType::DoorClosed,
-                    _ => return Err(E::invalid_value(serde::de::Unexpected::Unsigned(n), &self)),
-                })
-            }
-
-            fn visit_str<E: serde::de::Error>(self, s: &str) -> Result<TelegramType, E> {
-                Ok(match s {
-                    "pre_registration" => TelegramType::PreRegistration,
-                    "registration" => TelegramType::Registration,
-                    "de_registration" => TelegramType::DeRegistration,
-                    "door_close" => TelegramType::DoorClosed,
-                    _ => return Err(E::invalid_value(serde::de::Unexpected::Str(s), &self)),
-                })
-            }
-        }
-        deserializer.deserialize_any(TelegramTypeVisitor)
-    }
-}*/
 
 impl Hash for R09ReceiveTelegram {
     fn hash<H: Hasher>(&self, state: &mut H) {
