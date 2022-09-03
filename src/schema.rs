@@ -1,55 +1,65 @@
-
 table! {
     r09_telegrams (id) {
-        id -> BigSerial,
+        id -> Int8,
         time -> Timestamp,
         station -> Uuid,
-        telegram_type -> SmallInt,
-        delay -> Nullable<Integer>,
-        reporting_point -> Integer,
-        junction -> Integer,
-        direction -> SmallInt,
-        request_status -> SmallInt,
-        priority -> Nullable<SmallInt>,
-        direction_request -> Nullable<SmallInt>,
-        line -> Nullable<Integer>,
-        run_number -> Nullable<Integer>,
-        destination_number -> Nullable<Integer>,
-        train_length -> Nullable<SmallInt>,
-        vehicle_number -> Nullable<Integer>,
-        operator -> Nullable<SmallInt>,
+        telegram_type -> Int8,
+        delay -> Nullable<Int4>,
+        reporting_point -> Int4,
+        junction -> Int4,
+        direction -> Int2,
+        request_status -> Int2,
+        priority -> Nullable<Int2>,
+        direction_request -> Nullable<Int2>,
+        line -> Nullable<Int4>,
+        run_number -> Nullable<Int4>,
+        destination_number -> Nullable<Int4>,
+        train_length -> Nullable<Int2>,
+        vehicle_number -> Nullable<Int4>,
+        operator -> Nullable<Int2>,
     }
 }
 
 table! {
     raw_telegrams (id) {
-        id -> BigSerial,
+        id -> Int8,
         time -> Timestamp,
         station -> Uuid,
-        region -> Integer,
-        telegram_type -> SmallInt,
-        data -> Binary,
+        telegram_type -> Int8,
+        data -> Bytea,
+    }
+}
+
+table! {
+    regions (id) {
+        id -> Int8,
+        name -> Text,
+        transport_company -> Text,
+        regional_company -> Nullable<Text>,
+        frequency -> Nullable<Int8>,
+        r09_type -> Nullable<Int4>,
+        encoding -> Nullable<Int4>,
     }
 }
 
 table! {
     stations (id) {
         id -> Uuid,
-        token -> Nullable<VarChar>,
+        token -> Nullable<Varchar>,
         name -> Text,
-        lat -> Double,
-        lon -> Double,
-        region -> Serial,
+        lat -> Float8,
+        lon -> Float8,
+        region -> Int8,
         owner -> Uuid,
         approved -> Bool,
         deactivated -> Bool,
         public -> Bool,
-        radio -> Nullable<Integer>,
-        architecture -> Nullable<Integer>,
-        device -> Nullable<Integer>,
-        elevation -> Nullable<Double>,
-        telegram_decoder_version -> Nullable<Array<Integer>>,
-        antenna -> Nullable<Integer>,
+        radio -> Nullable<Int4>,
+        architecture -> Nullable<Int4>,
+        device -> Nullable<Int4>,
+        elevation -> Nullable<Float8>,
+        telegram_decoder_version -> Nullable<Array<Int4>>,
+        antenna -> Nullable<Int4>,
     }
 }
 
@@ -58,22 +68,22 @@ table! {
         id -> Uuid,
         name -> Text,
         email -> Text,
-        password -> VarChar,
-        role -> Integer,
-        email_setting -> Integer,
+        password -> Varchar,
+        role -> Int4,
+        email_setting -> Int4,
         deactivated -> Bool,
     }
 }
 
-table! {
-    regions (id) {
-        id -> Nullable<Serial>,
-        name -> Text,
-        transport_company -> Text,
-        regional_company -> Nullable<Text>,
-        frequency -> Nullable<BigInt>,
-        r09_type -> Nullable<Integer>,
-        encoding -> Nullable<Integer>,
-    }
-}
+joinable!(r09_telegrams -> stations (station));
+joinable!(raw_telegrams -> stations (station));
+joinable!(stations -> regions (region));
+joinable!(stations -> users (owner));
 
+allow_tables_to_appear_in_same_query!(
+    r09_telegrams,
+    raw_telegrams,
+    regions,
+    stations,
+    users,
+);
