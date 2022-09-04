@@ -24,7 +24,7 @@ pub enum R09Types {
 /// telegram is send when the vehicle reaces the traffic light and deregistration is send 
 /// when the bus leaves the stop.
 #[derive(Debug, PartialEq, Clone)]
-pub enum TelegramType {
+pub enum RequestStatus {
     PreRegistration = 0,
     Registration = 1,
     DeRegistration = 2,
@@ -37,7 +37,7 @@ pub struct TransmissionPosition {
     #[serde(alias = "DHID")]
     pub dhid: Option<String>,
     pub name: Option<String>,
-    pub request_status: i16,
+    pub request_status: RequestStatus,
     pub direction: i16,
     pub lat: f64,
     pub lon: f64,
@@ -141,7 +141,7 @@ impl InterRegional {
                 let selected_position = possbile_stations[0].clone();
 
                 for position in possbile_stations {
-                    if position.telegram_type == TelegramType::DoorClosed {
+                    if position.request_status == RequestStatus::DoorClosed {
                         return Some(position);
                     }
                 }
@@ -214,65 +214,65 @@ impl fmt::Display for R09Types {
     }
 }
 
-impl<'de> serde::Deserialize<'de> for TelegramType {
+impl<'de> serde::Deserialize<'de> for RequestStatus {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
     {
-        struct TelegramTypeVisitor;
+        struct RequestStatusVisitor;
 
-        impl<'de> serde::de::Visitor<'de> for TelegramTypeVisitor {
-            type Value = TelegramType;
+        impl<'de> serde::de::Visitor<'de> for RequestStatusVisitor {
+            type Value = RequestStatus;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
                 write!(formatter, "an integer or string representing a R09Type")
             }
-            fn visit_u64<E: serde::de::Error>(self, n: u64) -> Result<TelegramType, E> {
+            fn visit_u64<E: serde::de::Error>(self, n: u64) -> Result<RequestStatus, E> {
                 Ok(match n {
-                    0 => TelegramType::PreRegistration,
-                    1 => TelegramType::Registration,
-                    2 => TelegramType::DeRegistration,
-                    3 => TelegramType::DoorClosed,
+                    0 => RequestStatus::PreRegistration,
+                    1 => RequestStatus::Registration,
+                    2 => RequestStatus::DeRegistration,
+                    3 => RequestStatus::DoorClosed,
                     _ => return Err(E::invalid_value(serde::de::Unexpected::Unsigned(n), &self)),
                 })
             }
 
-            fn visit_str<E: serde::de::Error>(self, s: &str) -> Result<TelegramType, E> {
+            fn visit_str<E: serde::de::Error>(self, s: &str) -> Result<RequestStatus, E> {
                 Ok(match s {
-                    "pre_registration" => TelegramType::PreRegistration,
-                    "registration" => TelegramType::Registration,
-                    "de_registration" => TelegramType::DeRegistration,
-                    "door_close" => TelegramType::DoorClosed,
+                    "pre_registration" => RequestStatus::PreRegistration,
+                    "registration" => RequestStatus::Registration,
+                    "de_registration" => RequestStatus::DeRegistration,
+                    "door_close" => RequestStatus::DoorClosed,
                     _ => return Err(E::invalid_value(serde::de::Unexpected::Str(s), &self)),
                 })
             }
         }
-        deserializer.deserialize_any(TelegramTypeVisitor)
+        deserializer.deserialize_any(RequestStatusVisitor)
     }
 }
 
-impl Serialize for TelegramType {
+impl Serialize for RequestStatus {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: ::serde::Serializer,
     {
         // Serialize the enum as a string.
         serializer.serialize_i16(match *self {
-            TelegramType::PreRegistration => 0,
-            TelegramType::Registration => 1,
-            TelegramType::DeRegistration => 2,
-            TelegramType::DoorClosed => 3,
+            RequestStatus::PreRegistration => 0,
+            RequestStatus::Registration => 1,
+            RequestStatus::DeRegistration => 2,
+            RequestStatus::DoorClosed => 3,
         })
     }
 }
 
-impl TelegramType {
-    pub fn from_i16(value: i16) -> Option<TelegramType> {
+impl RequestStatus {
+    pub fn from_i16(value: i16) -> Option<RequestStatus> {
         match value {
-            0 => Some(TelegramType::PreRegistration),
-            1 => Some(TelegramType::Registration),
-            2 => Some(TelegramType::DeRegistration),
-            3 => Some(TelegramType::DoorClosed),
+            0 => Some(RequestStatus::PreRegistration),
+            1 => Some(RequestStatus::Registration),
+            2 => Some(RequestStatus::DeRegistration),
+            3 => Some(RequestStatus::DoorClosed),
             _ => None,
         }
     }

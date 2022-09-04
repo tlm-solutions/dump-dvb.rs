@@ -46,7 +46,7 @@ impl User {
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable, Queryable)]
 #[table_name = "regions"]
 pub struct Region {
-    pub id: Option<i32>,
+    pub id: Option<i64>,
     pub name: String,
     pub transport_company: String,
     pub regional_company: Option<String>,
@@ -65,7 +65,7 @@ pub struct Station {
     pub name: String,
     pub lat: f64,
     pub lon: f64,
-    pub region: i32,
+    pub region: i64,
     pub owner: Uuid,
     pub approved: bool,
     pub deactivated: bool,

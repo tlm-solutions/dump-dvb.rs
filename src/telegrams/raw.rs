@@ -22,9 +22,8 @@ pub struct RawSaveTelegram {
 
     pub time: NaiveDateTime,
     pub station: Uuid,
-    pub region: i32,
 
-    pub telegram_type: i16,
+    pub telegram_type: i64,
     pub data: Vec<u8>
 }
 
@@ -50,9 +49,8 @@ impl RawSaveTelegram {
 
             time: meta.time,
             station: meta.station,
-            region: meta.region,
 
-            telegram_type: telegram.telegram_type as i16,
+            telegram_type: telegram.telegram_type as i64,
             data: telegram.data
         }
     }

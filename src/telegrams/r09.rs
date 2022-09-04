@@ -67,7 +67,7 @@ pub struct R09SaveTelegram {
     pub time: NaiveDateTime,
     pub station: Uuid,
 
-    pub telegram_type: i16,
+    pub telegram_type: i64,
     #[serde(deserialize_with = "csv::invalid_option")]
     pub delay: Option<i32>,
     pub reporting_point: i32,
@@ -126,7 +126,7 @@ impl R09SaveTelegram {
             time: meta.time,
             station: meta.station,
 
-            telegram_type: telegram.telegram_type as i16,
+            telegram_type: telegram.telegram_type as i64,
             delay: telegram.delay,
             reporting_point: telegram.reporting_point as i32,
             junction: telegram.junction as i32,
