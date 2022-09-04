@@ -37,7 +37,7 @@ pub struct TransmissionPosition {
     #[serde(alias = "DHID")]
     pub dhid: Option<String>,
     pub name: Option<String>,
-    pub telegram_type: TelegramType,
+    pub request_status: i16,
     pub direction: i16,
     pub lat: f64,
     pub lon: f64,
