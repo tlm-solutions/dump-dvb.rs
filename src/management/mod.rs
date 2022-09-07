@@ -25,7 +25,7 @@ impl Role {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Insertable, Queryable)]
+#[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
 #[table_name = "users"]
 pub struct User {
     pub id: Uuid,
@@ -46,7 +46,7 @@ impl User {
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable, Queryable)]
 #[table_name = "regions"]
 pub struct Region {
-    pub id: Option<i64>,
+    pub id: i64,
     pub name: String,
     pub transport_company: String,
     pub regional_company: Option<String>,
