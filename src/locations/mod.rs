@@ -49,6 +49,8 @@ pub struct RegionMetaInformation {
     pub frequency: Option<u64>,
     pub city_name: Option<String>,
     pub type_r09: Option<R09Types>,
+    pub lat: Option<f64>,
+    pub lon: Option<f64>
 }
 
 /// Meta infomration about stops json 

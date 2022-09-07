@@ -64,6 +64,20 @@ table! {
 }
 
 table! {
+    tracy_runs (id) {
+        id -> Int8,
+        start_time -> Nullable<Timestamp>,
+        end_time -> Nullable<Timestamp>,
+        line -> Nullable<Int4>,
+        run -> Nullable<Int4>,
+        gps_file -> Nullable<Text>,
+        region -> Int8,
+        owner -> Uuid,
+        finished -> Bool,
+    }
+}
+
+table! {
     users (id) {
         id -> Uuid,
         name -> Text,
@@ -79,11 +93,14 @@ joinable!(r09_telegrams -> stations (station));
 joinable!(raw_telegrams -> stations (station));
 joinable!(stations -> regions (region));
 joinable!(stations -> users (owner));
+joinable!(tracy_runs -> regions (region));
+joinable!(tracy_runs -> users (owner));
 
 allow_tables_to_appear_in_same_query!(
     r09_telegrams,
     raw_telegrams,
     regions,
     stations,
+    tracy_runs,
     users,
 );

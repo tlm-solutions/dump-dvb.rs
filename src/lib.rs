@@ -10,3 +10,5 @@ pub mod locations;
 pub mod management;
 pub mod receivers;
 pub mod measurements;
+pub mod tracy;
+
