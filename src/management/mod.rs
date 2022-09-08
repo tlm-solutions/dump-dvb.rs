@@ -89,7 +89,7 @@ pub struct Session {
 }
 
 impl Session {
-    fn new(owner: &Uuid) -> Session {
+    pub fn new(owner: &Uuid) -> Session {
         let random_token: String = rand::thread_rng()
              .sample_iter(&Alphanumeric)
              .take(32)
@@ -102,15 +102,15 @@ impl Session {
         }
     }
 
-    fn outdated(&self) -> bool {
+    pub fn outdated(&self) -> bool {
         (Utc::now().naive_utc() - self.start_time ) > Duration::days(8)
     }
 
-    fn token_match(&self, token: &String) -> bool {
+    pub fn token_match(&self, token: &String) -> bool {
         self.token == *token
     }
 
-    fn renew(&mut self) {
+    pub fn renew(&mut self) {
         self.start_time = Utc::now().naive_utc();
     }
 }
