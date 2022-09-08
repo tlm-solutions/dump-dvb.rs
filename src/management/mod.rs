@@ -45,9 +45,21 @@ impl User {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Insertable, Queryable)]
-#[table_name = "regions"]
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
 pub struct Region {
+    #[diesel(deserialize_as = "i64")]
+    pub id: i64,
+    pub name: String,
+    pub transport_company: String,
+    pub regional_company: Option<String>,
+    pub frequency: Option<i64>,
+    pub r09_type: Option<i32>,
+    pub encoding: Option<i32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
+#[table_name = "regions"]
+pub struct InsertRegion {
     #[diesel(deserialize_as = "i64")]
     pub id: Option<i64>,
     pub name: String,
