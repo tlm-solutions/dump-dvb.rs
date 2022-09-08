@@ -2,7 +2,8 @@ use crate::schema::*;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Duration, Utc};
+use rand::{distributions::Alphanumeric, Rng};
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
 pub enum Role {
@@ -85,6 +86,33 @@ pub struct Session {
     pub owner: Uuid,
     pub start_time: NaiveDateTime,
     pub token: String
+}
+
+impl Session {
+    fn new(owner: &Uuid) -> Session {
+        let random_token: String = rand::thread_rng()
+             .sample_iter(&Alphanumeric)
+             .take(32)
+             .map(char::from)
+             .collect();
+        Session {
+            owner: owner.clone(),
+            start_time: Utc::now().naive_utc(),
+            token: random_token
+        }
+    }
+
+    fn outdated(&self) -> bool {
+        (Utc::now().naive_utc() - self.start_time ) > Duration::days(8)
+    }
+
+    fn token_match(&self, token: &String) -> bool {
+        self.token == *token
+    }
+
+    fn renew(&mut self) {
+        self.start_time = Utc::now().naive_utc();
+    }
 }
 
 impl Serialize for User {
