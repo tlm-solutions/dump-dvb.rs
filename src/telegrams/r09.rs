@@ -62,6 +62,7 @@ pub struct R09Telegram {
 #[belongs_to(Station, foreign_key = "station")]
 pub struct R09SaveTelegram {
     #[serde(deserialize_with = "csv::invalid_option")]
+    #[diesel(deserialize_as = "i64")]
     pub id: Option<i64>,
 
     pub time: NaiveDateTime,

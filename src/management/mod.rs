@@ -48,7 +48,8 @@ impl User {
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable, Queryable)]
 #[table_name = "regions"]
 pub struct Region {
-    pub id: i64,
+    #[diesel(deserialize_as = "i64")]
+    pub id: Option<i64>,
     pub name: String,
     pub transport_company: String,
     pub regional_company: Option<String>,
@@ -83,7 +84,8 @@ pub struct Station {
 #[derive(Debug, Clone, Deserialize, Insertable, Queryable)]
 #[table_name = "station_history"]
 pub struct StationHistory {
-    pub id: i64,
+    #[diesel(deserialize_as = "i64")]
+    pub id: Option<i64>,
     pub changed_time: NaiveDateTime,
     pub station_id: Uuid,
     pub name: String,
@@ -138,7 +140,7 @@ impl Session {
 impl StationHistory {
     pub fn from_station(station: &Station) -> StationHistory {
         StationHistory {
-            id: -1,
+            id: None,
             changed_time: Utc::now().naive_utc(),
             station_id: station.id,
             name: station.name.clone(),
