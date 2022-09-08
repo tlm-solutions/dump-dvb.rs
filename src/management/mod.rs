@@ -82,7 +82,6 @@ pub struct Station {
 #[derive(Debug, Clone, Deserialize, Insertable, Queryable)]
 #[table_name = "sessions"]
 pub struct Session {
-    pub id: i64,
     pub owner: Uuid,
     pub start_time: NaiveDateTime,
     pub token: String

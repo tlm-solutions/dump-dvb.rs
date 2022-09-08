@@ -43,8 +43,7 @@ table! {
 }
 
 table! {
-    sessions (id) {
-        id -> Int8,
+    sessions (owner) {
         owner -> Uuid,
         start_time -> Timestamp,
         token -> Varchar,
