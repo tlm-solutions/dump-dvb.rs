@@ -43,6 +43,15 @@ table! {
 }
 
 table! {
+    sessions (id) {
+        id -> Int8,
+        owner -> Uuid,
+        start_time -> Timestamp,
+        token -> Varchar,
+    }
+}
+
+table! {
     stations (id) {
         id -> Uuid,
         token -> Nullable<Varchar>,
@@ -91,6 +100,7 @@ table! {
 
 joinable!(r09_telegrams -> stations (station));
 joinable!(raw_telegrams -> stations (station));
+joinable!(sessions -> users (owner));
 joinable!(stations -> regions (region));
 joinable!(stations -> users (owner));
 joinable!(tracy_runs -> regions (region));
@@ -100,6 +110,7 @@ allow_tables_to_appear_in_same_query!(
     r09_telegrams,
     raw_telegrams,
     regions,
+    sessions,
     stations,
     tracy_runs,
     users,

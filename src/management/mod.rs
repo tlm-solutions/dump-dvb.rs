@@ -2,6 +2,7 @@ use crate::schema::*;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
+use chrono::NaiveDateTime;
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
 pub enum Role {
@@ -76,6 +77,15 @@ pub struct Station {
     pub elevation: Option<f64>,
     pub telegram_decoder_version: Option<Vec<i32>>,
     pub antenna: Option<i32>,
+}
+
+#[derive(Debug, Clone, Deserialize, Insertable, Queryable)]
+#[table_name = "sessions"]
+pub struct Session {
+    pub id: i64,
+    pub owner: Uuid,
+    pub start_time: NaiveDateTime,
+    pub token: String
 }
 
 impl Serialize for User {
