@@ -120,7 +120,7 @@ impl Serialize for User {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("User", 7)?;
+        let mut s = serializer.serialize_struct("User", 6)?;
         s.serialize_field("id", &self.id.to_string())?;
         s.serialize_field("name", &self.name)?;
         s.serialize_field("email", &self.email)?;
@@ -136,10 +136,9 @@ impl Serialize for Station {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("Station", 17).unwrap();
+        let mut s = serializer.serialize_struct("Station", 15).unwrap();
 
         s.serialize_field("id", &self.id)?;
-        s.serialize_field("token", &self.token)?;
         s.serialize_field("name", &self.name)?;
         s.serialize_field("lat", &self.lat)?;
         s.serialize_field("lon", &self.lon)?;
