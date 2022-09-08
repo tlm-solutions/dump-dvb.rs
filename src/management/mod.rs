@@ -80,6 +80,32 @@ pub struct Station {
     pub antenna: Option<i32>,
 }
 
+#[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations)]
+#[table_name = "station_history"]
+#[belongs_to(User, foreign_key = "owner")]
+#[belongs_to(Region, foreign_key = "region")]
+#[belongs_to(Station, foreign_key = "station_id")]
+pub struct StationHistory {
+    pub id: i64,
+    pub changed_time: NaiveDateTime,
+    pub station_id: Uuid,
+    pub token: Option<String>,
+    pub name: String,
+    pub lat: f64,
+    pub lon: f64,
+    pub region: i64,
+    pub owner: Uuid,
+    pub approved: bool,
+    pub deactivated: bool,
+    pub public: bool,
+    pub radio: Option<i32>,
+    pub architecture: Option<i32>,
+    pub device: Option<i32>,
+    pub elevation: Option<f64>,
+    pub telegram_decoder_version: Option<Vec<i32>>,
+    pub antenna: Option<i32>,
+}
+
 #[derive(Debug, Clone, Deserialize, Insertable, Queryable)]
 #[table_name = "sessions"]
 pub struct Session {

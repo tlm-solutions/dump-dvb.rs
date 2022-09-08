@@ -51,6 +51,29 @@ table! {
 }
 
 table! {
+    station_history (id) {
+        id -> Int8,
+        changed_time -> Timestamp,
+        station_id -> Uuid,
+        token -> Nullable<Varchar>,
+        name -> Text,
+        lat -> Float8,
+        lon -> Float8,
+        region -> Int8,
+        owner -> Uuid,
+        approved -> Bool,
+        deactivated -> Bool,
+        public -> Bool,
+        radio -> Nullable<Int4>,
+        architecture -> Nullable<Int4>,
+        device -> Nullable<Int4>,
+        elevation -> Nullable<Float8>,
+        telegram_decoder_version -> Nullable<Array<Int4>>,
+        antenna -> Nullable<Int4>,
+    }
+}
+
+table! {
     stations (id) {
         id -> Uuid,
         token -> Nullable<Varchar>,
@@ -100,6 +123,9 @@ table! {
 joinable!(r09_telegrams -> stations (station));
 joinable!(raw_telegrams -> stations (station));
 joinable!(sessions -> users (owner));
+joinable!(station_history -> regions (region));
+joinable!(station_history -> stations (station_id));
+joinable!(station_history -> users (owner));
 joinable!(stations -> regions (region));
 joinable!(stations -> users (owner));
 joinable!(tracy_runs -> regions (region));
@@ -110,6 +136,7 @@ allow_tables_to_appear_in_same_query!(
     raw_telegrams,
     regions,
     sessions,
+    station_history,
     stations,
     tracy_runs,
     users,
