@@ -93,7 +93,7 @@ pub struct Station {
     pub antenna: Option<i32>,
 }
 
-#[derive(Debug, Clone, Deserialize, Insertable, Queryable)]
+#[derive(Debug, Clone, Deserialize, Insertable)]
 #[table_name = "station_history"]
 pub struct StationHistory {
     #[diesel(deserialize_as = "i64")]
