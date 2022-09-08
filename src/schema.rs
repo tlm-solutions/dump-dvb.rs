@@ -55,12 +55,10 @@ table! {
         id -> Int8,
         changed_time -> Timestamp,
         station_id -> Uuid,
-        token -> Nullable<Varchar>,
         name -> Text,
         lat -> Float8,
         lon -> Float8,
         region -> Int8,
-        owner -> Uuid,
         approved -> Bool,
         deactivated -> Bool,
         public -> Bool,
@@ -125,7 +123,6 @@ joinable!(raw_telegrams -> stations (station));
 joinable!(sessions -> users (owner));
 joinable!(station_history -> regions (region));
 joinable!(station_history -> stations (station_id));
-joinable!(station_history -> users (owner));
 joinable!(stations -> regions (region));
 joinable!(stations -> users (owner));
 joinable!(tracy_runs -> regions (region));

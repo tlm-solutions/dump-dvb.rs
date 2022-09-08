@@ -80,21 +80,15 @@ pub struct Station {
     pub antenna: Option<i32>,
 }
 
-#[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations)]
+#[derive(Debug, Clone, Deserialize, Insertable, Queryable)]
 #[table_name = "station_history"]
-#[belongs_to(User, foreign_key = "owner")]
-#[belongs_to(Region, foreign_key = "region")]
-#[belongs_to(Station, foreign_key = "station_id")]
 pub struct StationHistory {
     pub id: i64,
     pub changed_time: NaiveDateTime,
     pub station_id: Uuid,
-    pub token: Option<String>,
     pub name: String,
     pub lat: f64,
     pub lon: f64,
-    pub region: i64,
-    pub owner: Uuid,
     pub approved: bool,
     pub deactivated: bool,
     pub public: bool,
@@ -138,6 +132,28 @@ impl Session {
 
     pub fn renew(&mut self) {
         self.start_time = Utc::now().naive_utc();
+    }
+}
+
+impl StationHistory {
+    pub fn from_station(station: &Station) -> StationHistory {
+        StationHistory {
+            id: -1,
+            changed_time: Utc::now().naive_utc(),
+            station_id: station.id,
+            name: station.name.clone(),
+            lat: station.lat,
+            lon: station.lon,
+            approved: station.approved,
+            deactivated: station.deactivated,
+            public: station.public,
+            radio: station.radio,
+            architecture: station.architecture,
+            device: station.device,
+            elevation: station.elevation,
+            telegram_decoder_version: station.telegram_decoder_version.clone(),
+            antenna: station.antenna
+        }
     }
 }
 
