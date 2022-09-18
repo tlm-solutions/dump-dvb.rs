@@ -117,7 +117,7 @@ pub struct StationHistory {
     pub antenna: Option<i32>,
 }
 
-#[derive(Debug, Clone, Deserialize, Insertable, Queryable)]
+#[derive(Debug, Clone, Deserialize, Serialize, Insertable, Queryable)]
 #[table_name = "sessions"]
 pub struct Session {
     pub owner: Uuid,
