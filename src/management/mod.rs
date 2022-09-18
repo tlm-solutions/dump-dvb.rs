@@ -1,9 +1,12 @@
 use crate::schema::*;
+
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 use chrono::{NaiveDateTime, Duration, Utc};
 use rand::{distributions::Alphanumeric, Rng};
+use diesel::{PgConnection, RunQueryDsl, QueryDsl, ExpressionMethods};
+use log::error;
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
 pub enum Role {
@@ -245,3 +248,43 @@ pub enum Architecture {
     X86 = 1,
     Aarch64 = 2,
 }
+
+
+pub fn user_from_session(connection: &PgConnection, received_token: &String) -> Option<User> {
+    use crate::schema::sessions::{owner, start_time, token};
+    use crate::schema::sessions::dsl::sessions;
+    use crate::schema::users::id;
+    use crate::schema::users::dsl::users;
+
+    let session = match sessions
+        .filter(token.eq(received_token))
+        .first::<Session>(connection) {
+        Ok(data) => {
+            data
+        }
+        Err(e) => {
+            error!("Err: {:?}", e);
+            return None;
+        }
+    };
+
+    let valid_token = !session.outdated() && session.token_match(received_token);
+
+    // if its a valid session renew token
+    if valid_token {
+        match diesel::update(sessions.filter(owner.eq(session.owner)))
+            .set(start_time.eq(Utc::now().naive_utc()))
+            .get_result::<Session>(connection) {
+            Ok(_) => {}
+            Err(e) => {
+                error!("error while trying to refresh session {:?}", e);
+            }
+        }
+
+        return users.filter(id.eq(session.owner))
+            .first::<User>(connection).ok()
+    }
+
+    None
+}
+

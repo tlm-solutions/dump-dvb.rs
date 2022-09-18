@@ -5,7 +5,7 @@ use crate::schema::r09_telegrams;
 use crate::telegrams::{AuthenticationMeta, TelegramMetaInformation, TelegramType, GetTelegramType };
 
 use chrono::NaiveDateTime;
-use diesel::{Insertable, Queryable};
+use diesel::{Insertable};
 use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -57,7 +57,7 @@ pub struct R09Telegram {
 /// R09SaveTelegram is how R09Telegrams are saved in the database or csv. Furthermore 
 /// it is enriched with meta information about the receiver that caught this telegram
 /// first or at which time this telegram was transmitted.
-#[derive(Clone, PartialEq, Debug, Deserialize, Serialize, Queryable, Insertable, Associations, FieldNamesAsArray)]
+#[derive(Clone, PartialEq, Debug, Deserialize, Serialize, Insertable, Associations, FieldNamesAsArray)]
 #[table_name = "r09_telegrams"]
 #[belongs_to(Station, foreign_key = "station")]
 pub struct R09SaveTelegram {
