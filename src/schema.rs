@@ -93,7 +93,7 @@ table! {
 }
 
 table! {
-    tracy_runs (id) {
+    trekkie_runs (id) {
         id -> Int8,
         start_time -> Nullable<Timestamp>,
         end_time -> Nullable<Timestamp>,
@@ -125,8 +125,8 @@ joinable!(station_history -> regions (region));
 joinable!(station_history -> stations (station_id));
 joinable!(stations -> regions (region));
 joinable!(stations -> users (owner));
-joinable!(tracy_runs -> regions (region));
-joinable!(tracy_runs -> users (owner));
+joinable!(trekkie_runs -> regions (region));
+joinable!(trekkie_runs -> users (owner));
 
 allow_tables_to_appear_in_same_query!(
     r09_telegrams,
@@ -135,6 +135,6 @@ allow_tables_to_appear_in_same_query!(
     sessions,
     station_history,
     stations,
-    tracy_runs,
+    trekkie_runs,
     users,
 );

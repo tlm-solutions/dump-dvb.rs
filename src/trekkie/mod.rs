@@ -2,11 +2,11 @@ use serde::{Serialize, Deserialize};
 use chrono::NaiveDateTime;
 use uuid::Uuid;
 
-use crate::schema::tracy_runs;
+use crate::schema::trekkie_runs;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable)]
-#[table_name = "tracy_runs"]
-pub struct TracyRun {
+#[table_name = "trekkie_runs"]
+pub struct TrekkieRuns {
     pub id: i64,
     pub start_time: Option<NaiveDateTime>,
     pub end_time: Option<NaiveDateTime>,
