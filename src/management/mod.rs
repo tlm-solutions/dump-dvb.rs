@@ -327,3 +327,22 @@ impl ReducedStation {
         }
     }
 }
+
+pub fn device_to_string(device: &Device) -> String {
+    match device {
+        Device::Raspberry3 => "rpi3".to_string(),
+        Device::Raspberry3b => "rpi3".to_string(),
+        Device::Raspberry3bPlus => "rpi3".to_string(),
+        Device::Raspberry4 => "rpi4".to_string(),
+        Device::DellWyse3040 => "dell-wyse-3040".to_string(),
+        _ => "other".to_string()
+    }
+}
+
+pub fn arch_to_strin(arch: &Architecture) -> String {
+    match arch {
+        Architecture::X86 => "x86_64-linux".to_string(),
+        Architecture::Aarch64 => "aarch64-linux".to_string(),
+        Architecture::Other => "other".to_string()
+    }
+}
