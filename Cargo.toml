@@ -1,6 +1,6 @@
 [package]
 name = "dump-dvb"
-version = "0.4.4"
+version = "0.4.5"
 edition = "2021"
 
 [dependencies]
@@ -20,9 +20,11 @@ csv = "1.1"
 struct-field-names-as-array = "0.1"
 num-traits = "0.2"
 num-derive = "0.3"
+pbkdf2 = "0.10"
 diesel_codegen = "*"
 rand = "*"
 log = "*"
+regex = "*"
 
 [build-dependencies]
 tonic-build = "0.7"

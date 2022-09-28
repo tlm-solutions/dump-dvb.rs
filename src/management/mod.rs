@@ -1,3 +1,6 @@
+pub mod user;
+
+use user::User;
 use crate::schema::*;
 
 use serde::ser::SerializeStruct;
@@ -5,49 +8,6 @@ use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 use chrono::{NaiveDateTime, Duration, Utc};
 use rand::{distributions::Alphanumeric, Rng};
-use diesel::{PgConnection, RunQueryDsl, QueryDsl, ExpressionMethods};
-use log::error;
-
-#[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
-pub enum Role {
-    User = 6,
-    Administrator = 0,
-}
-
-impl Role {
-    pub fn from(role: i32) -> Role {
-        match role {
-            0 => Role::Administrator,
-            _ => Role::User,
-        }
-    }
-
-    pub fn as_int(&self) -> i32 {
-        match self {
-            Role::Administrator => 0,
-            _ => 6,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
-#[table_name = "users"]
-pub struct User {
-    pub id: Uuid,
-    pub name: String,
-    pub email: String,
-    pub password: String,
-    pub role: i32,
-    pub email_setting: i32,
-    pub deactivated: bool,
-}
-
-impl User {
-    pub fn is_admin(&self) -> bool {
-        Role::from(self.role) == Role::Administrator
-    }
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
 pub struct Region {
     #[diesel(deserialize_as = "i64")]
@@ -192,22 +152,6 @@ impl StationHistory {
     }
 }
 
-impl Serialize for User {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut s = serializer.serialize_struct("User", 6)?;
-        s.serialize_field("id", &self.id.to_string())?;
-        s.serialize_field("name", &self.name)?;
-        s.serialize_field("email", &self.email)?;
-        s.serialize_field("role", &self.role)?;
-        s.serialize_field("email_setting", &self.email_setting)?;
-        s.serialize_field("deactivated", &self.deactivated)?;
-        s.end()
-    }
-}
-
 impl Serialize for Station {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -265,45 +209,6 @@ pub enum Architecture {
     Other = 0,
     X86 = 1,
     Aarch64 = 2,
-}
-
-
-pub fn user_from_session(connection: &PgConnection, received_token: &String) -> Option<User> {
-    use crate::schema::sessions::{owner, start_time, token};
-    use crate::schema::sessions::dsl::sessions;
-    use crate::schema::users::id;
-    use crate::schema::users::dsl::users;
-
-    let session = match sessions
-        .filter(token.eq(received_token))
-        .first::<Session>(connection) {
-        Ok(data) => {
-            data
-        }
-        Err(e) => {
-            error!("Err: {:?}", e);
-            return None;
-        }
-    };
-
-    let valid_token = !session.outdated() && session.token_match(received_token);
-
-    // if its a valid session renew token
-    if valid_token {
-        match diesel::update(sessions.filter(owner.eq(session.owner)))
-            .set(start_time.eq(Utc::now().naive_utc()))
-            .get_result::<Session>(connection) {
-            Ok(_) => {}
-            Err(e) => {
-                error!("error while trying to refresh session {:?}", e);
-            }
-        }
-
-        return users.filter(id.eq(session.owner))
-            .first::<User>(connection).ok()
-    }
-
-    None
 }
 
 

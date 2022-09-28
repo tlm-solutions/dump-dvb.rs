@@ -6,7 +6,7 @@ use crate::schema::trekkie_runs;
 
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable)]
 #[table_name = "trekkie_runs"]
-pub struct TrekkieRuns {
+pub struct TrekkieRun {
     pub id: i64,
     pub start_time: Option<NaiveDateTime>,
     pub end_time: Option<NaiveDateTime>,
