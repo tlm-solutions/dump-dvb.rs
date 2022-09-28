@@ -10,7 +10,7 @@ use chrono::{NaiveDateTime, Duration, Utc};
 use rand::{distributions::Alphanumeric, Rng};
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
 pub struct Region {
-    #[diesel(deserialize_as = "i64")]
+    #[diesel(deserialize_as = i64)]
     pub id: i64,
     pub name: String,
     pub transport_company: String,
@@ -21,9 +21,9 @@ pub struct Region {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
-#[table_name = "regions"]
+#[diesel(table_name = regions)]
 pub struct InsertRegion {
-    #[diesel(deserialize_as = "i64")]
+    //#[diesel(deserialize_as = "i64")]
     pub id: Option<i64>,
     pub name: String,
     pub transport_company: String,
@@ -34,9 +34,9 @@ pub struct InsertRegion {
 }
 
 #[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations)]
-#[table_name = "stations"]
-#[belongs_to(User, foreign_key = "owner")]
-#[belongs_to(Region, foreign_key = "region")]
+#[diesel(table_name = stations)]
+#[diesel(belongs_to(User, foreign_key = owner))]
+#[diesel(belongs_to(Region, foreign_key = region))]
 pub struct Station {
     pub id: Uuid,
     pub token: Option<String>,
@@ -75,9 +75,9 @@ pub struct ReducedStation {
 }
 
 #[derive(Debug, Clone, Deserialize, Insertable)]
-#[table_name = "station_history"]
+#[diesel(table_name = station_history)]
 pub struct StationHistory {
-    #[diesel(deserialize_as = "i64")]
+    #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
     pub changed_time: NaiveDateTime,
     pub station_id: Uuid,
@@ -96,7 +96,7 @@ pub struct StationHistory {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Insertable, Queryable)]
-#[table_name = "sessions"]
+#[diesel(table_name = sessions)]
 pub struct Session {
     pub owner: Uuid,
     pub start_time: NaiveDateTime,

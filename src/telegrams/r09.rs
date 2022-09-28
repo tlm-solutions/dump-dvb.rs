@@ -58,11 +58,11 @@ pub struct R09Telegram {
 /// it is enriched with meta information about the receiver that caught this telegram
 /// first or at which time this telegram was transmitted.
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize, Insertable, Associations, FieldNamesAsArray)]
-#[table_name = "r09_telegrams"]
-#[belongs_to(Station, foreign_key = "station")]
+#[diesel(table_name = r09_telegrams)]
+#[diesel(belongs_to(Station, foreign_key = station))]
 pub struct R09SaveTelegram {
     #[serde(deserialize_with = "csv::invalid_option")]
-    #[diesel(deserialize_as = "i64")]
+    #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
 
     pub time: NaiveDateTime,

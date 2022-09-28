@@ -16,9 +16,9 @@ pub struct RawTelegram {
 }
 
 #[derive(Deserialize, Serialize, Debug, Queryable, Insertable, Clone, PartialEq, FieldNamesAsArray)]
-#[table_name = "raw_telegrams"]
+#[diesel(table_name = raw_telegrams)]
 pub struct RawSaveTelegram {
-    #[diesel(deserialize_as = "i64")]
+    #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
 
     pub time: NaiveDateTime,

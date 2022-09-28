@@ -33,7 +33,7 @@ impl Role {
 }
 
 #[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
-#[table_name = "users"]
+#[diesel(table_name = users)]
 pub struct User {
     pub id: Uuid,
     pub name: String,
