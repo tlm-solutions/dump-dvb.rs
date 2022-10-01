@@ -12,6 +12,7 @@ use regex::Regex;
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
 pub enum Role {
+    Trekkie = 9,
     User = 6,
     Administrator = 0,
 }
@@ -32,9 +33,32 @@ impl Role {
     }
 }
 
+/// Schema implementation
 #[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
 #[diesel(table_name = users)]
 pub struct User {
+    pub id: Uuid,
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub password: Option<String>,
+    pub role: i32,
+    pub email_setting: Option<i32>,
+    pub deactivated: bool,
+}
+
+/// Minimal User mainly used for trekkie
+#[derive(Debug, Clone, Deserialize, Queryable)]
+#[diesel(table_name = users)]
+pub struct MinimalUser {
+    pub id: Uuid,
+    pub role: i32,
+    pub deactivated: bool,
+}
+
+/// Fully Registered User created by clicky-bunty server
+#[derive(Debug, Clone, Deserialize, Queryable)]
+#[diesel(table_name = users)]
+pub struct RegisteredUser {
     pub id: Uuid,
     pub name: String,
     pub email: String,
@@ -137,12 +161,12 @@ impl User {
 
         Some(User {
             id: Uuid::new_v4(),
-            name: request.name.clone(),
-            email: request.email.clone(),
-            password: password_hash,
+            name: Some(request.name.clone()),
+            email: Some(request.email.clone()),
+            password: Some(password_hash),
             role: Role::User.as_int(),
             deactivated: false,
-            email_setting: 0,
+            email_setting: Some(0),
         })
     }
 }

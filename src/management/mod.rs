@@ -23,7 +23,7 @@ pub struct Region {
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
 #[diesel(table_name = regions)]
 pub struct InsertRegion {
-    //#[diesel(deserialize_as = "i64")]
+    #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
     pub name: String,
     pub transport_company: String,

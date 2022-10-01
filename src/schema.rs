@@ -109,11 +109,11 @@ table! {
 table! {
     users (id) {
         id -> Uuid,
-        name -> Text,
-        email -> Text,
-        password -> Varchar,
+        name -> Nullable<Text>,
+        email -> Nullable<Text>,
+        password -> Nullable<Varchar>,
         role -> Int4,
-        email_setting -> Int4,
+        email_setting -> Nullable<Int4>,
         deactivated -> Bool,
     }
 }
