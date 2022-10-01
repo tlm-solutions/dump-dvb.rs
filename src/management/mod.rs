@@ -8,6 +8,10 @@ use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 use chrono::{NaiveDateTime, Duration, Utc};
 use rand::{distributions::Alphanumeric, Rng};
+use diesel::{QueryDsl, PgConnection, ExpressionMethods, RunQueryDsl};
+use log::error;
+
+
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
 pub struct Region {
     #[diesel(deserialize_as = i64)]
@@ -244,10 +248,49 @@ pub fn device_to_string(device: &Device) -> String {
     }
 }
 
-pub fn arch_to_strin(arch: &Architecture) -> String {
+pub fn arch_to_string(arch: &Architecture) -> String {
     match arch {
         Architecture::X86 => "x86_64-linux".to_string(),
         Architecture::Aarch64 => "aarch64-linux".to_string(),
         Architecture::Other => "other".to_string()
     }
 }
+
+pub fn user_from_session(connection: &mut PgConnection, received_token: &String) -> Option<User> {
+    use crate::schema::sessions::{owner, start_time, token};
+    use crate::schema::sessions::dsl::sessions;
+    use crate::schema::users::id;
+    use crate::schema::users::dsl::users;
+
+    let session = match sessions
+        .filter(token.eq(received_token))
+        .first::<Session>(connection) {
+        Ok(data) => {
+            data
+        }
+        Err(e) => {
+            error!("Err: {:?}", e);
+            return None;
+        }
+    };
+
+    let valid_token = !session.outdated() && session.token_match(received_token);
+
+    // if its a valid session renew token
+    if valid_token {
+        match diesel::update(sessions.filter(owner.eq(session.owner)))
+            .set(start_time.eq(Utc::now().naive_utc()))
+            .get_result::<Session>(connection) {
+            Ok(_) => {}
+            Err(e) => {
+                error!("error while trying to refresh session {:?}", e);
+            }
+        }
+
+        return users.filter(id.eq(session.owner))
+            .first::<User>(connection).ok()
+    }
+
+    None
+}
+
