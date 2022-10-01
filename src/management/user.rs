@@ -82,7 +82,7 @@ pub struct LoginRequest {
 }
 
 
-impl User {
+impl RegisteredUser {
     pub fn is_admin(&self) -> bool {
         Role::from(self.role) == Role::Administrator
     }
