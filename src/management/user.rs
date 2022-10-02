@@ -87,7 +87,7 @@ impl RegisteredUser {
         Role::from(self.role) == Role::Administrator
     }
 
-    pub fn from(user: &User) -> Option<RegisteredUser> {
+    pub fn from_user(user: &User) -> Option<RegisteredUser> {
         if user.name.is_none() || user.email.is_none() || user.password.is_none() || user.email_setting.is_none() {
             return None;
         }

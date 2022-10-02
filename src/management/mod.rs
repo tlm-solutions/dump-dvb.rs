@@ -292,7 +292,7 @@ pub fn user_from_session(connection: &mut PgConnection, received_token: &String)
         match users.filter(id.eq(session.owner))
             .first::<User>(connection) {
             Ok(user) => {
-                return RegisteredUser::from(&user);
+                return RegisteredUser::from_user(&user);
             },
             Err(e) => {
                 error!("error while quering {:?}", e);
