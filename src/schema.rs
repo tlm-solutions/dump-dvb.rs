@@ -95,11 +95,11 @@ table! {
 table! {
     trekkie_runs (id) {
         id -> Int8,
-        start_time -> Nullable<Timestamp>,
-        end_time -> Nullable<Timestamp>,
-        line -> Nullable<Int4>,
-        run -> Nullable<Int4>,
-        gps_file -> Nullable<Text>,
+        start_time -> Timestamp,
+        end_time -> Timestamp,
+        line -> Int4,
+        run -> Int4,
+        gps_file -> Text,
         region -> Int8,
         owner -> Uuid,
         finished -> Bool,
