@@ -136,7 +136,7 @@ pub fn verify_password(password: &String, hashed_password: &String) -> bool {
 }
 
 impl User {
-    pub fn new(request: &RegisterUserRequest) -> Option<User> {
+    pub fn new(request: &RegisterUserRequest) -> Option<RegisteredUser> {
         let email_regex = Regex::new(
             r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6})",
         )
@@ -159,14 +159,14 @@ impl User {
             }
         }
 
-        Some(User {
+        Some(RegisteredUser{
             id: Uuid::new_v4(),
-            name: Some(request.name.clone()),
-            email: Some(request.email.clone()),
-            password: Some(password_hash),
+            name: request.name.clone(),
+            email: request.email.clone(),
+            password: password_hash,
             role: Role::User.as_int(),
             deactivated: false,
-            email_setting: Some(0),
+            email_setting: 0,
         })
     }
 }
