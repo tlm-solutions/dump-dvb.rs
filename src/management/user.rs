@@ -21,14 +21,17 @@ impl Role {
     pub fn from(role: i32) -> Role {
         match role {
             0 => Role::Administrator,
-            _ => Role::User,
+            6 => Role::User,
+            9 => Role::Trekkie,
+            _ => Role::Trekkie,
         }
     }
 
     pub fn as_int(&self) -> i32 {
         match self {
             Role::Administrator => 0,
-            _ => 6,
+            Role::User => 6,
+            Role::Trekkie => 9,
         }
     }
 }
