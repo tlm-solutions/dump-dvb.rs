@@ -86,6 +86,21 @@ impl RegisteredUser {
     pub fn is_admin(&self) -> bool {
         Role::from(self.role) == Role::Administrator
     }
+
+    pub fn from(user: &User) -> Option<RegisteredUser> {
+        if user.name.is_none() || user.email.is_none() || user.password.is_none() || user.email_setting.is_none() {
+            return None;
+        }
+        Some(RegisteredUser {
+            id: user.id,
+            name: user.name.clone().unwrap(),
+            email: user.email.clone().unwrap(),
+            password: user.password.clone().unwrap(),
+            email_setting: user.email_setting.clone().unwrap(),
+            role: user.role,
+            deactivated: user.deactivated
+        })
+    }
 }
 
 

@@ -11,6 +11,8 @@ use rand::{distributions::Alphanumeric, Rng};
 use diesel::{QueryDsl, PgConnection, ExpressionMethods, RunQueryDsl};
 use log::error;
 
+use self::user::RegisteredUser;
+
 
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
 pub struct Region {
@@ -256,7 +258,7 @@ pub fn arch_to_string(arch: &Architecture) -> String {
     }
 }
 
-pub fn user_from_session(connection: &mut PgConnection, received_token: &String) -> Option<User> {
+pub fn user_from_session(connection: &mut PgConnection, received_token: &String) -> Option<RegisteredUser> {
     use crate::schema::sessions::{owner, start_time, token};
     use crate::schema::sessions::dsl::sessions;
     use crate::schema::users::id;
@@ -287,8 +289,16 @@ pub fn user_from_session(connection: &mut PgConnection, received_token: &String)
             }
         }
 
-        return users.filter(id.eq(session.owner))
-            .first::<User>(connection).ok()
+        match users.filter(id.eq(session.owner))
+            .first::<User>(connection) {
+            Ok(user) => {
+                return RegisteredUser::from(&user);
+            },
+            Err(e) => {
+                error!("error while quering {:?}", e);
+                return None;
+            }
+        }
     }
 
     None
