@@ -59,5 +59,9 @@
           ${pkgs.diesel-cli}/bin/diesel migration run --migration-dir ${self}/migrations
         '';
       };
+
+      devShells."x86_64-linux".default = pkgs.mkShell {
+        nativeBuildInputs = with pkgs; [  grpc protobuf websocketpp pkg-config postgresql_14 openssl ];
+      };
     };
 }
