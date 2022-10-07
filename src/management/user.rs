@@ -43,7 +43,7 @@ pub struct User {
     pub id: Uuid,
     pub name: Option<String>,
     pub email: Option<String>,
-    pub password: Option<String>,
+    pub password: String,
     pub role: i32,
     pub email_setting: Option<i32>,
     pub deactivated: bool,
@@ -91,14 +91,14 @@ impl RegisteredUser {
     }
 
     pub fn from_user(user: &User) -> Option<RegisteredUser> {
-        if user.name.is_none() || user.email.is_none() || user.password.is_none() || user.email_setting.is_none() {
+        if user.name.is_none() || user.email.is_none() || user.email_setting.is_none() {
             return None;
         }
         Some(RegisteredUser {
             id: user.id,
             name: user.name.clone().unwrap(),
             email: user.email.clone().unwrap(),
-            password: user.password.clone().unwrap(),
+            password: user.password.clone(),
             email_setting: user.email_setting.clone().unwrap(),
             role: user.role,
             deactivated: user.deactivated

@@ -111,7 +111,7 @@ table! {
         id -> Uuid,
         name -> Nullable<Text>,
         email -> Nullable<Text>,
-        password -> Nullable<Varchar>,
+        password -> Varchar,
         role -> Int4,
         email_setting -> Nullable<Int4>,
         deactivated -> Bool,
