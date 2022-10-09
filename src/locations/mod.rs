@@ -21,7 +21,7 @@ pub enum R09Types {
 
 /// There are 4 different telegrams which can be send from one location
 /// the first one is sent approximetly 150m before the traffic light the registration
-/// telegram is send when the vehicle reaces the traffic light and deregistration is send 
+/// telegram is send when the vehicle reaces the traffic light and deregistration is send
 /// when the bus leaves the stop.
 #[derive(Debug, PartialEq, Clone)]
 pub enum RequestStatus {
@@ -53,7 +53,12 @@ pub struct RegionMetaInformation {
     pub lon: Option<f64>
 }
 
-/// Meta infomration about stops json 
+//pub enum dumpDvbFormat {
+//    junction_lists,
+//    reporting_points
+//}
+
+/// Meta infomration about stops json
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct DocumentMetaInformation {
     pub schema_version: String,
@@ -68,6 +73,21 @@ pub type RegionalTransmissionPositions = HashMap<i32, Vec<TransmissionPosition>>
 pub struct InterRegional {
     pub document: DocumentMetaInformation,
     pub data: HashMap<i32, RegionalTransmissionPositions>,
+    pub meta: HashMap<i32, RegionMetaInformation>,
+}
+
+
+pub struct ReportLocation {
+    pub lat: f64,
+    pub lon: f64,
+    pub properties: serde_json::Value,
+}
+
+pub type RegionReportLocations = HashMap<i32, ReportLocation>;
+
+pub struct LocationsJson {
+    pub document: DocumentMetaInformation,
+    pub data: HashMap<i32, RegionReportLocations>,
     pub meta: HashMap<i32, RegionMetaInformation>,
 }
 
