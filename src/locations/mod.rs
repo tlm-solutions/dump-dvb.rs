@@ -76,11 +76,21 @@ pub struct InterRegional {
     pub meta: HashMap<i32, RegionMetaInformation>,
 }
 
-
 pub struct ReportLocation {
     pub lat: f64,
     pub lon: f64,
     pub properties: serde_json::Value,
+}
+
+pub struct LineSegment {
+    pub historical_time: u32, // time in seconds
+    pub next_reporting_point: i32, // reporting_point
+    pub positions: Vec<(f64, f64)>
+}
+
+pub struct Graph {
+    // direction (maybe arbitery) -> reporting_point
+    pub segments: HashMap<u32, LineSegment>,
 }
 
 pub type RegionReportLocations = HashMap<i32, ReportLocation>;
