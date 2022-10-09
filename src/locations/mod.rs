@@ -76,18 +76,21 @@ pub struct InterRegional {
     pub meta: HashMap<i32, RegionMetaInformation>,
 }
 
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct ReportLocation {
     pub lat: f64,
     pub lon: f64,
     pub properties: serde_json::Value,
 }
 
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct LineSegment {
     pub historical_time: u32, // time in seconds
     pub next_reporting_point: i32, // reporting_point
     pub positions: Vec<(f64, f64)>
 }
 
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Segments {
     // direction (maybe arbitery) -> reporting_point
     pub segments: HashMap<u32, LineSegment>,
