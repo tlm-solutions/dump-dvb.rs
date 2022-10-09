@@ -88,7 +88,7 @@ pub struct LineSegment {
     pub positions: Vec<(f64, f64)>
 }
 
-pub struct Graph {
+pub struct Segments {
     // direction (maybe arbitery) -> reporting_point
     pub segments: HashMap<u32, LineSegment>,
 }
