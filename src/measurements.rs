@@ -3,7 +3,7 @@ use crate::telegrams::r09::{R09SaveTelegram};
 use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct MeasurementInterval {
     pub start: Option<NaiveDateTime>,
     pub stop: Option<NaiveDateTime>,
@@ -13,9 +13,9 @@ pub struct MeasurementInterval {
 }
 
 /// The FinishedMeasurementInterval struct is primarly used in **Wartrammer-40k** and **lofi**.
-/// It defines the time intervall and which vehicle was taken where data is actively being 
+/// It defines the time intervall and which vehicle was taken where data is actively being
 /// recorded.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct FinishedMeasurementInterval {
     pub start: NaiveDateTime,
     pub stop: NaiveDateTime,
@@ -26,7 +26,7 @@ pub struct FinishedMeasurementInterval {
 
 impl FinishedMeasurementInterval {
     // Converts the intermediate representation into the final measurement
-    pub fn from_measurement(measurement: MeasurementInterval) -> FinishedMeasurementInterval { 
+    pub fn from_measurement(measurement: MeasurementInterval) -> FinishedMeasurementInterval {
         FinishedMeasurementInterval {
             start: measurement.start.unwrap(),
             stop: measurement.stop.unwrap(),
