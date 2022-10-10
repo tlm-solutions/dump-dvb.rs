@@ -162,17 +162,13 @@ impl LocationsJson {
             .expect("cannot write to file!");
     }
 
-    fn populate_meta(&mut self, generator: Option<String>, generator_version: Option<String>) {
+    pub fn populate_meta(&mut self, generator: Option<String>, generator_version: Option<String>) {
         self.document = DocumentMeta {
             schema_version: String::from(SCHEMA),
             date: chrono::Utc::now(),
             generator,
             generator_version,
         };
-    }
-
-    fn populate_meta_region() {
-        todo!();
     }
 }
 

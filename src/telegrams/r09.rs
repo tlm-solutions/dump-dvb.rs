@@ -28,7 +28,7 @@ pub use dvb_dump::{R09GrpcTelegram, ReturnCode};
 
 
 /// The R09Telegram is the heart piece it hold the raw information from the received
-/// radio-telegram. The goal was of this struct is to be the smallest denominator 
+/// radio-telegram. The goal was of this struct is to be the smallest denominator
 /// of all different telegram formats (**R09.14**, **R09.16**, **R09.18**).
 ///
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -54,7 +54,7 @@ pub struct R09Telegram {
 }
 
 
-/// R09SaveTelegram is how R09Telegrams are saved in the database or csv. Furthermore 
+/// R09SaveTelegram is how R09Telegrams are saved in the database or csv. Furthermore
 /// it is enriched with meta information about the receiver that caught this telegram
 /// first or at which time this telegram was transmitted.
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize, Insertable, Associations, FieldNamesAsArray)]
@@ -66,6 +66,7 @@ pub struct R09SaveTelegram {
     pub id: Option<i64>,
 
     pub time: NaiveDateTime,
+    //pub region: i32,
     pub station: Uuid,
 
     pub telegram_type: i64,
@@ -75,22 +76,15 @@ pub struct R09SaveTelegram {
     pub junction: i32,       //derived from  reporting_point
     pub direction: i16,      //derived from reporting_point
     pub request_status: i16, //derived from reporting_point
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub priority: Option<i16>,
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub direction_request: Option<i16>,
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub line: Option<i32>,
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub run_number: Option<i32>,
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub destination_number: Option<i32>,
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub train_length: Option<i16>,
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub vehicle_number: Option<i32>,
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub operator: Option<i16>,
+    pub region: i32,
 }
 
 /// This Telegram is what the **data-hoarder** service expects when submitting new telegrams.
@@ -126,7 +120,6 @@ impl R09SaveTelegram {
 
             time: meta.time,
             station: meta.station,
-
             telegram_type: telegram.telegram_type as i64,
             delay: telegram.delay,
             reporting_point: telegram.reporting_point as i32,
@@ -141,6 +134,7 @@ impl R09SaveTelegram {
             train_length: telegram.train_length.map(|x| x as i16),
             vehicle_number: telegram.vehicle_number.map(|x| x as i32),
             operator: telegram.operator.map(|x| x as i16),
+            region: meta.region,
         }
     }
 
