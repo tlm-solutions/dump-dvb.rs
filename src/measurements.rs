@@ -1,4 +1,4 @@
-use crate::telegrams::r09::{R09SaveTelegram};
+use crate::telegrams::r09::R09SaveTelegram;
 
 use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
@@ -9,7 +9,7 @@ pub struct MeasurementInterval {
     pub stop: Option<NaiveDateTime>,
     pub line: Option<i32>,
     pub run: Option<i32>,
-    pub region: Option<i32>
+    pub region: Option<i32>,
 }
 
 /// The FinishedMeasurementInterval struct is primarly used in **Wartrammer-40k** and **lofi**.
@@ -32,11 +32,11 @@ impl FinishedMeasurementInterval {
             stop: measurement.stop.unwrap(),
             line: measurement.line.unwrap(),
             run: measurement.run.unwrap(),
-            region: measurement.region.unwrap()
+            region: measurement.region.unwrap(),
         }
     }
 
-    // Checks if a given Telegram was recorded in this time intervall
+    // Checks if a given Telegram was recorded in this time interval
     pub fn fits(&self, telegram: &R09SaveTelegram) -> bool {
         if telegram.line.is_none() || telegram.run_number.is_none() {
             return false;

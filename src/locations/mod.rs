@@ -3,13 +3,13 @@ mod tests;
 use chrono::prelude::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
-use std::hash::Hash;
-use std::hash::Hasher;
 use std::collections::HashMap;
+use std::fmt;
 use std::fs;
 use std::fs::File;
+use std::hash::Hash;
+use std::hash::Hasher;
 use std::io::Write;
-use std::fmt;
 
 /// Enum for different telegram format
 #[derive(Debug, PartialEq, Clone)]
@@ -50,7 +50,7 @@ pub struct RegionMetaInformation {
     pub city_name: Option<String>,
     pub type_r09: Option<R09Types>,
     pub lat: Option<f64>,
-    pub lon: Option<f64>
+    pub lon: Option<f64>,
 }
 
 //pub enum dumpDvbFormat {
@@ -187,13 +187,12 @@ impl InterRegional {
 
     pub fn write(&self, file: &str) {
         fs::remove_file(file).ok();
-        let mut output = File::create(file)
-            .expect("cannot create or open file!");
+        let mut output = File::create(file).expect("cannot create or open file!");
 
-        let json_data = serde_json::to_string_pretty(&self)
-            .expect("cannot serialize structs!");
+        let json_data = serde_json::to_string_pretty(&self).expect("cannot serialize structs!");
 
-        output.write_all(json_data.as_bytes())
+        output
+            .write_all(json_data.as_bytes())
             .expect("cannot write to file!");
     }
 
@@ -306,9 +305,9 @@ impl Serialize for R09Types {
 impl fmt::Display for R09Types {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            R09Types::R14 => { formatter.write_str("R09.14") }
-            R09Types::R16 => { formatter.write_str("R09.16") }
-            R09Types::R18 => { formatter.write_str("R09.18") }
+            R09Types::R14 => formatter.write_str("R09.14"),
+            R09Types::R16 => formatter.write_str("R09.16"),
+            R09Types::R18 => formatter.write_str("R09.18"),
         }
     }
 }
@@ -380,9 +379,15 @@ impl RequestStatus {
 impl Hash for R09Types {
     fn hash<H: Hasher>(&self, state: &mut H) {
         match self {
-            R09Types::R14 => { 14i32.hash(state); }
-            R09Types::R16 => { 16i32.hash(state); }
-            R09Types::R18 => { 18i32.hash(state); }
+            R09Types::R14 => {
+                14i32.hash(state);
+            }
+            R09Types::R16 => {
+                16i32.hash(state);
+            }
+            R09Types::R18 => {
+                18i32.hash(state);
+            }
         }
     }
 }
