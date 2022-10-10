@@ -101,8 +101,18 @@ pub struct Segments {
 
 pub type RegionReportLocations = HashMap<i32, ReportLocation>;
 
+const SCHEMA: &str = "1";
+#[derive(Serialize, Deserialize)]
+struct DocumentMeta {
+    schema_version: String,
+    date: DateTime<Utc>,
+    generator: Option<String>,
+    generator_version: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
 pub struct LocationsJson {
-    pub document: DocumentMetaInformation,
+    document: DocumentMeta,
     pub data: HashMap<i32, RegionReportLocations>,
     pub meta: HashMap<i32, RegionMetaInformation>,
 }
@@ -111,6 +121,57 @@ pub struct LocationsJson {
 pub struct Region {
     pub traffic_lights: RegionalTransmissionPositions,
     pub meta: RegionMetaInformation,
+}
+
+impl LocationsJson {
+    pub fn from_file(file: &str) -> Result<LocationsJson, serde_json::error::Error> {
+        let data = fs::read_to_string(file).expect("could not read LocationsJson file!");
+        serde_json::from_str(&data)
+    }
+
+    // FIXME
+    pub fn construct(
+        data: HashMap<i32, RegionReportLocations>,
+        meta: HashMap<i32, RegionMetaInformation>,
+        generator: Option<String>,
+        generator_version: Option<String>,
+    ) -> LocationsJson {
+        LocationsJson {
+            document: DocumentMeta {
+                schema_version: String::from(SCHEMA),
+                date: chrono::Utc::now(),
+                generator,
+                generator_version,
+            },
+            data: data,
+            meta: meta,
+        }
+    }
+
+    pub fn write(&self, file: &str) {
+        // FIXME proper logic instead of silent overwrite
+        fs::remove_file(file).ok();
+        let mut output = File::create(file).expect("cannot create or open file!");
+
+        let json_data = serde_json::to_string_pretty(&self).expect("cannot serialize structs!");
+
+        output
+            .write_all(json_data.as_bytes())
+            .expect("cannot write to file!");
+    }
+
+    fn populate_meta(&mut self, generator: Option<String>, generator_version: Option<String>) {
+        self.document = DocumentMeta {
+            schema_version: String::from(SCHEMA),
+            date: chrono::Utc::now(),
+            generator,
+            generator_version,
+        };
+    }
+
+    fn populate_meta_region() {
+        todo!();
+    }
 }
 
 impl InterRegional {
