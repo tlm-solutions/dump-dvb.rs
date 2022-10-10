@@ -61,7 +61,7 @@
       };
 
       devShells."x86_64-linux".default = pkgs.mkShell {
-        nativeBuildInputs = with pkgs; [  grpc protobuf websocketpp pkg-config postgresql_14 openssl ];
+        nativeBuildInputs = with pkgs; [  grpc protobuf websocketpp pkg-config postgresql_14 openssl diesel-cli ];
       };
     };
 }
