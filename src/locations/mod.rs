@@ -33,6 +33,7 @@ pub enum RequestStatus {
 
 /// This is used in stops json to define accurate positions
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[deprecated()]
 pub struct TransmissionPosition {
     #[serde(alias = "DHID")]
     pub dhid: Option<String>,
@@ -102,7 +103,7 @@ pub struct Segments {
 pub type RegionReportLocations = HashMap<i32, ReportLocation>;
 
 const SCHEMA: &str = "1";
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 struct DocumentMeta {
     schema_version: String,
     date: DateTime<Utc>,
@@ -110,7 +111,7 @@ struct DocumentMeta {
     generator_version: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct LocationsJson {
     document: DocumentMeta,
     pub data: HashMap<i32, RegionReportLocations>,
@@ -118,6 +119,7 @@ pub struct LocationsJson {
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[deprecated()]
 pub struct Region {
     pub traffic_lights: RegionalTransmissionPositions,
     pub meta: RegionMetaInformation,
