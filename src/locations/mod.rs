@@ -60,6 +60,7 @@ pub struct RegionMetaInformation {
 
 /// Meta infomration about stops json
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[deprecated()]
 pub struct DocumentMetaInformation {
     pub schema_version: String,
     pub date: DateTime<Utc>,
@@ -67,9 +68,11 @@ pub struct DocumentMetaInformation {
     pub generator_version: Option<String>,
 }
 
+#[deprecated()]
 pub type RegionalTransmissionPositions = HashMap<i32, Vec<TransmissionPosition>>;
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[deprecated()]
 pub struct InterRegional {
     pub document: DocumentMetaInformation,
     pub data: HashMap<i32, RegionalTransmissionPositions>,
