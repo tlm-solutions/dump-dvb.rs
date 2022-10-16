@@ -66,7 +66,6 @@ pub struct R09SaveTelegram {
     pub id: Option<i64>,
 
     pub time: NaiveDateTime,
-    //pub region: i32,
     pub station: Uuid,
 
     pub telegram_type: i64,
