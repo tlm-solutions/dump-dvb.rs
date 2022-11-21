@@ -25,6 +25,7 @@ diesel_codegen = "*"
 rand = "*"
 log = "*"
 regex = "*"
+lazy_static = "1.4.0"
 
 [build-dependencies]
 tonic-build = "0.7"

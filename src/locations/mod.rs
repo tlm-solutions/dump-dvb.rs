@@ -2,6 +2,7 @@ mod tests;
 pub mod graph;
 
 use chrono::prelude::{DateTime, Utc};
+use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
@@ -48,17 +49,73 @@ pub struct TransmissionPosition {
 /// Meta inforamtion about region which then can be used to configure radio receivers
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct RegionMetaInformation {
+    /// Frequency in Hz
     pub frequency: Option<u64>,
     pub city_name: Option<String>,
+    /// Type of R09 telegram
     pub type_r09: Option<R09Types>,
+    /// Latitude of the Region, degrees
     pub lat: Option<f64>,
+    /// Longitude of the Region, degrees
     pub lon: Option<f64>,
 }
 
-//pub enum dumpDvbFormat {
-//    junction_lists,
-//    reporting_points
-//}
+//number to struct
+lazy_static! {
+    #[derive(Debug)]
+    pub static ref REGION_META_MAP: HashMap<i32, RegionMetaInformation> = HashMap::from([
+        (
+            0_i32,
+            RegionMetaInformation {
+                frequency: Some(170795000),
+                city_name: Some(String::from("Dresden")),
+                type_r09: Some(R09Types::R16),
+                lat: Some(51.05),
+                lon: Some(13.74),
+            }
+        ),
+        (
+            1_i32,
+            RegionMetaInformation {
+                frequency: Some(153850000),
+                city_name: Some(String::from("Chemnitz")),
+                type_r09: Some(R09Types::R16),
+                lat: Some(50.82),
+                lon: Some(12.92),
+            }
+        ),
+        (
+            2_i32,
+            RegionMetaInformation {
+                frequency: Some(150827500),
+                city_name: Some(String::from("Münster")),
+                type_r09: None,
+                lat: Some(51.96),
+                lon: Some(7.63),
+            }
+        ),
+        (
+            3_i32,
+            RegionMetaInformation {
+                frequency: Some(150827500),
+                city_name: Some(String::from("Aachen")),
+                type_r09: None,
+                lat: Some(50.78),
+                lon: Some(6.08),
+            }
+        ),
+        (
+            4_i32,
+            RegionMetaInformation {
+                frequency: None,
+                city_name: Some(String::from("Berlin")),
+                type_r09: None,
+                lat: Some(52.52),
+                lon: Some(13.41),
+            }
+        ),
+    ]);
+}
 
 /// Meta infomration about stops json
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
