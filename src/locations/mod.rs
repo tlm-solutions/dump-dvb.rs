@@ -1,5 +1,5 @@
-mod tests;
 pub mod graph;
+mod tests;
 
 use chrono::prelude::{DateTime, Utc};
 use lazy_static::lazy_static;
@@ -87,18 +87,18 @@ lazy_static! {
         (
             2_i32,
             RegionMetaInformation {
-                frequency: Some(150827500),
-                city_name: Some(String::from("Münster")),
+                frequency: Some(170450000),
+                city_name: Some(String::from("Berlin")),
                 type_r09: None,
-                lat: Some(51.96),
-                lon: Some(7.63),
+                lat: Some(52.52),
+                lon: Some(13.41),
             }
         ),
         (
             3_i32,
             RegionMetaInformation {
-                frequency: Some(150827500),
-                city_name: Some(String::from("Aachen")),
+                frequency: Some(155630000),
+                city_name: Some(String::from("Duesseldorf")),
                 type_r09: None,
                 lat: Some(50.78),
                 lon: Some(6.08),
@@ -107,11 +107,61 @@ lazy_static! {
         (
             4_i32,
             RegionMetaInformation {
-                frequency: None,
-                city_name: Some(String::from("Berlin")),
+                frequency: Some(150910000),
+                city_name: Some(String::from("Hannover")),
+                type_r09: Some(R09Types::R14),
+                lat: Some(52.38),
+                lon: Some(9.73),
+            }
+        ),
+        (
+            5_i32,
+            RegionMetaInformation {
+                frequency: Some(152930000),
+                city_name: Some(String::from("Karlsruhe")),
                 type_r09: None,
-                lat: Some(52.52),
-                lon: Some(13.41),
+                lat: None,
+                lon: None,
+            }
+        ),
+        (
+            6_i32,
+            RegionMetaInformation {
+                frequency: Some(151030000),
+                city_name: Some(String::from("Moenchengladbach")),
+                type_r09: None,
+                lat: None,
+                lon: None,
+            }
+        ),
+        (
+            7_i32,
+            RegionMetaInformation {
+                frequency: Some(150827500),
+                city_name: Some(String::from("Münster")),
+                type_r09: None,
+                lat: Some(51.96),
+                lon: Some(7.63),
+            }
+        ),
+        (
+            8_i32,
+            RegionMetaInformation {
+                frequency: Some(152930000),
+                city_name: Some(String::from("Ulm")),
+                type_r09: None,
+                lat: None,
+                lon: None,
+            }
+        ),
+        (
+            9_i32,
+            RegionMetaInformation {
+                frequency: Some(150827500),
+                city_name: Some(String::from("Aachen")),
+                type_r09: None,
+                lat: Some(50.78),
+                lon: Some(6.08),
             }
         ),
     ]);
