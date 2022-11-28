@@ -157,6 +157,16 @@ lazy_static! {
         (
             9_i32,
             RegionMetaInformation {
+                frequency: Some(152850000),
+                city_name: Some(String::from("Region-Hannover")),
+                type_r09: None,
+                lat: None,
+                lon: None,
+            }
+        ),
+        (
+            10_i32,
+            RegionMetaInformation {
                 frequency: Some(150827500),
                 city_name: Some(String::from("Aachen")),
                 type_r09: None,
