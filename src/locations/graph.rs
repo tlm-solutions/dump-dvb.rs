@@ -5,17 +5,17 @@ use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Position {
-    lat: f32,
-    lon: f32,
-    properties: HashMap<String, serde_json::Value> 
+    pub lat: f32,
+    pub lon: f32,
+    pub properties: HashMap<String, serde_json::Value> 
 }
 
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Edge {
-    last_update: u64,
-    historical_time: u64,
-    next_reporting_point: u32,
-    positions: HashMap<String, Position>
+    pub last_update: u64,
+    pub historical_time: u64,
+    pub next_reporting_point: u32,
+    pub positions: HashMap<String, Position>
 }
 
 
@@ -23,7 +23,7 @@ pub struct Edge {
 pub struct LineSegment {
     pub historical_time: u32, // time in seconds
     pub next_reporting_point: i32, // reporting_point
-    pub positions: Vec<(f64, f64)>
+    pub positions: HashMap<String, Position>
 }
 
 /// departure reporting_point -> destiation reporting_point -> Vec<GPS>
