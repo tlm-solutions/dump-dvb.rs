@@ -3,6 +3,13 @@ use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
 
+
+#[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
+pub struct Epsg3857 {
+    pub x: f32,
+    pub y: f32
+}
+
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Position {
     pub lat: f32,
