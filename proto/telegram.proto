@@ -38,9 +38,10 @@ message Position {
 }
 
 message Edge {
-    int32 historical_time = 1;
-    int32 next_reporting_point = 2;
-    repeated Position positions = 3;
+    int32 last_update = 1;
+    int32 historical_time = 2;
+    int32 next_reporting_point = 3;
+    map<string, Position> positions = 4;
 }
 
 message R09GrpcTelegramEnriched {
