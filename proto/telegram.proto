@@ -62,7 +62,7 @@ message R09GrpcTelegramEnriched {
     optional int32 train_length = 15;
     optional int32 vehicle_number = 16;
     optional int32 operator = 17;
-    repeated Edge enriched = 18;
+    Edge enriched = 18;
 }
 
 message ReturnCode {
