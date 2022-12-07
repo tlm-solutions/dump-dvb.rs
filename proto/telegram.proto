@@ -38,7 +38,7 @@ message Position {
 }
 
 message Edge {
-    int32 last_update = 1;
+    int64 last_update = 1;
     int32 historical_time = 2;
     int32 next_reporting_point = 3;
     map<string, Position> positions = 4;
