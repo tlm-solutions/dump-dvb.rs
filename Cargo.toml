@@ -7,8 +7,8 @@ edition = "2021"
 schema = ["dep:log"]
 
 management = [
-    "schema", 
-    "dep:pbkdf2", 
+    "schema",
+    "dep:pbkdf2",
     "dep:rand",
     "dep:regex"
 ]
@@ -19,18 +19,18 @@ locations = [
 ]
 
 telegrams = [
-    "schema", 
-    "locations", 
-    "management", 
+    "schema",
+    "locations",
+    "management",
     "dep:log",
-    "dep:num-traits", 
-    "dep:regex", 
+    "dep:num-traits",
+    "dep:regex",
     "dep:csv",
     "dep:struct-field-names-as-array",
     "dep:tonic",
     "dep:prost"
 ]
-measurement = []
+measurements = []
 receivers = []
 trekkie = ["schema"]
 
