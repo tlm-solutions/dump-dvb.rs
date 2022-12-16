@@ -33,19 +33,6 @@ pub enum RequestStatus {
     DoorClosed = 3,
 }
 
-/// This is used in stops json to define accurate positions
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-#[deprecated()]
-pub struct TransmissionPosition {
-    #[serde(alias = "DHID")]
-    pub dhid: Option<String>,
-    pub name: Option<String>,
-    pub request_status: RequestStatus,
-    pub direction: i16,
-    pub lat: f64,
-    pub lon: f64,
-}
-
 /// Meta inforamtion about region which then can be used to configure radio receivers
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct RegionMetaInformation {
@@ -177,27 +164,6 @@ lazy_static! {
     ]);
 }
 
-/// Meta infomration about stops json
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-#[deprecated()]
-pub struct DocumentMetaInformation {
-    pub schema_version: String,
-    pub date: DateTime<Utc>,
-    pub generator: Option<String>,
-    pub generator_version: Option<String>,
-}
-
-#[deprecated()]
-pub type RegionalTransmissionPositions = HashMap<i32, Vec<TransmissionPosition>>;
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-#[deprecated()]
-pub struct InterRegional {
-    pub document: DocumentMetaInformation,
-    pub data: HashMap<i32, RegionalTransmissionPositions>,
-    pub meta: HashMap<i32, RegionMetaInformation>,
-}
-
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct ReportLocation {
     pub lat: f64,
@@ -221,13 +187,6 @@ pub struct LocationsJson {
     document: DocumentMeta,
     pub data: HashMap<i32, RegionReportLocations>,
     pub meta: HashMap<i32, RegionMetaInformation>,
-}
-
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
-#[deprecated()]
-pub struct Region {
-    pub traffic_lights: RegionalTransmissionPositions,
-    pub meta: RegionMetaInformation,
 }
 
 impl LocationsJson {
@@ -274,83 +233,6 @@ impl LocationsJson {
             generator,
             generator_version,
         };
-    }
-}
-
-impl InterRegional {
-    pub fn from(file: &str) -> Option<InterRegional> {
-        let data = fs::read_to_string(file);
-
-        if data.is_err() {
-            return None;
-        }
-
-        serde_json::from_str(&data.unwrap()).ok()
-    }
-
-    pub fn write(&self, file: &str) {
-        fs::remove_file(file).ok();
-        let mut output = File::create(file).expect("cannot create or open file!");
-
-        let json_data = serde_json::to_string_pretty(&self).expect("cannot serialize structs!");
-
-        output
-            .write_all(json_data.as_bytes())
-            .expect("cannot write to file!");
-    }
-
-    pub fn extract(&self, region_id: &i32) -> Option<Region> {
-        let data = self.data.get(region_id);
-        let meta = self.meta.get(region_id);
-
-        if data.is_none() || meta.is_none() {
-            return None;
-        }
-
-        Some(Region {
-            traffic_lights: data.unwrap().clone(),
-            meta: meta.unwrap().clone(),
-        })
-    }
-
-    pub fn look_up(
-        &self,
-        region_id: &i32,
-        traffic_light: &i32,
-    ) -> Option<Vec<TransmissionPosition>> {
-        match self.data.get(region_id) {
-            Some(region) => {
-                return region.get(traffic_light).map(|x| x.clone());
-            }
-            None => None,
-        }
-    }
-
-    pub fn get_approximate_position(
-        &self,
-        region_id: &i32,
-        traffic_light: &i32,
-    ) -> Option<TransmissionPosition> {
-        let stop_list = self.look_up(region_id, traffic_light);
-
-        match stop_list {
-            Some(possbile_stations) => {
-                if possbile_stations.len() == 0 {
-                    return None;
-                }
-
-                let selected_position = possbile_stations[0].clone();
-
-                for position in possbile_stations {
-                    if position.request_status == RequestStatus::DoorClosed {
-                        return Some(position);
-                    }
-                }
-
-                Some(selected_position.clone())
-            }
-            None => None,
-        }
     }
 }
 

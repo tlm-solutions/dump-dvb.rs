@@ -1,4 +1,4 @@
-use crate::locations::{TransmissionPosition, R09Types};
+use crate::locations::R09Types;
 use crate::management::Station;
 
 use crate::schema::r09_telegrams;
@@ -95,15 +95,6 @@ pub struct R09ReceiveTelegram {
 
     #[serde(flatten)]
     pub data: R09Telegram,
-}
-
-#[derive(Debug, Serialize)]
-pub struct R09WebSocketTelegram {
-    #[serde(flatten)]
-    pub reduced: R09GrpcTelegram,
-
-    #[serde(flatten)]
-    pub meta_data: TransmissionPosition,
 }
 
 impl GetTelegramType for R09Telegram {
