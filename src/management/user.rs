@@ -71,20 +71,6 @@ pub struct RegisteredUser {
     pub deactivated: bool,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-pub struct RegisterUserRequest {
-    pub name: String,
-    pub email: String,
-    pub password: String
-}
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct LoginRequest {
-    pub email: String,
-    pub password: String
-}
-
-
 impl RegisteredUser {
     pub fn is_admin(&self) -> bool {
         Role::from(self.role) == Role::Administrator
@@ -106,7 +92,7 @@ impl RegisteredUser {
     }
 }
 
-
+/// custom serializer so we dont accidentailly leak password to the outside
 impl Serialize for User {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where

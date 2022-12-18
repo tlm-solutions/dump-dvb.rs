@@ -101,41 +101,6 @@ pub struct StationHistory {
     pub antenna: Option<i32>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Insertable, Queryable)]
-#[diesel(table_name = sessions)]
-pub struct Session {
-    pub owner: Uuid,
-    pub start_time: NaiveDateTime,
-    pub token: String
-}
-
-impl Session {
-    pub fn new(owner: &Uuid) -> Session {
-        let random_token: String = rand::thread_rng()
-             .sample_iter(&Alphanumeric)
-             .take(32)
-             .map(char::from)
-             .collect();
-        Session {
-            owner: owner.clone(),
-            start_time: Utc::now().naive_utc(),
-            token: random_token
-        }
-    }
-
-    pub fn outdated(&self) -> bool {
-        (Utc::now().naive_utc() - self.start_time ) > Duration::days(8)
-    }
-
-    pub fn token_match(&self, token: &String) -> bool {
-        self.token == *token
-    }
-
-    pub fn renew(&mut self) {
-        self.start_time = Utc::now().naive_utc();
-    }
-}
-
 impl StationHistory {
     pub fn from_station(station: &Station) -> StationHistory {
         StationHistory {
@@ -256,51 +221,5 @@ pub fn arch_to_string(arch: &Architecture) -> String {
         Architecture::Aarch64 => "aarch64-linux".to_string(),
         Architecture::Other => "other".to_string()
     }
-}
-
-pub fn user_from_session(connection: &mut PgConnection, received_token: &String) -> Option<RegisteredUser> {
-    use crate::schema::sessions::{owner, start_time, token};
-    use crate::schema::sessions::dsl::sessions;
-    use crate::schema::users::id;
-    use crate::schema::users::dsl::users;
-
-    let session = match sessions
-        .filter(token.eq(received_token))
-        .first::<Session>(connection) {
-        Ok(data) => {
-            data
-        }
-        Err(e) => {
-            error!("Err: {:?}", e);
-            return None;
-        }
-    };
-
-    let valid_token = !session.outdated() && session.token_match(received_token);
-
-    // if its a valid session renew token
-    if valid_token {
-        match diesel::update(sessions.filter(owner.eq(session.owner)))
-            .set(start_time.eq(Utc::now().naive_utc()))
-            .get_result::<Session>(connection) {
-            Ok(_) => {}
-            Err(e) => {
-                error!("error while trying to refresh session {:?}", e);
-            }
-        }
-
-        match users.filter(id.eq(session.owner))
-            .first::<User>(connection) {
-            Ok(user) => {
-                return RegisteredUser::from_user(&user);
-            },
-            Err(e) => {
-                error!("error while quering {:?}", e);
-                return None;
-            }
-        }
-    }
-
-    None
 }
 
