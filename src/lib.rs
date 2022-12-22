@@ -1,6 +1,6 @@
 #[macro_use]
 extern crate diesel;
-extern crate diesel_codegen;
+//extern crate diesel_codegen;
 extern crate dotenv;
 extern crate num_derive;
 
