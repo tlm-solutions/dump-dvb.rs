@@ -15,6 +15,7 @@ pub enum Role {
     Trekkie = 9,
     User = 6,
     Administrator = 0,
+    Unknown = 64
 }
 
 impl Role {
@@ -23,7 +24,7 @@ impl Role {
             0 => Role::Administrator,
             6 => Role::User,
             9 => Role::Trekkie,
-            _ => Role::Trekkie,
+            _ => Role::Unknown,
         }
     }
 
@@ -32,6 +33,7 @@ impl Role {
             Role::Administrator => 0,
             Role::User => 6,
             Role::Trekkie => 9,
+            Role::Unknown => 9,
         }
     }
 }
