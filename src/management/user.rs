@@ -73,6 +73,12 @@ pub struct RegisteredUser {
     pub deactivated: bool,
 }
 
+impl User {
+    pub fn is_admin(&self) -> bool {
+        Role::from(self.role) == Role::Administrator
+    }
+}
+
 impl RegisteredUser {
     pub fn is_admin(&self) -> bool {
         Role::from(self.role) == Role::Administrator
