@@ -17,14 +17,14 @@ use std::fs::File;
 use std::hash::Hash;
 use std::hash::Hasher;
 
-mod dvb_dump {
-    tonic::include_proto!("dvbdump");
+mod tlms {
+    tonic::include_proto!("tlms");
 }
 
-pub use dvb_dump::receives_telegrams_client::ReceivesTelegramsClient;
-pub use dvb_dump::receives_telegrams_server::ReceivesTelegrams;
-pub use dvb_dump::receives_telegrams_server::ReceivesTelegramsServer;
-pub use dvb_dump::{R09GrpcTelegram, ReturnCode};
+pub use tlms::receives_telegrams_client::ReceivesTelegramsClient;
+pub use tlms::receives_telegrams_server::ReceivesTelegrams;
+pub use tlms::receives_telegrams_server::ReceivesTelegramsServer;
+pub use tlms::{R09GrpcTelegram, ReturnCode};
 
 
 /// The R09Telegram is the heart piece it hold the raw information from the received

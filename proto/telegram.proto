@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package dvbdump;
+package tlms;
 
 service ReceivesTelegrams {
   rpc receive_r09 (R09GrpcTelegram) returns (ReturnCode) {}

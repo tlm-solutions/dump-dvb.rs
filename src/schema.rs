@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     r09_telegrams (id) {
         id -> Int8,
         time -> Timestamp,
@@ -21,7 +23,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     raw_telegrams (id) {
         id -> Int8,
         time -> Timestamp,
@@ -31,7 +33,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     regions (id) {
         id -> Int8,
         name -> Text,
@@ -40,10 +42,11 @@ table! {
         frequency -> Nullable<Int8>,
         r09_type -> Nullable<Int4>,
         encoding -> Nullable<Int4>,
+        deactivated -> Bool,
     }
 }
 
-table! {
+diesel::table! {
     sessions (owner) {
         owner -> Uuid,
         start_time -> Timestamp,
@@ -51,7 +54,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     station_history (id) {
         id -> Int8,
         changed_time -> Timestamp,
@@ -67,12 +70,12 @@ table! {
         architecture -> Nullable<Int4>,
         device -> Nullable<Int4>,
         elevation -> Nullable<Float8>,
-        telegram_decoder_version -> Nullable<Array<Int4>>,
+        telegram_decoder_version -> Nullable<Array<Nullable<Int4>>>,
         antenna -> Nullable<Int4>,
     }
 }
 
-table! {
+diesel::table! {
     stations (id) {
         id -> Uuid,
         token -> Nullable<Varchar>,
@@ -88,12 +91,12 @@ table! {
         architecture -> Nullable<Int4>,
         device -> Nullable<Int4>,
         elevation -> Nullable<Float8>,
-        telegram_decoder_version -> Nullable<Array<Int4>>,
+        telegram_decoder_version -> Nullable<Array<Nullable<Int4>>>,
         antenna -> Nullable<Int4>,
     }
 }
 
-table! {
+diesel::table! {
     trekkie_runs (id) {
         id -> Int8,
         start_time -> Timestamp,
@@ -107,7 +110,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     users (id) {
         id -> Uuid,
         name -> Nullable<Text>,
@@ -119,17 +122,17 @@ table! {
     }
 }
 
-joinable!(r09_telegrams -> stations (station));
-joinable!(raw_telegrams -> stations (station));
-joinable!(sessions -> users (owner));
-joinable!(station_history -> regions (region));
-joinable!(station_history -> stations (station_id));
-joinable!(stations -> regions (region));
-joinable!(stations -> users (owner));
-joinable!(trekkie_runs -> regions (region));
-joinable!(trekkie_runs -> users (owner));
+diesel::joinable!(r09_telegrams -> stations (station));
+diesel::joinable!(raw_telegrams -> stations (station));
+diesel::joinable!(sessions -> users (owner));
+diesel::joinable!(station_history -> regions (region));
+diesel::joinable!(station_history -> stations (station_id));
+diesel::joinable!(stations -> regions (region));
+diesel::joinable!(stations -> users (owner));
+diesel::joinable!(trekkie_runs -> regions (region));
+diesel::joinable!(trekkie_runs -> users (owner));
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     r09_telegrams,
     raw_telegrams,
     regions,
