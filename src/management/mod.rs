@@ -62,24 +62,6 @@ pub struct Station {
     pub antenna: Option<i32>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct ReducedStation {
-    pub id: Uuid,
-    pub name: String,
-    pub lat: f64,
-    pub lon: f64,
-    pub region: i64,
-    pub approved: bool,
-    pub deactivated: bool,
-    pub public: bool,
-    pub radio: Option<i32>,
-    pub architecture: Option<i32>,
-    pub device: Option<i32>,
-    pub elevation: Option<f64>,
-    pub telegram_decoder_version: Option<Vec<i32>>,
-    pub antenna: Option<i32>,
-}
-
 impl Serialize for Station {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -137,28 +119,6 @@ pub enum Architecture {
     Other = 0,
     X86 = 1,
     Aarch64 = 2,
-}
-
-
-impl ReducedStation {
-    pub fn from(station: Station) -> ReducedStation {
-        ReducedStation {
-            id: station.id,
-            name: station.name,
-            lat: station.lat,
-            lon: station.lon,
-            approved: station.approved,
-            deactivated: station.deactivated,
-            region: station.region,
-            public: station.public,
-            radio: station.radio,
-            architecture: station.architecture,
-            device: station.device,
-            elevation: station.elevation,
-            telegram_decoder_version: station.telegram_decoder_version.clone(),
-            antenna: station.antenna
-        }
-    }
 }
 
 pub fn device_to_string(device: &Device) -> String {
