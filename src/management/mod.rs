@@ -58,7 +58,7 @@ pub struct Station {
     pub architecture: Option<i32>,
     pub device: Option<i32>,
     pub elevation: Option<f64>,
-    pub telegram_decoder_version: Option<Vec<i32>>,
+    pub telegram_decoder_version: Option<String>,
     pub antenna: Option<i32>,
 }
 
