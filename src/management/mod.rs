@@ -24,6 +24,7 @@ pub struct Region {
     pub frequency: Option<i64>,
     pub r09_type: Option<i32>,
     pub encoding: Option<i32>,
+    pub deactivated: bool
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
@@ -37,6 +38,7 @@ pub struct InsertRegion {
     pub frequency: Option<i64>,
     pub r09_type: Option<i32>,
     pub encoding: Option<i32>,
+    pub deactivated: bool
 }
 
 #[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations)]
