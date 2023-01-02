@@ -1,6 +1,13 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    internal_stations (id) {
+        id -> Uuid,
+        wireguard_number -> Nullable<Int4>,
+    }
+}
+
+diesel::table! {
     r09_telegrams (id) {
         id -> Int8,
         time -> Timestamp,
@@ -93,6 +100,7 @@ diesel::table! {
         elevation -> Nullable<Float8>,
         antenna -> Nullable<Int4>,
         telegram_decoder_version -> Nullable<Text>,
+        notes -> Nullable<Text>,
     }
 }
 
@@ -122,6 +130,7 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(internal_stations -> stations (id));
 diesel::joinable!(r09_telegrams -> stations (station));
 diesel::joinable!(raw_telegrams -> stations (station));
 diesel::joinable!(sessions -> users (owner));
@@ -133,6 +142,7 @@ diesel::joinable!(trekkie_runs -> regions (region));
 diesel::joinable!(trekkie_runs -> users (owner));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    internal_stations,
     r09_telegrams,
     raw_telegrams,
     regions,
