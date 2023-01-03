@@ -26,7 +26,7 @@ diesel::table! {
         train_length -> Nullable<Int2>,
         vehicle_number -> Nullable<Int4>,
         operator -> Nullable<Int2>,
-        region -> Int4,
+        region -> Int8,
     }
 }
 

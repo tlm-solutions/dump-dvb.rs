@@ -13,7 +13,7 @@ use num_derive::FromPrimitive;
 pub struct TelegramMetaInformation {
     pub time: NaiveDateTime,
     pub station: Uuid,
-    pub region: i32, // foreign key references regions
+    pub region: i64, // foreign key references regions
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]

@@ -83,7 +83,7 @@ pub struct R09SaveTelegram {
     pub train_length: Option<i16>,
     pub vehicle_number: Option<i32>,
     pub operator: Option<i16>,
-    pub region: i32,
+    pub region: i64,
 }
 
 /// This Telegram is what the **data-hoarder** service expects when submitting new telegrams.
