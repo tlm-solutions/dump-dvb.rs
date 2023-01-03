@@ -4,6 +4,9 @@ version = "0.7.3"
 edition = "2021"
 
 [features]
+
+
+
 schema = ["dep:log"]
 
 management = [
@@ -45,8 +48,8 @@ num-derive = {version = "*"}
 
 diesel = { version = "*", features = ["postgres", "r2d2", "chrono", "uuid"]}
 
-tonic = {version = "*", optional = true}
-prost = {version = "*", optional = true}
+tonic = {version = "0.7", optional = true}
+prost = {version = "0.10", optional = true}
 
 csv = {version = "*", optional = true}
 struct-field-names-as-array = {version = "*", optional = true}
@@ -60,4 +63,4 @@ lazy_static = {version = "*", optional = true}
 [build-dependencies]
 tonic-build = "0.7"
 # temporary fix for dependency hell
-petgraph = { version = "*", git = "https://github.com/petgraph/petgraph" }
+petgraph = { version = "0.6", git = "https://github.com/petgraph/petgraph" }
