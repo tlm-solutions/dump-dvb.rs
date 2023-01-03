@@ -9,7 +9,7 @@ service ReceivesTelegrams {
 message R09GrpcTelegram {
     uint64 time = 1;
     string station = 2;
-    int32 region = 3;
+    int64 region = 3;
     int32 telegram_type = 4;
     optional int32 delay = 5;
     int32 reporting_point = 6;
@@ -47,7 +47,7 @@ message Edge {
 message R09GrpcTelegramEnriched {
     uint64 time = 1;
     string station = 2;
-    int32 region = 3;
+    int64 region = 3;
     int32 telegram_type = 4;
     optional int32 delay = 5;
     int32 reporting_point = 6;
