@@ -62,6 +62,7 @@ pub struct Station {
     pub elevation: Option<f64>,
     pub antenna: Option<i32>,
     pub telegram_decoder_version: Option<String>,
+    pub notes: Option<String>
 }
 
 impl Serialize for Station {
