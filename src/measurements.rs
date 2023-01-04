@@ -46,6 +46,6 @@ impl FinishedMeasurementInterval {
             && telegram.time < self.stop
             && telegram.line.unwrap() == self.line
             && telegram.run_number.unwrap() == self.run
-            && telegram.region == self.region
+            && telegram.region == self.region as i64
     }
 }
