@@ -1,13 +1,13 @@
 pub mod r09;
 pub mod raw;
 
-use std::hash::{Hasher, Hash};
 use core::fmt::Debug;
+use std::hash::{Hash, Hasher};
 
 use chrono::NaiveDateTime;
+use num_derive::FromPrimitive;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use num_derive::FromPrimitive;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TelegramMetaInformation {
@@ -20,9 +20,8 @@ pub struct TelegramMetaInformation {
 pub struct AuthenticationMeta {
     pub station: Uuid,
     pub token: String,
-    pub time: NaiveDateTime
+    pub time: NaiveDateTime,
 }
-
 
 /// All the different Telegram flawors
 #[derive(Serialize, Deserialize, FromPrimitive, Debug, Clone)]
@@ -58,9 +57,8 @@ pub enum TelegramType {
     C12 = 28,
     C13 = 29,
     C14 = 30,
-    C15 = 31
+    C15 = 31,
 }
-
 
 impl Hash for TelegramType {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -69,6 +67,7 @@ impl Hash for TelegramType {
 }
 
 pub trait GetTelegramType {
-    fn get_type(self: &Self) -> TelegramType where Self: Sized;
+    fn get_type(&self) -> TelegramType
+    where
+        Self: Sized;
 }
-

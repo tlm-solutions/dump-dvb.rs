@@ -7,5 +7,5 @@ pub struct RadioReceiver {
     pub name: String,
     pub region: u32,
     pub lat: f64,
-    pub lon: f64
+    pub lon: f64,
 }

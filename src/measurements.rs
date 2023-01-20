@@ -1,7 +1,7 @@
 use crate::telegrams::r09::R09SaveTelegram;
 
-use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct MeasurementInterval {

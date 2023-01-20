@@ -1,21 +1,23 @@
-use super::{TelegramType, AuthenticationMeta, TelegramMetaInformation, GetTelegramType };
 use super::super::schema::raw_telegrams;
+use super::{AuthenticationMeta, GetTelegramType, TelegramMetaInformation, TelegramType};
 
 use std::fmt;
-use std::hash::{Hasher, Hash};
+use std::hash::{Hash, Hasher};
 
 use chrono::NaiveDateTime;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use struct_field_names_as_array::FieldNamesAsArray;
 use uuid::Uuid;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct RawTelegram {
     pub telegram_type: TelegramType,
-    pub data: Vec<u8>
+    pub data: Vec<u8>,
 }
 
-#[derive(Deserialize, Serialize, Debug, Queryable, Insertable, Clone, PartialEq, FieldNamesAsArray)]
+#[derive(
+    Deserialize, Serialize, Debug, Queryable, Insertable, Clone, PartialEq, Eq, FieldNamesAsArray,
+)]
 #[diesel(table_name = raw_telegrams)]
 pub struct RawSaveTelegram {
     #[diesel(deserialize_as = i64)]
@@ -25,7 +27,7 @@ pub struct RawSaveTelegram {
     pub station: Uuid,
 
     pub telegram_type: i64,
-    pub data: Vec<u8>
+    pub data: Vec<u8>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -34,7 +36,7 @@ pub struct RawReceiveTelegram {
     pub auth: AuthenticationMeta,
 
     #[serde(flatten)]
-    pub data: RawTelegram
+    pub data: RawTelegram,
 }
 
 impl GetTelegramType for RawTelegram {
@@ -52,7 +54,7 @@ impl RawSaveTelegram {
             station: meta.station,
 
             telegram_type: telegram.telegram_type as i64,
-            data: telegram.data
+            data: telegram.data,
         }
     }
 }
@@ -75,9 +77,7 @@ impl fmt::Display for RawTelegram {
         write!(
             f,
             "Type {:?} Raw Data: {:#?}",
-            self.telegram_type,
-            self.data,
+            self.telegram_type, self.data,
         )
     }
 }
-

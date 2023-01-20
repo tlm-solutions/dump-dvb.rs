@@ -1,21 +1,20 @@
 use crate::schema::*;
 
-use serde::ser::SerializeStruct;
-use serde::{Deserialize, Serialize, Serializer};
-use uuid::Uuid;
+use log::warn;
 use pbkdf2::{
     password_hash::{Encoding, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Pbkdf2,
 };
-use log::warn;
-use regex::Regex;
+use serde::ser::SerializeStruct;
+use serde::{Deserialize, Serialize, Serializer};
+use uuid::Uuid;
 
-#[derive(Clone, Serialize, Deserialize, PartialEq, Debug)]
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug)]
 pub enum Role {
     Trekkie = 9,
     User = 6,
     Administrator = 0,
-    Unknown = 64
+    Unknown = 64,
 }
 
 impl Role {
@@ -93,9 +92,9 @@ impl RegisteredUser {
             name: user.name.clone().unwrap(),
             email: user.email.clone().unwrap(),
             password: user.password.clone(),
-            email_setting: user.email_setting.clone().unwrap(),
+            email_setting: user.email_setting.unwrap(),
             role: user.role,
-            deactivated: user.deactivated
+            deactivated: user.deactivated,
         })
     }
 }
@@ -133,7 +132,7 @@ pub fn hash_password(password: &String) -> Option<String> {
     }
 }
 
-pub fn verify_password(password: &String, hashed_password: &String) -> bool {
+pub fn verify_password(password: &String, hashed_password: &str) -> bool {
     let password_hash = match PasswordHash::parse(hashed_password, Encoding::B64) {
         Ok(data) => data,
         Err(e) => {
@@ -141,9 +140,7 @@ pub fn verify_password(password: &String, hashed_password: &String) -> bool {
             return false;
         }
     };
-    match Pbkdf2.verify_password(password.as_bytes(), &password_hash) {
-        Ok(_) => true,
-        Err(_) => false
-    }
+    Pbkdf2
+        .verify_password(password.as_bytes(), &password_hash)
+        .is_ok()
 }
-

@@ -1,5 +1,5 @@
-use serde::{Serialize, Deserialize};
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::schema::trekkie_runs;
@@ -15,9 +15,8 @@ pub struct TrekkieRun {
     pub gps_file: String,
     pub region: i64,
     pub owner: Uuid,
-    pub finished: bool
+    pub finished: bool,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
 #[diesel(table_name = trekkie_runs)]
@@ -30,5 +29,5 @@ pub struct InsertTrekkieRun {
     pub gps_file: String,
     pub region: i64,
     pub owner: Uuid,
-    pub finished: bool
+    pub finished: bool,
 }

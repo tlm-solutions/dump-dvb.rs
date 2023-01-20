@@ -3,7 +3,6 @@ extern crate diesel;
 extern crate dotenv;
 extern crate num_derive;
 
-
 #[cfg(feature = "telegrams")]
 pub mod telegrams;
 
@@ -24,4 +23,3 @@ pub mod measurements;
 
 #[cfg(feature = "trekkie")]
 pub mod trekkie;
-

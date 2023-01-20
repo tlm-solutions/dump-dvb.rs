@@ -1,18 +1,11 @@
 pub mod user;
 
-use user::User;
 use crate::schema::*;
+use user::User;
 
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
-use chrono::{NaiveDateTime, Duration, Utc};
-use rand::{distributions::Alphanumeric, Rng};
-use diesel::{QueryDsl, PgConnection, ExpressionMethods, RunQueryDsl};
-use log::error;
-
-use self::user::RegisteredUser;
-
 
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
 pub struct Region {
@@ -24,7 +17,7 @@ pub struct Region {
     pub frequency: Option<i64>,
     pub r09_type: Option<i32>,
     pub encoding: Option<i32>,
-    pub deactivated: bool
+    pub deactivated: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
@@ -38,7 +31,7 @@ pub struct InsertRegion {
     pub frequency: Option<i64>,
     pub r09_type: Option<i32>,
     pub encoding: Option<i32>,
-    pub deactivated: bool
+    pub deactivated: bool,
 }
 
 #[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations)]
@@ -62,7 +55,7 @@ pub struct Station {
     pub elevation: Option<f64>,
     pub antenna: Option<i32>,
     pub telegram_decoder_version: Option<String>,
-    pub notes: Option<String>
+    pub notes: Option<String>,
 }
 
 impl Serialize for Station {
@@ -131,7 +124,7 @@ pub fn device_to_string(device: &Device) -> String {
         Device::Raspberry3bPlus => "rpi3".to_string(),
         Device::Raspberry4 => "rpi4".to_string(),
         Device::DellWyse3040 => "dell-wyse-3040".to_string(),
-        _ => "other".to_string()
+        _ => "other".to_string(),
     }
 }
 
@@ -139,7 +132,6 @@ pub fn arch_to_string(arch: &Architecture) -> String {
     match arch {
         Architecture::X86 => "x86_64-linux".to_string(),
         Architecture::Aarch64 => "aarch64-linux".to_string(),
-        Architecture::Other => "other".to_string()
+        Architecture::Other => "other".to_string(),
     }
 }
-

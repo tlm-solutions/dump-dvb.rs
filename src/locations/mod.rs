@@ -25,7 +25,7 @@ pub enum R09Types {
 /// the first one is sent approximetly 150m before the traffic light the registration
 /// telegram is send when the vehicle reaces the traffic light and deregistration is send
 /// when the bus leaves the stop.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum RequestStatus {
     PreRegistration = 0,
     Registration = 1,
@@ -209,8 +209,8 @@ impl LocationsJson {
                 generator,
                 generator_version,
             },
-            data: data,
-            meta: meta,
+            data,
+            meta,
         }
     }
 
@@ -361,6 +361,7 @@ impl RequestStatus {
     }
 }
 
+#[allow(clippy::derive_hash_xor_eq)]
 impl Hash for R09Types {
     fn hash<H: Hasher>(&self, state: &mut H) {
         match self {

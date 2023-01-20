@@ -2,15 +2,17 @@ use crate::locations::R09Types;
 use crate::management::Station;
 
 use crate::schema::r09_telegrams;
-use crate::telegrams::{AuthenticationMeta, TelegramMetaInformation, TelegramType, GetTelegramType };
+use crate::telegrams::{
+    AuthenticationMeta, GetTelegramType, TelegramMetaInformation, TelegramType,
+};
 
 use chrono::NaiveDateTime;
-use diesel::{Insertable};
+use csv;
+use diesel::Insertable;
 use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-use csv;
 use struct_field_names_as_array::FieldNamesAsArray;
+use uuid::Uuid;
 
 use std::fmt;
 use std::fs::File;
@@ -26,7 +28,6 @@ pub use tlms::receives_telegrams_server::ReceivesTelegrams;
 pub use tlms::receives_telegrams_server::ReceivesTelegramsServer;
 pub use tlms::{R09GrpcTelegram, ReturnCode};
 
-
 /// The R09Telegram is the heart piece it hold the raw information from the received
 /// radio-telegram. The goal was of this struct is to be the smallest denominator
 /// of all different telegram formats (**R09.14**, **R09.16**, **R09.18**).
@@ -40,7 +41,7 @@ pub struct R09Telegram {
     /// TODO: marenz
     pub reporting_point: u32,
     /// TODO: marenz
-    pub junction: u32,      //derived from  reporting_point
+    pub junction: u32, //derived from  reporting_point
     pub direction: u8,      //derived from reporting_point
     pub request_status: u8, //derived from reporting_point
     pub priority: Option<u8>,
@@ -53,11 +54,12 @@ pub struct R09Telegram {
     pub operator: Option<u8>,
 }
 
-
 /// R09SaveTelegram is how R09Telegrams are saved in the database or csv. Furthermore
 /// it is enriched with meta information about the receiver that caught this telegram
 /// first or at which time this telegram was transmitted.
-#[derive(Clone, PartialEq, Debug, Deserialize, Serialize, Insertable, Associations, FieldNamesAsArray)]
+#[derive(
+    Clone, PartialEq, Eq, Debug, Deserialize, Serialize, Insertable, Associations, FieldNamesAsArray,
+)]
 #[diesel(table_name = r09_telegrams)]
 #[diesel(belongs_to(Station, foreign_key = station))]
 pub struct R09SaveTelegram {
@@ -140,7 +142,6 @@ impl R09SaveTelegram {
                 Err(e) => {
                     println!("error: {:?}", e);
                 }
-
             }
         }
         Ok(collection)
@@ -198,39 +199,30 @@ impl Serialize for R09GrpcTelegram {
         s.serialize_field("region", &self.region)?;
         s.serialize_field("telegram_type", &self.telegram_type)?;
 
-        self.delay.map(|value| {
-            s.serialize_field("delay", &value).ok();
-        });
+        self.delay
+            .map(|value| s.serialize_field("delay", &value).ok());
 
         s.serialize_field("reporting_point", &self.reporting_point)?;
         s.serialize_field("junction", &self.junction)?;
         s.serialize_field("direction", &self.direction)?;
         s.serialize_field("request_status", &self.request_status)?;
 
-        self.priority.map(|value| {
-            s.serialize_field("priority", &value).ok();
-        });
-        self.direction_request.map(|value| {
-            s.serialize_field("direction_request", &value).ok();
-        });
-        self.line.map(|value| {
-            s.serialize_field("line", &value).ok();
-        });
-        self.run_number.map(|value| {
-            s.serialize_field("run_number", &value).ok();
-        });
-        self.destination_number.map(|value| {
-            s.serialize_field("destination_number", &value).ok();
-        });
-        self.train_length.map(|value| {
-            s.serialize_field("train_length", &value).ok();
-        });
-        self.vehicle_number.map(|value| {
-            s.serialize_field("vehicle_number", &value).ok();
-        });
-        self.operator.map(|value| {
-            s.serialize_field("operator", &value).ok();
-        });
+        self.priority
+            .map(|value| s.serialize_field("priority", &value).ok());
+        self.direction_request
+            .map(|value| s.serialize_field("direction_request", &value).ok());
+        self.line
+            .map(|value| s.serialize_field("line", &value).ok());
+        self.run_number
+            .map(|value| s.serialize_field("run_number", &value).ok());
+        self.destination_number
+            .map(|value| s.serialize_field("destination_number", &value).ok());
+        self.train_length
+            .map(|value| s.serialize_field("train_length", &value).ok());
+        self.vehicle_number
+            .map(|value| s.serialize_field("vehicle_number", &value).ok());
+        self.operator
+            .map(|value| s.serialize_field("operator", &value).ok());
 
         s.end()
     }
@@ -252,12 +244,11 @@ impl R09GrpcTelegram {
             priority: telegram.priority.map(|x| x as i32),
             direction_request: telegram.direction_request.map(|x| x as i32),
             line: telegram.line.map(|x| x as i32),
-            run_number: telegram.run_number.map(|x| x as i32 ),
-            destination_number: telegram.destination_number.map(|x| x as i32 ),
+            run_number: telegram.run_number.map(|x| x as i32),
+            destination_number: telegram.destination_number.map(|x| x as i32),
             train_length: telegram.train_length.map(|x| x as i32),
             vehicle_number: telegram.vehicle_number.map(|x| x as i32),
             operator: telegram.operator.map(|x| x as i32),
         }
     }
 }
-
