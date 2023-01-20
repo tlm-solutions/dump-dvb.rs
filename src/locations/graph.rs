@@ -31,7 +31,7 @@ pub struct LineSegment {
 }
 
 /// departure reporting_point -> destiation reporting_point -> Vec<GPS>
-pub type RegionGraph = HashMap<i32, Vec<LineSegment>>;
+pub type RegionGraph = HashMap<i64, Vec<LineSegment>>;
 
 /// region_id -> region graph positions
-pub type PositionGraph = HashMap<i32, RegionGraph>;
+pub type PositionGraph = HashMap<i64, RegionGraph>;
