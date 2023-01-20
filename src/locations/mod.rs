@@ -50,9 +50,9 @@ pub struct RegionMetaInformation {
 //number to struct
 lazy_static! {
     #[derive(Debug)]
-    pub static ref REGION_META_MAP: HashMap<i32, RegionMetaInformation> = HashMap::from([
+    pub static ref REGION_META_MAP: HashMap<i64, RegionMetaInformation> = HashMap::from([
         (
-            0_i32,
+            0_i64,
             RegionMetaInformation {
                 frequency: Some(170795000),
                 city_name: Some(String::from("Dresden")),
@@ -62,7 +62,7 @@ lazy_static! {
             }
         ),
         (
-            1_i32,
+            1_i64,
             RegionMetaInformation {
                 frequency: Some(153850000),
                 city_name: Some(String::from("Chemnitz")),
@@ -72,7 +72,7 @@ lazy_static! {
             }
         ),
         (
-            2_i32,
+            2_i64,
             RegionMetaInformation {
                 frequency: Some(170450000),
                 city_name: Some(String::from("Berlin")),
@@ -82,7 +82,7 @@ lazy_static! {
             }
         ),
         (
-            3_i32,
+            3_i64,
             RegionMetaInformation {
                 frequency: Some(155630000),
                 city_name: Some(String::from("Duesseldorf")),
@@ -92,7 +92,7 @@ lazy_static! {
             }
         ),
         (
-            4_i32,
+            4_i64,
             RegionMetaInformation {
                 frequency: Some(150910000),
                 city_name: Some(String::from("Hannover")),
@@ -102,7 +102,7 @@ lazy_static! {
             }
         ),
         (
-            5_i32,
+            5_i64,
             RegionMetaInformation {
                 frequency: Some(152930000),
                 city_name: Some(String::from("Karlsruhe")),
@@ -112,7 +112,7 @@ lazy_static! {
             }
         ),
         (
-            6_i32,
+            6_i64,
             RegionMetaInformation {
                 frequency: Some(151030000),
                 city_name: Some(String::from("Moenchengladbach")),
@@ -122,7 +122,7 @@ lazy_static! {
             }
         ),
         (
-            7_i32,
+            7_i64,
             RegionMetaInformation {
                 frequency: Some(150827500),
                 city_name: Some(String::from("Münster")),
@@ -132,7 +132,7 @@ lazy_static! {
             }
         ),
         (
-            8_i32,
+            8_i64,
             RegionMetaInformation {
                 frequency: Some(152930000),
                 city_name: Some(String::from("Ulm")),
@@ -142,7 +142,7 @@ lazy_static! {
             }
         ),
         (
-            9_i32,
+            9_i64,
             RegionMetaInformation {
                 frequency: Some(152850000),
                 city_name: Some(String::from("Region-Hannover")),
@@ -152,7 +152,7 @@ lazy_static! {
             }
         ),
         (
-            10_i32,
+            10_i64,
             RegionMetaInformation {
                 frequency: Some(150827500),
                 city_name: Some(String::from("Aachen")),
@@ -171,7 +171,7 @@ pub struct ReportLocation {
     pub properties: serde_json::Value,
 }
 
-pub type RegionReportLocations = HashMap<i32, ReportLocation>;
+pub type RegionReportLocations = HashMap<i64, ReportLocation>;
 
 const SCHEMA: &str = "1";
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
@@ -185,8 +185,8 @@ struct DocumentMeta {
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct LocationsJson {
     document: DocumentMeta,
-    pub data: HashMap<i32, RegionReportLocations>,
-    pub meta: HashMap<i32, RegionMetaInformation>,
+    pub data: HashMap<i64, RegionReportLocations>,
+    pub meta: HashMap<i64, RegionMetaInformation>,
 }
 
 impl LocationsJson {
@@ -197,8 +197,8 @@ impl LocationsJson {
 
     // FIXME
     pub fn construct(
-        data: HashMap<i32, RegionReportLocations>,
-        meta: HashMap<i32, RegionMetaInformation>,
+        data: HashMap<i64, RegionReportLocations>,
+        meta: HashMap<i64, RegionMetaInformation>,
         generator: Option<String>,
         generator_version: Option<String>,
     ) -> LocationsJson {
