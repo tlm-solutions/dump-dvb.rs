@@ -63,4 +63,4 @@ lazy_static = {version = "*", optional = true}
 [build-dependencies]
 tonic-build = "0.7"
 # temporary fix for dependency hell
-petgraph = { version = "0.6" } #, git = "https://github.com/petgraph/petgraph" }
+indexmap = { version='*', features = [ "std" ] }
