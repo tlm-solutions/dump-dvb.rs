@@ -171,7 +171,7 @@ pub struct ReportLocation {
     pub properties: serde_json::Value,
 }
 
-pub type RegionReportLocations = HashMap<i64, ReportLocation>;
+pub type RegionReportLocations = HashMap<i32, ReportLocation>;
 
 const SCHEMA: &str = "1";
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
