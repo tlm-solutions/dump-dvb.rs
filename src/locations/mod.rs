@@ -350,6 +350,33 @@ impl Serialize for RequestStatus {
     }
 }
 
+impl ReportLocation {
+    /// Updates property field with epsg3857 coordinates, calculated from `loc` and `lon` fileds of
+    /// the struct. If field doesn't exist, creates it.
+    pub fn update_epsg3857(&mut self) {
+        // Convert the coords to pseudo-mercator (epsg3857)
+        const EARTH_RADIUS_M: f64 = 6_378_137_f64;
+        let x = EARTH_RADIUS_M * self.lon.to_radians();
+        let y =
+            ((self.lat.to_radians() / 2. + std::f64::consts::PI / 4.).tan()).ln() * EARTH_RADIUS_M;
+
+        // serialize value
+        let epsg_val = match serde_json::from_str(&format!("{{ \"x\":{}, \"y\":{} }}", x, y)) {
+            Ok(val) => val,
+            Err(whoops) => {
+                eprintln!(
+                    "Error while trying to serialize epsg3857 into json: {}",
+                    whoops
+                );
+                serde_json::Value::Null
+            }
+        };
+
+        // store the value back into the struct, overwrite if exists
+        self.properties["epsg3857"] = epsg_val;
+    }
+}
+
 impl RequestStatus {
     pub fn from_i16(value: i16) -> Option<RequestStatus> {
         match value {
