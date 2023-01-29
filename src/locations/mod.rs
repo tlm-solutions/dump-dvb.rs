@@ -49,6 +49,7 @@ pub struct RegionMetaInformation {
 
 //number to struct
 lazy_static! {
+    #[deprecated(note="REGION_META_MAP is deprecated in favour of using API directly")]
     #[derive(Debug)]
     pub static ref REGION_META_MAP: HashMap<i64, RegionMetaInformation> = HashMap::from([
         (
