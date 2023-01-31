@@ -1,3 +1,4 @@
+#![deny(missing_docs)]
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
