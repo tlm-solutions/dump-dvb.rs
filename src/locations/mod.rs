@@ -6,6 +6,7 @@ use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
+use std::convert::TryFrom;
 use std::fmt;
 use std::fs;
 use std::fs::File;
@@ -395,15 +396,16 @@ impl ReportLocation {
     }
 }
 
-impl RequestStatus {
+impl TryFrom<i16> for RequestStatus {
+    type Error = ();
     /// converts integer to a proper enum value
-    pub fn from_i16(value: i16) -> Option<RequestStatus> {
+    fn try_from(value: i16) -> Result<Self, Self::Error> {
         match value {
-            0 => Some(RequestStatus::PreRegistration),
-            1 => Some(RequestStatus::Registration),
-            2 => Some(RequestStatus::DeRegistration),
-            3 => Some(RequestStatus::DoorClosed),
-            _ => None,
+            0 => Ok(RequestStatus::PreRegistration),
+            1 => Ok(RequestStatus::Registration),
+            2 => Ok(RequestStatus::DeRegistration),
+            3 => Ok(RequestStatus::DoorClosed),
+            _ => Err(()),
         }
     }
 }
