@@ -9,7 +9,7 @@ pub struct MeasurementInterval {
     pub stop: Option<NaiveDateTime>,
     pub line: Option<i32>,
     pub run: Option<i32>,
-    pub region: Option<i32>,
+    pub region: Option<i64>,
 }
 
 /// The FinishedMeasurementInterval struct is primarly used in **Wartrammer-40k** and **lofi**.
@@ -21,7 +21,7 @@ pub struct FinishedMeasurementInterval {
     pub stop: NaiveDateTime,
     pub line: i32,
     pub run: i32,
-    pub region: i32,
+    pub region: i64,
 }
 
 impl FinishedMeasurementInterval {
@@ -46,6 +46,6 @@ impl FinishedMeasurementInterval {
             && telegram.time < self.stop
             && telegram.line.unwrap() == self.line
             && telegram.run_number.unwrap() == self.run
-            && telegram.region == self.region as i64
+            && telegram.region == self.region
     }
 }
