@@ -380,19 +380,11 @@ impl ReportLocation {
             ((self.lat.to_radians() / 2. + std::f64::consts::PI / 4.).tan()).ln() * EARTH_RADIUS_M;
 
         // serialize value
-        let epsg_val = match serde_json::from_str(&format!("{{ \"x\":{}, \"y\":{} }}", x, y)) {
-            Ok(val) => val,
-            Err(whoops) => {
-                eprintln!(
-                    "Error while trying to serialize epsg3857 into json: {}",
-                    whoops
-                );
-                serde_json::Value::Null
-            }
-        };
-
-        // store the value back into the struct, overwrite if exists
-        self.properties["epsg3857"] = epsg_val;
+        if let Ok(epsg_val) = serde_json::from_str(&format!("{{ \"x\":{x}, \"y\":{y} }}")) {
+            self.properties["epsg3857"] = epsg_val;
+        } else {
+            eprintln!("epsg3857 property update skipped: Could not serialize {x} and {y} into json Value!");
+        }
     }
 }
 
