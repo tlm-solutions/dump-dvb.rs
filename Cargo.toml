@@ -62,5 +62,3 @@ lazy_static = {version = "*", optional = true}
 
 [build-dependencies]
 tonic-build = "0.7"
-# temporary fix for dependency hell
-indexmap = { version='*', features = [ "std" ] }
