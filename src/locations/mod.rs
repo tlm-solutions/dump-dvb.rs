@@ -6,12 +6,17 @@ use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
+use std::convert::TryFrom;
 use std::fmt;
 use std::fs;
 use std::fs::File;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::io::Write;
+
+// INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
+/// Version of the json shcema used.
+const SCHEMA: &str = "1";
 
 /// Enum for different telegram format
 #[derive(Debug, PartialEq, Clone)]
@@ -47,9 +52,10 @@ pub struct RegionMetaInformation {
     pub lon: Option<f64>,
 }
 
-//number to struct
 lazy_static! {
+    #[deprecated(note="REGION_META_MAP is deprecated in favour of using API directly")]
     #[derive(Debug)]
+    /// lazy_static map of a region number to `RegionMetaInformation` struct for this region
     pub static ref REGION_META_MAP: HashMap<i64, RegionMetaInformation> = HashMap::from([
         (
             0_i64,
@@ -164,16 +170,22 @@ lazy_static! {
     ]);
 }
 
+/// Structure containing the coordinates and any extra JSON value for specific report location
+/// `meldepunkt`
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct ReportLocation {
+    /// Latitude of the report location
     pub lat: f64,
+    /// Longitude of the report location
     pub lon: f64,
+    /// any extra data, as long as this is a valid `serde_json::Value`. Currently only used for
+    /// epsg3857.
     pub properties: serde_json::Value,
 }
 
+/// Hash map of a report location ID to the `ReportLocation` struct
 pub type RegionReportLocations = HashMap<i32, ReportLocation>;
 
-const SCHEMA: &str = "1";
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 struct DocumentMeta {
     schema_version: String,
@@ -182,20 +194,27 @@ struct DocumentMeta {
     generator_version: Option<String>,
 }
 
+/// Struct that deserializes directly into locations.json, the main source of transmission location
+/// data across the project
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct LocationsJson {
+    /// meta information about the document, e.g. schema version, and how it was generated.
     document: DocumentMeta,
+    /// Hash map of a region number to the `RegionReportLocations`
     pub data: HashMap<i64, RegionReportLocations>,
+    /// Hash map of a region number to the meta information about this region
     pub meta: HashMap<i64, RegionMetaInformation>,
 }
 
 impl LocationsJson {
+    /// Deserialzes file into `LocationsJson`
     pub fn from_file(file: &str) -> Result<LocationsJson, serde_json::error::Error> {
         let data = fs::read_to_string(file).expect("could not read LocationsJson file!");
         serde_json::from_str(&data)
     }
 
-    // FIXME
+    /// Creates the LocationsJson struct form the hashmaps for data and meta fields, while taking
+    /// care of properly filling out the meta private field.
     pub fn construct(
         data: HashMap<i64, RegionReportLocations>,
         meta: HashMap<i64, RegionMetaInformation>,
@@ -214,8 +233,8 @@ impl LocationsJson {
         }
     }
 
+    /// Serialises `LocationsJson` to json file. If file exists - silently overwrites it
     pub fn write(&self, file: &str) {
-        // FIXME proper logic instead of silent overwrite
         fs::remove_file(file).ok();
         let mut output = File::create(file).expect("cannot create or open file!");
 
@@ -226,6 +245,7 @@ impl LocationsJson {
             .expect("cannot write to file!");
     }
 
+    /// Populates document metainformation
     pub fn populate_meta(&mut self, generator: Option<String>, generator_version: Option<String>) {
         self.document = DocumentMeta {
             schema_version: String::from(SCHEMA),
@@ -349,14 +369,35 @@ impl Serialize for RequestStatus {
     }
 }
 
-impl RequestStatus {
-    pub fn from_i16(value: i16) -> Option<RequestStatus> {
+impl ReportLocation {
+    /// Updates property field with epsg3857 coordinates, calculated from `loc` and `lon` fileds of
+    /// the struct. If field doesn't exist, creates it.
+    pub fn update_epsg3857(&mut self) {
+        // Convert the coords to pseudo-mercator (epsg3857)
+        const EARTH_RADIUS_M: f64 = 6_378_137_f64;
+        let x = EARTH_RADIUS_M * self.lon.to_radians();
+        let y =
+            ((self.lat.to_radians() / 2. + std::f64::consts::PI / 4.).tan()).ln() * EARTH_RADIUS_M;
+
+        // serialize value
+        if let Ok(epsg_val) = serde_json::from_str(&format!("{{ \"x\":{x}, \"y\":{y} }}")) {
+            self.properties["epsg3857"] = epsg_val;
+        } else {
+            eprintln!("epsg3857 property update skipped: Could not serialize {x} and {y} into json Value!");
+        }
+    }
+}
+
+impl TryFrom<i16> for RequestStatus {
+    type Error = ();
+    /// converts integer to a proper enum value
+    fn try_from(value: i16) -> Result<Self, Self::Error> {
         match value {
-            0 => Some(RequestStatus::PreRegistration),
-            1 => Some(RequestStatus::Registration),
-            2 => Some(RequestStatus::DeRegistration),
-            3 => Some(RequestStatus::DoorClosed),
-            _ => None,
+            0 => Ok(RequestStatus::PreRegistration),
+            1 => Ok(RequestStatus::Registration),
+            2 => Ok(RequestStatus::DeRegistration),
+            3 => Ok(RequestStatus::DoorClosed),
+            _ => Err(()),
         }
     }
 }
