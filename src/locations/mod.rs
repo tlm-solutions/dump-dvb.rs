@@ -2,7 +2,6 @@ pub mod graph;
 mod tests;
 
 use chrono::prelude::{DateTime, Utc};
-use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
@@ -50,124 +49,6 @@ pub struct RegionMetaInformation {
     pub lat: Option<f64>,
     /// Longitude of the Region, degrees
     pub lon: Option<f64>,
-}
-
-lazy_static! {
-    #[deprecated(note="REGION_META_MAP is deprecated in favour of using API directly")]
-    #[derive(Debug)]
-    /// lazy_static map of a region number to `RegionMetaInformation` struct for this region
-    pub static ref REGION_META_MAP: HashMap<i64, RegionMetaInformation> = HashMap::from([
-        (
-            0_i64,
-            RegionMetaInformation {
-                frequency: Some(170795000),
-                city_name: Some(String::from("Dresden")),
-                type_r09: Some(R09Types::R16),
-                lat: Some(51.05),
-                lon: Some(13.74),
-            }
-        ),
-        (
-            1_i64,
-            RegionMetaInformation {
-                frequency: Some(153850000),
-                city_name: Some(String::from("Chemnitz")),
-                type_r09: Some(R09Types::R16),
-                lat: Some(50.82),
-                lon: Some(12.92),
-            }
-        ),
-        (
-            2_i64,
-            RegionMetaInformation {
-                frequency: Some(170450000),
-                city_name: Some(String::from("Berlin")),
-                type_r09: None,
-                lat: Some(52.52),
-                lon: Some(13.41),
-            }
-        ),
-        (
-            3_i64,
-            RegionMetaInformation {
-                frequency: Some(155630000),
-                city_name: Some(String::from("Duesseldorf")),
-                type_r09: None,
-                lat: Some(50.78),
-                lon: Some(6.08),
-            }
-        ),
-        (
-            4_i64,
-            RegionMetaInformation {
-                frequency: Some(150910000),
-                city_name: Some(String::from("Hannover")),
-                type_r09: Some(R09Types::R14),
-                lat: Some(52.38),
-                lon: Some(9.73),
-            }
-        ),
-        (
-            5_i64,
-            RegionMetaInformation {
-                frequency: Some(152930000),
-                city_name: Some(String::from("Karlsruhe")),
-                type_r09: None,
-                lat: None,
-                lon: None,
-            }
-        ),
-        (
-            6_i64,
-            RegionMetaInformation {
-                frequency: Some(151030000),
-                city_name: Some(String::from("Moenchengladbach")),
-                type_r09: None,
-                lat: None,
-                lon: None,
-            }
-        ),
-        (
-            7_i64,
-            RegionMetaInformation {
-                frequency: Some(150827500),
-                city_name: Some(String::from("Münster")),
-                type_r09: None,
-                lat: Some(51.96),
-                lon: Some(7.63),
-            }
-        ),
-        (
-            8_i64,
-            RegionMetaInformation {
-                frequency: Some(152930000),
-                city_name: Some(String::from("Ulm")),
-                type_r09: None,
-                lat: None,
-                lon: None,
-            }
-        ),
-        (
-            9_i64,
-            RegionMetaInformation {
-                frequency: Some(152850000),
-                city_name: Some(String::from("Region-Hannover")),
-                type_r09: None,
-                lat: None,
-                lon: None,
-            }
-        ),
-        (
-            10_i64,
-            RegionMetaInformation {
-                frequency: Some(150827500),
-                city_name: Some(String::from("Aachen")),
-                type_r09: None,
-                lat: Some(50.78),
-                lon: Some(6.08),
-            }
-        ),
-    ]);
 }
 
 /// Structure containing the coordinates and any extra JSON value for specific report location
