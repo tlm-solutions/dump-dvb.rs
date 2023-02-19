@@ -17,8 +17,8 @@ pub enum Role {
     Unknown = 64,
 }
 
-impl Role {
-    pub fn from(role: i32) -> Role {
+impl From<i32> for Role {
+    fn from(role: i32) -> Self {
         match role {
             0 => Role::Administrator,
             6 => Role::User,
@@ -26,8 +26,10 @@ impl Role {
             _ => Role::Unknown,
         }
     }
+}
 
-    pub fn as_int(&self) -> i32 {
+impl Into<i32> for Role {
+    fn into(self) -> i32 {
         match self {
             Role::Administrator => 0,
             Role::User => 6,
