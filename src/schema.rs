@@ -77,7 +77,7 @@ diesel::table! {
         architecture -> Nullable<Int4>,
         device -> Nullable<Int4>,
         elevation -> Nullable<Float8>,
-        telegram_decoder_version -> Nullable<Array<Nullable<Int4>>>,
+        telegram_decoder_version -> Nullable<Array<Int4>>,
         antenna -> Nullable<Int4>,
     }
 }

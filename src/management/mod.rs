@@ -117,6 +117,21 @@ pub enum Architecture {
     Aarch64 = 2,
 }
 
+#[derive(Serialize, Deserialize)]
+pub enum Architecture {
+    Other = 0,
+    Dipole = 1,
+    GroundPlane = 2,
+    Yagi = 3,
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum Encoding {
+    Other = 0,
+    OnOffKeying = 1,
+    Nemo = 2
+}
+
 pub fn device_to_string(device: &Device) -> String {
     match device {
         Device::Raspberry3 => "rpi3".to_string(),
