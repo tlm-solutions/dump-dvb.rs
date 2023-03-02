@@ -25,25 +25,27 @@ pub enum R09Types {
     R18 = 18,
 }
 
-/// There are 4 different telegrams which can be send from one location
-/// the first one is sent approximetly 150m before the traffic light the registration
-/// telegram is send when the vehicle reaces the traffic light and deregistration is send
-/// when the bus leaves the stop.
+/// Enum of 4 possible different telegrams which can be send from one location.
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum RequestStatus {
+    /// Pre-Registration telegram is sent approximately 150m before the traffic light.
     PreRegistration = 0,
+    /// Registration telegram is sent when the vehicle reaches the traffic light.
     Registration = 1,
+    /// Deregistration is sent after vehicle passes the intersection.
     DeRegistration = 2,
+    /// Door Closed is sent when vehicle leaves the stop.
     DoorClosed = 3,
 }
 
-/// Meta inforamtion about region which then can be used to configure radio receivers
+/// Meta inforamtion about region.
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct RegionMetaInformation {
     /// Frequency in Hz
     pub frequency: Option<u64>,
+    /// Human-readable name of the region
     pub city_name: Option<String>,
-    /// Type of R09 telegram
+    /// Type of R09 telegram used in the region
     pub type_r09: Option<R09Types>,
     /// Latitude of the Region, degrees
     pub lat: Option<f64>,
@@ -67,6 +69,8 @@ pub struct ReportLocation {
 /// Hash map of a report location ID to the `ReportLocation` struct
 pub type RegionReportLocations = HashMap<i32, ReportLocation>;
 
+/// Doucment meta information. To set metadata for the document see [`StopsJson::construct`]
+/// or to [`StopsJson::update_metadata`]
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 struct DocumentMeta {
     schema_version: String,
@@ -81,20 +85,20 @@ struct DocumentMeta {
 pub struct LocationsJson {
     /// meta information about the document, e.g. schema version, and how it was generated.
     document: DocumentMeta,
-    /// Hash map of a region number to the `RegionReportLocations`
+    /// Hash map of a region number to the [`RegionReportLocations`]
     pub data: HashMap<i64, RegionReportLocations>,
     /// Hash map of a region number to the meta information about this region
     pub meta: HashMap<i64, RegionMetaInformation>,
 }
 
 impl LocationsJson {
-    /// Deserialzes file into `LocationsJson`
+    /// Deserialzes file into [`LocationsJson`]
     pub fn from_file(file: &str) -> Result<LocationsJson, serde_json::error::Error> {
         let data = fs::read_to_string(file).expect("could not read LocationsJson file!");
         serde_json::from_str(&data)
     }
 
-    /// Creates the LocationsJson struct form the hashmaps for data and meta fields, while taking
+    /// Creates the [`LocationsJson`] struct form the hashmaps for data and meta fields, while taking
     /// care of properly filling out the meta private field.
     pub fn construct(
         data: HashMap<i64, RegionReportLocations>,
@@ -114,7 +118,7 @@ impl LocationsJson {
         }
     }
 
-    /// Serialises `LocationsJson` to json file. If file exists - silently overwrites it
+    /// Serialises [`LocationsJson`] to json file. If file exists - silently overwrites it.
     pub fn write(&self, file: &str) {
         fs::remove_file(file).ok();
         let mut output = File::create(file).expect("cannot create or open file!");
@@ -271,7 +275,6 @@ impl ReportLocation {
 
 impl TryFrom<i16> for RequestStatus {
     type Error = ();
-    /// converts integer to a proper enum value
     fn try_from(value: i16) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(RequestStatus::PreRegistration),
