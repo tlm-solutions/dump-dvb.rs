@@ -119,7 +119,7 @@ pub enum Architecture {
 }
 
 #[derive(Serialize, Deserialize)]
-pub enum Architecture {
+pub enum Antenna {
     Other = 0,
     Dipole = 1,
     GroundPlane = 2,
