@@ -80,6 +80,7 @@ impl Serialize for Station {
         s.serialize_field("elevation", &self.elevation)?;
         s.serialize_field("telegram_decoder_version", &self.telegram_decoder_version)?;
         s.serialize_field("antenna", &self.antenna)?;
+        s.serialize_field("notes", &self.notes)?;
         s.end()
     }
 }
