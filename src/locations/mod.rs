@@ -2,9 +2,10 @@ pub mod graph;
 mod tests;
 
 use chrono::prelude::{DateTime, Utc};
+use reqwest;
 use serde::{Deserialize, Serialize};
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::convert::TryFrom;
 use std::fmt;
 use std::fs;
@@ -12,10 +13,15 @@ use std::fs::File;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::io::Write;
+use std::path::PathBuf;
 
 // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
 /// Version of the json shcema used.
 const SCHEMA: &str = "1";
+
+/// Default region cache lifetime in seconds (24h)
+const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
+const REGION_CACHE_FILE: &str = "region_cache.json";
 
 /// Enum for different telegram format
 #[derive(Debug, PartialEq, Clone)]
@@ -91,6 +97,46 @@ pub struct LocationsJson {
     pub meta: HashMap<i64, RegionMetaInformation>,
 }
 
+/// Error type for [`LocationsJson`]
+pub enum LJError {
+    /// Error during merge of [`LocationsJson`]'s
+    MergeError,
+    /// Error during fetch of region metadata from API
+    RegionCacheAPIError,
+    /// Error during deserialization of the region cache
+    RegionMetaCacheError,
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RegionMetaCache {
+    pub metadata: HashMap<i64, RegionMetaInformation>,
+    pub modified: DateTime<Utc>,
+}
+
+#[derive(Debug)]
+pub enum RegionMetaCacheError {
+    SerdeJsonError(serde_json::Error),
+    ReqwestError(reqwest::Error),
+    IOError(std::io::Error),
+}
+
+impl From<reqwest::Error> for RegionMetaCacheError {
+    fn from(e: reqwest::Error) -> RegionMetaCacheError {
+        RegionMetaCacheError::ReqwestError(e)
+    }
+}
+impl From<serde_json::Error> for RegionMetaCacheError {
+    fn from(e: serde_json::Error) -> RegionMetaCacheError {
+        RegionMetaCacheError::SerdeJsonError(e)
+    }
+}
+impl From<std::io::Error> for RegionMetaCacheError {
+    fn from(e: std::io::Error) -> RegionMetaCacheError {
+        RegionMetaCacheError::IOError(e)
+    }
+}
+
 impl LocationsJson {
     /// Deserialzes file into [`LocationsJson`]
     pub fn from_file(file: &str) -> Result<LocationsJson, serde_json::error::Error> {
@@ -131,7 +177,11 @@ impl LocationsJson {
     }
 
     /// Populates document metainformation
-    pub fn populate_meta(&mut self, generator: Option<String>, generator_version: Option<String>) {
+    pub fn update_metadata(
+        &mut self,
+        generator: Option<String>,
+        generator_version: Option<String>,
+    ) {
         self.document = DocumentMeta {
             schema_version: String::from(SCHEMA),
             date: chrono::Utc::now(),
@@ -139,6 +189,106 @@ impl LocationsJson {
             generator_version,
         };
     }
+
+    /// refreshes the region data cache from the datacare API unconditionaly
+    pub fn get_region_cache(
+        datacare_api: &str,
+        cache_dir: PathBuf,
+    ) -> Result<RegionMetaCache, RegionMetaCacheError> {
+        let api_url = format!("{datacare_api}/region");
+        let api_response: String = reqwest::blocking::get(api_url)?.text()?;
+
+        let region_cache: HashMap<i64, RegionMetaInformation> =
+            serde_json::from_str(&api_response)?;
+
+        let timestamped_region_cache = RegionMetaCache {
+            metadata: region_cache,
+            modified: Utc::now(),
+        };
+
+        // try to write out the cache
+        let mut cache_file = cache_dir.clone();
+        cache_file.push(REGION_CACHE_FILE);
+        let cache_string = serde_json::to_string(&timestamped_region_cache)?;
+        fs::write(cache_file, cache_string)?;
+
+        Ok(timestamped_region_cache)
+    }
+
+    /// Read local region cache
+    pub fn read_region_cache(cache_dir: PathBuf) -> Result<RegionMetaCache, RegionMetaCacheError> {
+        let mut cache_file_path = cache_dir.clone();
+        cache_file_path.push(REGION_CACHE_FILE);
+        let cache_file_string = fs::read_to_string(cache_file_path)?;
+
+        let cache = serde_json::from_str::<RegionMetaCache>(&cache_file_string)?;
+        Ok(cache)
+    }
+
+    /// Gets the cache for the region data. First looks if it exists already, if not (or if it is
+    /// older than REGION_CACHE_EXPIRATION) tries to update it. Any Errs are propagated up.
+    pub fn update_region_cache(
+        datacare_api: &str,
+        cache_dir: PathBuf,
+    ) -> Result<RegionMetaCache, RegionMetaCacheError> {
+        let mut cache_file_path = cache_dir.clone();
+        cache_file_path.push(REGION_CACHE_FILE);
+
+        // make sure that the dir exists
+        fs::create_dir_all(cache_dir.clone())?;
+
+        // try to read the cache
+        let cache_to_return = match Self::read_region_cache(cache_dir.clone()) {
+            Ok(read_cache) => {
+                // check that cache is fresh enough
+                if (Utc::now() - read_cache.modified)
+                    < chrono::Duration::seconds(REGION_CACHE_EXPIRATION)
+                {
+                    read_cache
+                } else {
+                    // try to update the cache
+                    match Self::get_region_cache(datacare_api, cache_dir) {
+                        Ok(new_cache) => new_cache,
+                        Err(e) => {
+                            eprintln!("While trying to get the cache from datacare API: {e:?}");
+                            eprintln!("Using stale cache! {read_cache:?}");
+                            read_cache
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                eprintln!("While trying to get local region metadata cache: {e:?}");
+                eprintln!("Trying to refresh region metadata cache");
+                Self::get_region_cache(datacare_api, cache_dir.clone())?
+            }
+        };
+
+        Ok(cache_to_return)
+    }
+
+    /// Updates the region information in the file from the cache
+    pub fn update_region_data(&mut self, region_cache: HashMap<i64, RegionMetaInformation>) {
+        // iterate over keys in data, put it into hashset
+        let mut reg_set: HashSet<i64> = HashSet::new();
+        // iterate over hashset, put region metadata
+        for k in self.data.keys() {
+            reg_set.insert(*k);
+        }
+
+        for r in reg_set {
+            match region_cache.get(&r) {
+                Some(reg) => {
+                    self.meta.insert(r, reg.clone());
+                }
+                None => {
+                    eprintln!("ERROR: Region {r} is not found in region metadata cache!");
+                    eprintln!("WARNING: Metadata for region {r} is not written!");
+                }
+            };
+        }
+    }
+
 }
 
 impl<'de> serde::Deserialize<'de> for R09Types {
@@ -274,7 +424,7 @@ impl ReportLocation {
 }
 
 impl TryFrom<i16> for RequestStatus {
-    type Error = ();
+    type Error = (); // TODO: proper errors
     fn try_from(value: i16) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(RequestStatus::PreRegistration),
