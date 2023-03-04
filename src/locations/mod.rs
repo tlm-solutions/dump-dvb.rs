@@ -1,3 +1,4 @@
+pub mod gps;
 pub mod graph;
 mod tests;
 

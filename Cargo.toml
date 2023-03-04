@@ -1,6 +1,6 @@
 [package]
 name = "tlms"
-version = "0.7.5"
+version = "0.7.6"
 edition = "2021"
 
 [features]
@@ -34,7 +34,6 @@ telegrams = [
     "dep:prost"
 ]
 measurements = []
-receivers = []
 trekkie = ["schema"]
 
 [dependencies]
