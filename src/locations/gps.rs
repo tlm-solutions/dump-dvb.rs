@@ -1,10 +1,10 @@
-use crate::schema::*;
-use serde::{Deserialize, Serialize, Serializer};
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 // Public Structs
 // Only parts relevant for the interpolation are here
 /// Gps trackpoint representation used in lofi for Gps data
-#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Clone, Copy, Debug)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, Queryable)]
 pub struct GpsPoint {
     /// primary key bigserial
     pub id: i64,
