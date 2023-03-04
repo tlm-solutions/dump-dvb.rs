@@ -29,7 +29,7 @@ pub struct GpsPoint {
     pub speed: Option<f64>,
 }
 
-/// struct for inserting a gps point into the database and utilise 
+/// struct for inserting a gps point into the database and utilise
 /// the auto increment functions from postgres
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, Insertable)]
 #[diesel(table_name = gps_points)]

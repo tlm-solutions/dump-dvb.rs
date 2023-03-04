@@ -21,6 +21,8 @@ locations = [
     "reqwest"
 ]
 
+receivers = []
+
 telegrams = [
     "schema",
     "locations",

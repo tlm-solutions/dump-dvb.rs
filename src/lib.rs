@@ -12,6 +12,9 @@ pub mod schema;
 #[cfg(feature = "locations")]
 pub mod locations;
 
+#[cfg(feature = "receivers")]
+pub mod receivers;
+
 #[cfg(feature = "management")]
 pub mod management;
 
