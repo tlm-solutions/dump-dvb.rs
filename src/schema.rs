@@ -9,7 +9,7 @@ diesel::table! {
         lon -> Float8,
         elevation -> Nullable<Float8>,
         accuracy -> Nullable<Float8>,
-        verical_accuracy -> Nullable<Float8>,
+        vertical_accuracy -> Nullable<Float8>,
         bearing -> Nullable<Float8>,
         speed -> Nullable<Float8>,
     }

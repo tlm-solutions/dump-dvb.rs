@@ -6,7 +6,7 @@ CREATE TABLE gps_points (
     lon FLOAT NOT NULL,
     elevation FLOAT,
     accuracy FLOAT,
-    verical_accuracy FLOAT,
+    vertical_accuracy FLOAT,
     bearing FLOAT,
     speed FLOAT
 );
