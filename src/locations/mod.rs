@@ -25,6 +25,10 @@ pub const SCHEMA: &str = "1"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
 const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
 /// Name for a cache file
 const REGION_CACHE_FILE: &str = "region_cache.json";
+/// maximum distance in meters
+const SANE_INTERPOLATION_DISTANCE: i32 = 50;
+/// Mean earth radius, required for calcuation of distances between the GPS points
+const MEAN_EARTH_RADIUS: u32 = 6_371_000;
 
 /// Enum for different telegram format
 #[derive(Debug, PartialEq, Clone)]
@@ -292,6 +296,70 @@ impl LocationsJson {
         }
     }
 
+    /// This method merges in new report locations. Averages the transmission position in the
+    /// process. Returns statistic ([`LocationsJsonMergeStats`] wrapped in [`Result`]): how many new report
+    /// locations are added, how many transmission positions were refined, how many points were
+    /// discarded.
+    pub fn merge(
+        &mut self,
+        new: &LocationsJson,
+        region_cache: HashMap<i64, RegionMetaInformation>,
+    ) -> Result<LocationsJsonMergeStats, LocationsJsonError> {
+        let mut new_regions: HashSet<i64> = HashSet::new();
+        let mut stats = LocationsJsonMergeStats {
+            created: 0,
+            refined_loc: 0,
+            skipped: 0,
+        };
+        for k in new.data.keys() {
+            new_regions.insert(*k);
+        }
+
+        for r in new_regions {
+            let region_data = self.data.entry(r).or_insert(HashMap::new());
+            let new_region_data = new.data.get(&r).expect("Unreacheble");
+            for (k, v) in new_region_data {
+                region_data
+                    .entry(*k)
+                    .and_modify(|old| *old = Self::linear_interpolate_point(old, v, &mut stats))
+                    .or_insert({
+                        stats.created += 1;
+                        v.clone()
+                    });
+            }
+        }
+
+        self.update_region_data(region_cache);
+
+        Ok(stats)
+    }
+
+    /// Takes two GPS points, lineraly interpolates them while performing sanity checks.
+    fn linear_interpolate_point(
+        old: &ReportLocation,
+        new: &ReportLocation,
+        stats: &mut LocationsJsonMergeStats,
+    ) -> ReportLocation {
+        let a = (old.lat - new.lat).sin().powi(2)
+            + new.lat.cos() * old.lat.cos() * (old.lat - new.lat).sin().powi(2);
+        let c = 2_f64 * a.sqrt().atan2((1_f64 - a).sqrt());
+        let distance = MEAN_EARTH_RADIUS as f64 * c;
+
+        if distance > SANE_INTERPOLATION_DISTANCE.into() {
+            stats.skipped += 1;
+            return old.clone();
+        }
+
+        let lon = new.lon + old.lon / 2.;
+        let lat = new.lat + old.lat / 2.;
+        stats.refined_loc += 1;
+
+        ReportLocation {
+            lat,
+            lon,
+            properties: serde_json::Value::Null,
+        }
+    }
 }
 
 impl<'de> serde::Deserialize<'de> for R09Types {
