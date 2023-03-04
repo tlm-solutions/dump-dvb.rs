@@ -126,7 +126,6 @@ diesel::table! {
         end_time -> Timestamp,
         line -> Int4,
         run -> Int4,
-        gps_file -> Text,
         region -> Int8,
         owner -> Uuid,
         finished -> Bool,
