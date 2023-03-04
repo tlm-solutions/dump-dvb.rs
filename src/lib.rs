@@ -15,9 +15,6 @@ pub mod locations;
 #[cfg(feature = "management")]
 pub mod management;
 
-#[cfg(feature = "receivers")]
-pub mod receivers;
-
 #[cfg(feature = "measurements")]
 pub mod measurements;
 
