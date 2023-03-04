@@ -1,6 +1,21 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    gps_points (id) {
+        id -> Int8,
+        trekkie_run -> Int8,
+        timestamp -> Timestamp,
+        lat -> Float8,
+        lon -> Float8,
+        elevation -> Nullable<Float8>,
+        accuracy -> Nullable<Float8>,
+        verical_accuracy -> Nullable<Float8>,
+        bearing -> Nullable<Float8>,
+        speed -> Nullable<Float8>,
+    }
+}
+
+diesel::table! {
     internal_stations (id) {
         id -> Uuid,
         wireguard_number -> Nullable<Int4>,
@@ -130,6 +145,7 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
 diesel::joinable!(internal_stations -> stations (id));
 diesel::joinable!(r09_telegrams -> stations (station));
 diesel::joinable!(raw_telegrams -> stations (station));
@@ -142,6 +158,7 @@ diesel::joinable!(trekkie_runs -> regions (region));
 diesel::joinable!(trekkie_runs -> users (owner));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    gps_points,
     internal_stations,
     r09_telegrams,
     raw_telegrams,

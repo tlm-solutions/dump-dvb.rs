@@ -1,5 +1,6 @@
 //! This module deals with transmission loctions
 
+pub mod gps;
 /// This module contains definition of the graph used for interpolation
 pub mod graph;
 mod tests;

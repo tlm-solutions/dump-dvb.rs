@@ -80,6 +80,7 @@ impl Serialize for Station {
         s.serialize_field("elevation", &self.elevation)?;
         s.serialize_field("telegram_decoder_version", &self.telegram_decoder_version)?;
         s.serialize_field("antenna", &self.antenna)?;
+        s.serialize_field("notes", &self.notes)?;
         s.end()
     }
 }
@@ -115,6 +116,21 @@ pub enum Architecture {
     Other = 0,
     X86 = 1,
     Aarch64 = 2,
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum Antenna {
+    Other = 0,
+    Dipole = 1,
+    GroundPlane = 2,
+    Yagi = 3,
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum Encoding {
+    Other = 0,
+    OnOffKeying = 1,
+    Nemo = 2,
 }
 
 pub fn device_to_string(device: &Device) -> String {
