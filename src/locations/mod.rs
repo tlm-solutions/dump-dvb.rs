@@ -1,3 +1,6 @@
+//! This module deals with transmission loctions
+
+/// This module contains definition of the graph used for interpolation
 pub mod graph;
 mod tests;
 
@@ -15,12 +18,12 @@ use std::hash::Hasher;
 use std::io::Write;
 use std::path::PathBuf;
 
-// INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
-/// Version of the json shcema used.
-const SCHEMA: &str = "1";
+/// Version of the [`LocationsJson`] shcema used.
+pub const SCHEMA: &str = "1"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
 
 /// Default region cache lifetime in seconds (24h)
 const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
+/// Name for a cache file
 const REGION_CACHE_FILE: &str = "region_cache.json";
 
 /// Enum for different telegram format
@@ -97,16 +100,15 @@ pub struct LocationsJson {
     pub meta: HashMap<i64, RegionMetaInformation>,
 }
 
-/// Error type for [`LocationsJson`]
-pub enum LJError {
-    /// Error during merge of [`LocationsJson`]'s
-    MergeError,
-    /// Error during fetch of region metadata from API
-    RegionCacheAPIError,
-    /// Error during deserialization of the region cache
-    RegionMetaCacheError,
+/// Merge statistics for [`LocationsJson`]
+pub struct LocationsJsonMergeStats {
+    /// Amount of new reporting locations added by merge
+    pub created: u64,
+    /// Amount of reporting locations that were refined by merge
+    pub refined_loc: u64,
+    /// Amount of reporting locations that were skipped, e.g. due to the failed sanity checks
+    pub skipped: u64,
 }
-
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegionMetaCache {
@@ -114,26 +116,27 @@ pub struct RegionMetaCache {
     pub modified: DateTime<Utc>,
 }
 
+/// Error enum for [`LocationsJson`] methods and associated funcitons
 #[derive(Debug)]
-pub enum RegionMetaCacheError {
+pub enum LocationsJsonError {
     SerdeJsonError(serde_json::Error),
     ReqwestError(reqwest::Error),
     IOError(std::io::Error),
 }
 
-impl From<reqwest::Error> for RegionMetaCacheError {
-    fn from(e: reqwest::Error) -> RegionMetaCacheError {
-        RegionMetaCacheError::ReqwestError(e)
+impl From<reqwest::Error> for LocationsJsonError {
+    fn from(e: reqwest::Error) -> LocationsJsonError {
+        LocationsJsonError::ReqwestError(e)
     }
 }
-impl From<serde_json::Error> for RegionMetaCacheError {
-    fn from(e: serde_json::Error) -> RegionMetaCacheError {
-        RegionMetaCacheError::SerdeJsonError(e)
+impl From<serde_json::Error> for LocationsJsonError {
+    fn from(e: serde_json::Error) -> LocationsJsonError {
+        LocationsJsonError::SerdeJsonError(e)
     }
 }
-impl From<std::io::Error> for RegionMetaCacheError {
-    fn from(e: std::io::Error) -> RegionMetaCacheError {
-        RegionMetaCacheError::IOError(e)
+impl From<std::io::Error> for LocationsJsonError {
+    fn from(e: std::io::Error) -> LocationsJsonError {
+        LocationsJsonError::IOError(e)
     }
 }
 
@@ -194,7 +197,7 @@ impl LocationsJson {
     pub fn get_region_cache(
         datacare_api: &str,
         cache_dir: PathBuf,
-    ) -> Result<RegionMetaCache, RegionMetaCacheError> {
+    ) -> Result<RegionMetaCache, LocationsJsonError> {
         let api_url = format!("{datacare_api}/region");
         let api_response: String = reqwest::blocking::get(api_url)?.text()?;
 
@@ -207,7 +210,7 @@ impl LocationsJson {
         };
 
         // try to write out the cache
-        let mut cache_file = cache_dir.clone();
+        let mut cache_file = cache_dir;
         cache_file.push(REGION_CACHE_FILE);
         let cache_string = serde_json::to_string(&timestamped_region_cache)?;
         fs::write(cache_file, cache_string)?;
@@ -216,8 +219,8 @@ impl LocationsJson {
     }
 
     /// Read local region cache
-    pub fn read_region_cache(cache_dir: PathBuf) -> Result<RegionMetaCache, RegionMetaCacheError> {
-        let mut cache_file_path = cache_dir.clone();
+    pub fn read_region_cache(cache_dir: PathBuf) -> Result<RegionMetaCache, LocationsJsonError> {
+        let mut cache_file_path = cache_dir;
         cache_file_path.push(REGION_CACHE_FILE);
         let cache_file_string = fs::read_to_string(cache_file_path)?;
 
@@ -230,7 +233,7 @@ impl LocationsJson {
     pub fn update_region_cache(
         datacare_api: &str,
         cache_dir: PathBuf,
-    ) -> Result<RegionMetaCache, RegionMetaCacheError> {
+    ) -> Result<RegionMetaCache, LocationsJsonError> {
         let mut cache_file_path = cache_dir.clone();
         cache_file_path.push(REGION_CACHE_FILE);
 
@@ -260,7 +263,7 @@ impl LocationsJson {
             Err(e) => {
                 eprintln!("While trying to get local region metadata cache: {e:?}");
                 eprintln!("Trying to refresh region metadata cache");
-                Self::get_region_cache(datacare_api, cache_dir.clone())?
+                Self::get_region_cache(datacare_api, cache_dir)?
             }
         };
 
