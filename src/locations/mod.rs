@@ -1,12 +1,15 @@
+//! This module deals with transmission loctions
+
 pub mod gps;
+/// This module contains definition of the graph used for interpolation
 pub mod graph;
 mod tests;
 
 use chrono::prelude::{DateTime, Utc};
-use lazy_static::lazy_static;
+use reqwest;
 use serde::{Deserialize, Serialize};
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::convert::TryFrom;
 use std::fmt;
 use std::fs;
@@ -14,10 +17,19 @@ use std::fs::File;
 use std::hash::Hash;
 use std::hash::Hasher;
 use std::io::Write;
+use std::path::PathBuf;
 
-// INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
-/// Version of the json shcema used.
-const SCHEMA: &str = "1";
+/// Version of the [`LocationsJson`] shcema used.
+pub const SCHEMA: &str = "1"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
+
+/// Default region cache lifetime in seconds (24h)
+const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
+/// Name for a cache file
+const REGION_CACHE_FILE: &str = "region_cache.json";
+/// maximum distance in meters
+const SANE_INTERPOLATION_DISTANCE: i32 = 50;
+/// Mean earth radius, required for calcuation of distances between the GPS points
+const MEAN_EARTH_RADIUS: u32 = 6_371_000;
 
 /// Enum for different telegram format
 #[derive(Debug, PartialEq, Clone)]
@@ -27,148 +39,32 @@ pub enum R09Types {
     R18 = 18,
 }
 
-/// There are 4 different telegrams which can be send from one location
-/// the first one is sent approximetly 150m before the traffic light the registration
-/// telegram is send when the vehicle reaces the traffic light and deregistration is send
-/// when the bus leaves the stop.
+/// Enum of 4 possible different telegrams which can be send from one location.
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum RequestStatus {
+    /// Pre-Registration telegram is sent approximately 150m before the traffic light.
     PreRegistration = 0,
+    /// Registration telegram is sent when the vehicle reaches the traffic light.
     Registration = 1,
+    /// Deregistration is sent after vehicle passes the intersection.
     DeRegistration = 2,
+    /// Door Closed is sent when vehicle leaves the stop.
     DoorClosed = 3,
 }
 
-/// Meta inforamtion about region which then can be used to configure radio receivers
+/// Meta inforamtion about region.
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct RegionMetaInformation {
     /// Frequency in Hz
     pub frequency: Option<u64>,
+    /// Human-readable name of the region
     pub city_name: Option<String>,
-    /// Type of R09 telegram
+    /// Type of R09 telegram used in the region
     pub type_r09: Option<R09Types>,
     /// Latitude of the Region, degrees
     pub lat: Option<f64>,
     /// Longitude of the Region, degrees
     pub lon: Option<f64>,
-}
-
-lazy_static! {
-    #[deprecated(note="REGION_META_MAP is deprecated in favour of using API directly")]
-    #[derive(Debug)]
-    /// lazy_static map of a region number to `RegionMetaInformation` struct for this region
-    pub static ref REGION_META_MAP: HashMap<i64, RegionMetaInformation> = HashMap::from([
-        (
-            0_i64,
-            RegionMetaInformation {
-                frequency: Some(170795000),
-                city_name: Some(String::from("Dresden")),
-                type_r09: Some(R09Types::R16),
-                lat: Some(51.05),
-                lon: Some(13.74),
-            }
-        ),
-        (
-            1_i64,
-            RegionMetaInformation {
-                frequency: Some(153850000),
-                city_name: Some(String::from("Chemnitz")),
-                type_r09: Some(R09Types::R16),
-                lat: Some(50.82),
-                lon: Some(12.92),
-            }
-        ),
-        (
-            2_i64,
-            RegionMetaInformation {
-                frequency: Some(170450000),
-                city_name: Some(String::from("Berlin")),
-                type_r09: None,
-                lat: Some(52.52),
-                lon: Some(13.41),
-            }
-        ),
-        (
-            3_i64,
-            RegionMetaInformation {
-                frequency: Some(155630000),
-                city_name: Some(String::from("Duesseldorf")),
-                type_r09: None,
-                lat: Some(50.78),
-                lon: Some(6.08),
-            }
-        ),
-        (
-            4_i64,
-            RegionMetaInformation {
-                frequency: Some(150910000),
-                city_name: Some(String::from("Hannover")),
-                type_r09: Some(R09Types::R14),
-                lat: Some(52.38),
-                lon: Some(9.73),
-            }
-        ),
-        (
-            5_i64,
-            RegionMetaInformation {
-                frequency: Some(152930000),
-                city_name: Some(String::from("Karlsruhe")),
-                type_r09: None,
-                lat: None,
-                lon: None,
-            }
-        ),
-        (
-            6_i64,
-            RegionMetaInformation {
-                frequency: Some(151030000),
-                city_name: Some(String::from("Moenchengladbach")),
-                type_r09: None,
-                lat: None,
-                lon: None,
-            }
-        ),
-        (
-            7_i64,
-            RegionMetaInformation {
-                frequency: Some(150827500),
-                city_name: Some(String::from("Münster")),
-                type_r09: None,
-                lat: Some(51.96),
-                lon: Some(7.63),
-            }
-        ),
-        (
-            8_i64,
-            RegionMetaInformation {
-                frequency: Some(152930000),
-                city_name: Some(String::from("Ulm")),
-                type_r09: None,
-                lat: None,
-                lon: None,
-            }
-        ),
-        (
-            9_i64,
-            RegionMetaInformation {
-                frequency: Some(152850000),
-                city_name: Some(String::from("Region-Hannover")),
-                type_r09: None,
-                lat: None,
-                lon: None,
-            }
-        ),
-        (
-            10_i64,
-            RegionMetaInformation {
-                frequency: Some(150827500),
-                city_name: Some(String::from("Aachen")),
-                type_r09: None,
-                lat: Some(50.78),
-                lon: Some(6.08),
-            }
-        ),
-    ]);
 }
 
 /// Structure containing the coordinates and any extra JSON value for specific report location
@@ -187,6 +83,8 @@ pub struct ReportLocation {
 /// Hash map of a report location ID to the `ReportLocation` struct
 pub type RegionReportLocations = HashMap<i32, ReportLocation>;
 
+/// Doucment meta information. To set metadata for the document see [`StopsJson::construct`]
+/// or to [`StopsJson::update_metadata`]
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 struct DocumentMeta {
     schema_version: String,
@@ -201,20 +99,60 @@ struct DocumentMeta {
 pub struct LocationsJson {
     /// meta information about the document, e.g. schema version, and how it was generated.
     document: DocumentMeta,
-    /// Hash map of a region number to the `RegionReportLocations`
+    /// Hash map of a region number to the [`RegionReportLocations`]
     pub data: HashMap<i64, RegionReportLocations>,
     /// Hash map of a region number to the meta information about this region
     pub meta: HashMap<i64, RegionMetaInformation>,
 }
 
+/// Merge statistics for [`LocationsJson`]
+pub struct LocationsJsonMergeStats {
+    /// Amount of new reporting locations added by merge
+    pub created: u64,
+    /// Amount of reporting locations that were refined by merge
+    pub refined_loc: u64,
+    /// Amount of reporting locations that were skipped, e.g. due to the failed sanity checks
+    pub skipped: u64,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct RegionMetaCache {
+    pub metadata: HashMap<i64, RegionMetaInformation>,
+    pub modified: DateTime<Utc>,
+}
+
+/// Error enum for [`LocationsJson`] methods and associated funcitons
+#[derive(Debug)]
+pub enum LocationsJsonError {
+    SerdeJsonError(serde_json::Error),
+    ReqwestError(reqwest::Error),
+    IOError(std::io::Error),
+}
+
+impl From<reqwest::Error> for LocationsJsonError {
+    fn from(e: reqwest::Error) -> LocationsJsonError {
+        LocationsJsonError::ReqwestError(e)
+    }
+}
+impl From<serde_json::Error> for LocationsJsonError {
+    fn from(e: serde_json::Error) -> LocationsJsonError {
+        LocationsJsonError::SerdeJsonError(e)
+    }
+}
+impl From<std::io::Error> for LocationsJsonError {
+    fn from(e: std::io::Error) -> LocationsJsonError {
+        LocationsJsonError::IOError(e)
+    }
+}
+
 impl LocationsJson {
-    /// Deserialzes file into `LocationsJson`
+    /// Deserialzes file into [`LocationsJson`]
     pub fn from_file(file: &str) -> Result<LocationsJson, serde_json::error::Error> {
         let data = fs::read_to_string(file).expect("could not read LocationsJson file!");
         serde_json::from_str(&data)
     }
 
-    /// Creates the LocationsJson struct form the hashmaps for data and meta fields, while taking
+    /// Creates the [`LocationsJson`] struct form the hashmaps for data and meta fields, while taking
     /// care of properly filling out the meta private field.
     pub fn construct(
         data: HashMap<i64, RegionReportLocations>,
@@ -234,7 +172,7 @@ impl LocationsJson {
         }
     }
 
-    /// Serialises `LocationsJson` to json file. If file exists - silently overwrites it
+    /// Serialises [`LocationsJson`] to json file. If file exists - silently overwrites it.
     pub fn write(&self, file: &str) {
         fs::remove_file(file).ok();
         let mut output = File::create(file).expect("cannot create or open file!");
@@ -247,13 +185,181 @@ impl LocationsJson {
     }
 
     /// Populates document metainformation
-    pub fn populate_meta(&mut self, generator: Option<String>, generator_version: Option<String>) {
+    pub fn update_metadata(
+        &mut self,
+        generator: Option<String>,
+        generator_version: Option<String>,
+    ) {
         self.document = DocumentMeta {
             schema_version: String::from(SCHEMA),
             date: chrono::Utc::now(),
             generator,
             generator_version,
         };
+    }
+
+    /// refreshes the region data cache from the datacare API unconditionaly
+    pub fn get_region_cache(
+        datacare_api: &str,
+        cache_dir: PathBuf,
+    ) -> Result<RegionMetaCache, LocationsJsonError> {
+        let api_url = format!("{datacare_api}/region");
+        let api_response: String = reqwest::blocking::get(api_url)?.text()?;
+
+        let region_cache: HashMap<i64, RegionMetaInformation> =
+            serde_json::from_str(&api_response)?;
+
+        let timestamped_region_cache = RegionMetaCache {
+            metadata: region_cache,
+            modified: Utc::now(),
+        };
+
+        // try to write out the cache
+        let mut cache_file = cache_dir;
+        cache_file.push(REGION_CACHE_FILE);
+        let cache_string = serde_json::to_string(&timestamped_region_cache)?;
+        fs::write(cache_file, cache_string)?;
+
+        Ok(timestamped_region_cache)
+    }
+
+    /// Read local region cache
+    pub fn read_region_cache(cache_dir: PathBuf) -> Result<RegionMetaCache, LocationsJsonError> {
+        let mut cache_file_path = cache_dir;
+        cache_file_path.push(REGION_CACHE_FILE);
+        let cache_file_string = fs::read_to_string(cache_file_path)?;
+
+        let cache = serde_json::from_str::<RegionMetaCache>(&cache_file_string)?;
+        Ok(cache)
+    }
+
+    /// Gets the cache for the region data. First looks if it exists already, if not (or if it is
+    /// older than REGION_CACHE_EXPIRATION) tries to update it. Any Errs are propagated up.
+    pub fn update_region_cache(
+        datacare_api: &str,
+        cache_dir: PathBuf,
+    ) -> Result<RegionMetaCache, LocationsJsonError> {
+        let mut cache_file_path = cache_dir.clone();
+        cache_file_path.push(REGION_CACHE_FILE);
+
+        // make sure that the dir exists
+        fs::create_dir_all(cache_dir.clone())?;
+
+        // try to read the cache
+        let cache_to_return = match Self::read_region_cache(cache_dir.clone()) {
+            Ok(read_cache) => {
+                // check that cache is fresh enough
+                if (Utc::now() - read_cache.modified)
+                    < chrono::Duration::seconds(REGION_CACHE_EXPIRATION)
+                {
+                    read_cache
+                } else {
+                    // try to update the cache
+                    match Self::get_region_cache(datacare_api, cache_dir) {
+                        Ok(new_cache) => new_cache,
+                        Err(e) => {
+                            eprintln!("While trying to get the cache from datacare API: {e:?}");
+                            eprintln!("Using stale cache! {read_cache:?}");
+                            read_cache
+                        }
+                    }
+                }
+            }
+            Err(e) => {
+                eprintln!("While trying to get local region metadata cache: {e:?}");
+                eprintln!("Trying to refresh region metadata cache");
+                Self::get_region_cache(datacare_api, cache_dir)?
+            }
+        };
+
+        Ok(cache_to_return)
+    }
+
+    /// Updates the region information in the file from the cache
+    pub fn update_region_data(&mut self, region_cache: HashMap<i64, RegionMetaInformation>) {
+        // iterate over keys in data, put it into hashset
+        let mut reg_set: HashSet<i64> = HashSet::new();
+        // iterate over hashset, put region metadata
+        for k in self.data.keys() {
+            reg_set.insert(*k);
+        }
+
+        for r in reg_set {
+            match region_cache.get(&r) {
+                Some(reg) => {
+                    self.meta.insert(r, reg.clone());
+                }
+                None => {
+                    eprintln!("ERROR: Region {r} is not found in region metadata cache!");
+                    eprintln!("WARNING: Metadata for region {r} is not written!");
+                }
+            };
+        }
+    }
+
+    /// This method merges in new report locations. Averages the transmission position in the
+    /// process. Returns statistic ([`LocationsJsonMergeStats`] wrapped in [`Result`]): how many new report
+    /// locations are added, how many transmission positions were refined, how many points were
+    /// discarded.
+    pub fn merge(
+        &mut self,
+        new: &LocationsJson,
+        region_cache: HashMap<i64, RegionMetaInformation>,
+    ) -> Result<LocationsJsonMergeStats, LocationsJsonError> {
+        let mut new_regions: HashSet<i64> = HashSet::new();
+        let mut stats = LocationsJsonMergeStats {
+            created: 0,
+            refined_loc: 0,
+            skipped: 0,
+        };
+        for k in new.data.keys() {
+            new_regions.insert(*k);
+        }
+
+        for r in new_regions {
+            let region_data = self.data.entry(r).or_insert(HashMap::new());
+            let new_region_data = new.data.get(&r).expect("Unreacheble");
+            for (k, v) in new_region_data {
+                region_data
+                    .entry(*k)
+                    .and_modify(|old| *old = Self::linear_interpolate_point(old, v, &mut stats))
+                    .or_insert({
+                        stats.created += 1;
+                        v.clone()
+                    });
+            }
+        }
+
+        self.update_region_data(region_cache);
+
+        Ok(stats)
+    }
+
+    /// Takes two GPS points, lineraly interpolates them while performing sanity checks.
+    fn linear_interpolate_point(
+        old: &ReportLocation,
+        new: &ReportLocation,
+        stats: &mut LocationsJsonMergeStats,
+    ) -> ReportLocation {
+        let a = (old.lat - new.lat).sin().powi(2)
+            + new.lat.cos() * old.lat.cos() * (old.lat - new.lat).sin().powi(2);
+        let c = 2_f64 * a.sqrt().atan2((1_f64 - a).sqrt());
+        let distance = MEAN_EARTH_RADIUS as f64 * c;
+
+        if distance > SANE_INTERPOLATION_DISTANCE.into() {
+            stats.skipped += 1;
+            return old.clone();
+        }
+
+        let lon = new.lon + old.lon / 2.;
+        let lat = new.lat + old.lat / 2.;
+        stats.refined_loc += 1;
+
+        ReportLocation {
+            lat,
+            lon,
+            properties: serde_json::Value::Null,
+        }
     }
 }
 
@@ -390,8 +496,7 @@ impl ReportLocation {
 }
 
 impl TryFrom<i16> for RequestStatus {
-    type Error = ();
-    /// converts integer to a proper enum value
+    type Error = (); // TODO: proper errors
     fn try_from(value: i16) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(RequestStatus::PreRegistration),

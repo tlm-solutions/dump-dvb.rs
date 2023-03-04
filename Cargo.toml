@@ -17,8 +17,8 @@ management = [
 ]
 
 locations = [
-    "schema", 
-    "dep:lazy_static"
+    "schema",
+    "reqwest"
 ]
 
 telegrams = [
@@ -57,7 +57,7 @@ pbkdf2 = {version = "*", optional = true}
 rand = {version = "*", optional = true}
 log = { version = "*", optional = true}
 regex = {version = "*", optional = true}
-lazy_static = {version = "*", optional = true}
+reqwest = {version = "0.11", optional = true, features = ["blocking"]}
 
 [build-dependencies]
 tonic-build = "0.7"
