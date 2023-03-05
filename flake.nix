@@ -65,6 +65,9 @@
         '';
 
         yeet-data = pkgs.writeScriptBin "yeet-data" ''
+          set -e
+          export PSQL = ${pkgs.postgresql_14}/bin/psql
+
           $PSQL -d dvbdump -c "COPY users TO '/tmp/users.csv'  WITH DELIMITER ',' CSV HEADER;"
           $PSQL -d dvbdump -c "COPY regions TO '/tmp/regions.csv'  WITH DELIMITER ',' CSV HEADER;"
           $PSQL -d dvbdump -c "COPY stations TO '/tmp/stations.csv'  WITH DELIMITER ',' CSV HEADER;"
@@ -73,13 +76,13 @@
           $PSQL -d dvbdump -c "COPY raw_telegrams TO '/tmp/raw_telegrams.csv'  WITH DELIMITER ',' CSV HEADER;"
           $PSQL -d dvbdump -c "COPY r09_telegrams TO '/tmp/r09_telegrams.csv'  WITH DELIMITER ',' CSV HEADER;"
 
-          $PSQL -d dvbdump -c "COPY persons(*) FROM '/tmp/users.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY regions(*) FROM '/tmp/regions.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY stations(*) FROM '/tmp/stations.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY trekkie_runs(*) FROM '/tmp/stations.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY gps_points(*) FROM '/tmp/gps_points.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY raw_telegrams(*) FROM '/tmp/raw_telegrams.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY r09_telegrams(*) FROM '/tmp/r09_telegrams.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY persons(*) FROM '/tmp/users.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY regions(*) FROM '/tmp/regions.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY stations(*) FROM '/tmp/stations.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY trekkie_runs(*) FROM '/tmp/stations.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY gps_points(*) FROM '/tmp/gps_points.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY raw_telegrams(*) FROM '/tmp/raw_telegrams.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY r09_telegrams(*) FROM '/tmp/r09_telegrams.csv' DELIMITER ',' CSV HEADER;"
         '';
 
       };
