@@ -1,6 +1,6 @@
 CREATE TABLE gps_points (
     id BIGSERIAL PRIMARY KEY NOT NULL,
-    trekkie_run BIGINT REFERENCES trekkie_runs(id) NOT NULL,
+    trekkie_run UUID NOT NULL,
     timestamp TIMESTAMP NOT NULL,
     lat FLOAT NOT NULL,
     lon FLOAT NOT NULL,

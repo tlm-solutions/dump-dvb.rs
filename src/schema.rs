@@ -3,7 +3,7 @@
 diesel::table! {
     gps_points (id) {
         id -> Int8,
-        trekkie_run -> Int8,
+        trekkie_run -> Uuid,
         timestamp -> Timestamp,
         lat -> Float8,
         lon -> Float8,
@@ -12,13 +12,6 @@ diesel::table! {
         vertical_accuracy -> Nullable<Float8>,
         bearing -> Nullable<Float8>,
         speed -> Nullable<Float8>,
-    }
-}
-
-diesel::table! {
-    internal_stations (id) {
-        id -> Uuid,
-        wireguard_number -> Nullable<Int4>,
     }
 }
 
@@ -69,35 +62,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    sessions (owner) {
-        owner -> Uuid,
-        start_time -> Timestamp,
-        token -> Varchar,
-    }
-}
-
-diesel::table! {
-    station_history (id) {
-        id -> Int8,
-        changed_time -> Timestamp,
-        station_id -> Uuid,
-        name -> Text,
-        lat -> Float8,
-        lon -> Float8,
-        region -> Int8,
-        approved -> Bool,
-        deactivated -> Bool,
-        public -> Bool,
-        radio -> Nullable<Int4>,
-        architecture -> Nullable<Int4>,
-        device -> Nullable<Int4>,
-        elevation -> Nullable<Float8>,
-        telegram_decoder_version -> Nullable<Array<Nullable<Int4>>>,
-        antenna -> Nullable<Int4>,
-    }
-}
-
-diesel::table! {
     stations (id) {
         id -> Uuid,
         token -> Nullable<Varchar>,
@@ -121,7 +85,6 @@ diesel::table! {
 
 diesel::table! {
     trekkie_runs (id) {
-        id -> Int8,
         start_time -> Timestamp,
         end_time -> Timestamp,
         line -> Int4,
@@ -129,6 +92,7 @@ diesel::table! {
         region -> Int8,
         owner -> Uuid,
         finished -> Bool,
+        id -> Uuid,
     }
 }
 
@@ -145,12 +109,8 @@ diesel::table! {
 }
 
 diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
-diesel::joinable!(internal_stations -> stations (id));
 diesel::joinable!(r09_telegrams -> stations (station));
 diesel::joinable!(raw_telegrams -> stations (station));
-diesel::joinable!(sessions -> users (owner));
-diesel::joinable!(station_history -> regions (region));
-diesel::joinable!(station_history -> stations (station_id));
 diesel::joinable!(stations -> regions (region));
 diesel::joinable!(stations -> users (owner));
 diesel::joinable!(trekkie_runs -> regions (region));
@@ -158,12 +118,9 @@ diesel::joinable!(trekkie_runs -> users (owner));
 
 diesel::allow_tables_to_appear_in_same_query!(
     gps_points,
-    internal_stations,
     r09_telegrams,
     raw_telegrams,
     regions,
-    sessions,
-    station_history,
     stations,
     trekkie_runs,
     users,

@@ -1,6 +1,7 @@
 use crate::schema::*;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 // Only parts relevant for the interpolation are here
 /// Gps trackpoint representation used in lofi for Gps data
@@ -10,7 +11,7 @@ pub struct GpsPoint {
     /// primary key bigserial
     pub id: i64,
     // foreign key referencing the corresponding trekkie run
-    pub trekkie_run: i64,
+    pub trekkie_run: Uuid,
     /// point's timestamp
     pub timestamp: NaiveDateTime,
     /// Latitude
@@ -37,7 +38,7 @@ pub struct InsertGpsPoint {
     /// primary key bigserial
     pub id: Option<i64>,
     // foreign key referencing the corresponding trekkie run
-    pub trekkie_run: i64,
+    pub trekkie_run: Uuid,
     /// point's timestamp
     pub timestamp: NaiveDateTime,
     /// Latitude
