@@ -40,25 +40,25 @@ trekkie = ["schema"]
 
 [dependencies]
 
-serde_json = "*"
-serde = {version = "*", features = ["derive"]}
-chrono = {version = "*", features = [ "serde" ]}
-uuid = {version = "*", features = ["serde", "v4"]}
-dotenv = {version = "*"}
-num-derive = {version = "*"}
+serde_json = "1.0"
+serde = {version = "1.0", features = ["derive"]}
+chrono = {version = "0.4", features = [ "serde" ]}
+uuid = {version = "1.2", features = ["serde", "v4"]}
+dotenv = {version = "0.15"}
+num-derive = {version = "0.3"}
 
-diesel = { version = "*", features = ["postgres", "r2d2", "chrono", "uuid"]}
+diesel = { version = "2.0", features = ["postgres", "r2d2", "chrono", "uuid"]}
 
 tonic = {version = "0.7", optional = true}
 prost = {version = "0.10", optional = true}
 
-csv = {version = "*", optional = true}
-struct-field-names-as-array = {version = "*", optional = true}
-num-traits = {version = "*", optional = true}
-pbkdf2 = {version = "*", optional = true}
-rand = {version = "*", optional = true}
-log = { version = "*", optional = true}
-regex = {version = "*", optional = true}
+csv = {version = "1.2", optional = true}
+struct-field-names-as-array = {version = "0.1", optional = true}
+num-traits = {version = "0.2", optional = true}
+pbkdf2 = {version = "0.11", optional = true}
+rand = {version = "0.8", optional = true}
+log = { version = "0.4", optional = true}
+regex = {version = "1.7", optional = true}
 reqwest = {version = "0.11", optional = true, features = ["blocking"]}
 
 [build-dependencies]

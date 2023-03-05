@@ -16,4 +16,3 @@ pub struct TrekkieRun {
     pub finished: bool,
     pub id: Uuid,
 }
-
