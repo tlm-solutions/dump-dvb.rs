@@ -59,8 +59,27 @@
         run-migration = pkgs.writeScriptBin "run-migration" ''
           ${pkgs.diesel-cli}/bin/diesel migration run --migration-dir ${self}/migrations
         '';
+
         run-migration-based = pkgs.writeScriptBin "run-migration" ''
           ${pkgs.diesel-cli}/bin/diesel migration run --migration-dir ${self}/migrations-based
+        '';
+
+        yeet-data = pkgs.writeScriptBin "yeet-data" ''
+          $PSQL -d dvbdump -c "COPY users TO '/tmp/users.csv'  WITH DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY regions TO '/tmp/regions.csv'  WITH DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY stations TO '/tmp/stations.csv'  WITH DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY trekkie_runs TO '/tmp/trekkie_runs.csv'  WITH DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY gps_points TO '/tmp/gps_points.csv'  WITH DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY raw_telegrams TO '/tmp/raw_telegrams.csv'  WITH DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY r09_telegrams TO '/tmp/r09_telegrams.csv'  WITH DELIMITER ',' CSV HEADER;"
+
+          $PSQL -d dvbdump -c "COPY persons(*) FROM '/tmp/users.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY regions(*) FROM '/tmp/regions.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY stations(*) FROM '/tmp/stations.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY trekkie_runs(*) FROM '/tmp/stations.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY gps_points(*) FROM '/tmp/gps_points.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY raw_telegrams(*) FROM '/tmp/raw_telegrams.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d dvbdump -c "COPY r09_telegrams(*) FROM '/tmp/r09_telegrams.csv' DELIMITER ',' CSV HEADER;"
         '';
 
       };
