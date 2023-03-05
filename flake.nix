@@ -59,6 +59,10 @@
         run-migration = pkgs.writeScriptBin "run-migration" ''
           ${pkgs.diesel-cli}/bin/diesel migration run --migration-dir ${self}/migrations
         '';
+        run-migration-based = pkgs.writeScriptBin "run-migration" ''
+          ${pkgs.diesel-cli}/bin/diesel migration run --migration-dir ${self}/migrations-based
+        '';
+
       };
 
       devShells."x86_64-linux".default = pkgs.mkShell {
