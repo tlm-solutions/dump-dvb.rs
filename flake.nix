@@ -80,10 +80,10 @@
           $PSQL -d dvbdump -c "COPY raw_telegrams TO '/var/lib/postgres-backup/raw_telegrams.csv'  WITH DELIMITER ',' CSV HEADER;"
           $PSQL -d dvbdump -c "COPY r09_telegrams TO '/var/lib/postgres-backup/r09_telegrams.csv'  WITH DELIMITER ',' CSV HEADER;"
 
-          $PSQL -d tlms -c "COPY persons FROM '/var/lib/postgres-backup/users.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY users FROM '/var/lib/postgres-backup/users.csv' DELIMITER ',' CSV HEADER;"
           $PSQL -d tlms -c "COPY regions FROM '/var/lib/postgres-backup/regions.csv' DELIMITER ',' CSV HEADER;"
           $PSQL -d tlms -c "COPY stations FROM '/var/lib/postgres-backup/stations.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d tlms -c "COPY trekkie_runs FROM '/var/lib/postgres-backup/stations.csv' DELIMITER ',' CSV HEADER;"
+          $PSQL -d tlms -c "COPY trekkie_runs FROM '/var/lib/postgres-backup/trekkie_runs.csv' DELIMITER ',' CSV HEADER;"
           $PSQL -d tlms -c "COPY gps_points FROM '/var/lib/postgres-backup/gps_points.csv' DELIMITER ',' CSV HEADER;"
           $PSQL -d tlms -c "COPY raw_telegrams FROM '/var/lib/postgres-backup/raw_telegrams.csv' DELIMITER ',' CSV HEADER;"
           $PSQL -d tlms -c "COPY r09_telegrams FROM '/var/lib/postgres-backup/r09_telegrams.csv' DELIMITER ',' CSV HEADER;"
