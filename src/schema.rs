@@ -3,7 +3,7 @@
 diesel::table! {
     gps_points (id) {
         id -> Int8,
-        trekkie_run -> Int8,
+        trekkie_run -> Uuid,
         timestamp -> Timestamp,
         lat -> Float8,
         lon -> Float8,
@@ -108,6 +108,7 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
 diesel::joinable!(r09_telegrams -> stations (station));
 diesel::joinable!(raw_telegrams -> stations (station));
 diesel::joinable!(stations -> regions (region));
