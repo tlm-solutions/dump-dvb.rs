@@ -1,7 +1,7 @@
 use crate::schema::*;
-use uuid::Uuid;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 // Only parts relevant for the interpolation are here
 /// Gps trackpoint representation used in lofi for Gps data
