@@ -66,7 +66,7 @@
 
         yeet-data = pkgs.writeScriptBin "yeet-data" ''
           set -e
-          export PSQL = ${pkgs.postgresql_14}/bin/psql
+          export PSQL=${pkgs.postgresql_14}/bin/psql
 
           $PSQL -d dvbdump -c "COPY users TO '/tmp/users.csv'  WITH DELIMITER ',' CSV HEADER;"
           $PSQL -d dvbdump -c "COPY regions TO '/tmp/regions.csv'  WITH DELIMITER ',' CSV HEADER;"
