@@ -8,10 +8,10 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 
-
+/// ID value for [`GpsPoint`]'s that are not fetched from database, and therefore do not have a
+/// primary key
 pub const NO_ID: i64 = -0xDEADBABE;
 
-// Only parts relevant for the interpolation are here
 /// Gps trackpoint representation used in database for Gps data
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, Queryable)]
 #[diesel(table_name = gps_points)]
@@ -65,9 +65,9 @@ pub struct InsertGpsPoint {
     pub speed: Option<f64>,
 }
 
-/// Hasmap of gps timestamps to [`GpsPoint`]
+/// Hasmap of gps unix timestamps to [`GpsPoint`]
 #[derive(Clone, Debug)]
-pub struct Gps(HashMap<i64, GpsPoint>);
+pub struct Gps(HashMap<i64, InsertGpsPoint>);
 
 
 impl Gps {
@@ -87,8 +87,8 @@ impl Gps {
         for track in gpx.tracks {
             for segment in track.segments {
                 for point in segment.points {
-                    let soul = GpsPoint {
-                        id: NO_ID,
+                    let soul = InsertGpsPoint {
+                        id: None,
                         trekkie_run: Uuid::parse_str("00000000-0000-0000-0000-000000000000").unwrap(),
                         lat: point.point().y(), // according to gpx crate team x and y are less
                         lon: point.point().x(), // ambiguous for coordinates on a map
@@ -117,23 +117,23 @@ impl Gps {
     // hashmap boilerplate
     /// Exposes hashmap methods on our type alias
     #[allow(dead_code)]
-    pub fn iter(&self) -> impl Iterator<Item = (&i64, &GpsPoint)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&i64, &InsertGpsPoint)> {
         self.0.iter()
     }
 
     /// Exposes hashmap methods on our type alias
     #[allow(dead_code)]
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = (&i64, &mut GpsPoint)> {
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = (&i64, &mut InsertGpsPoint)> {
         self.0.iter_mut()
     }
 
     /// Exposes hashmap methods on our type alias
-    pub fn insert(&mut self, k: i64, v: GpsPoint) -> Option<GpsPoint> {
+    pub fn insert(&mut self, k: i64, v: InsertGpsPoint) -> Option<InsertGpsPoint> {
         self.0.insert(k, v)
     }
 
     /// Exposes hashmap methods on our type alias
-    pub fn get(&self, k: &i64) -> Option<&GpsPoint> {
+    pub fn get(&self, k: &i64) -> Option<&InsertGpsPoint> {
         self.0.get(k)
     }
 
