@@ -1,8 +1,8 @@
 use crate::schema::*;
 use chrono::NaiveDateTime;
+use gpx::Gpx;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use gpx::Gpx;
 
 use std::collections::HashMap;
 use std::fs::File;
@@ -69,7 +69,6 @@ pub struct InsertGpsPoint {
 #[derive(Clone, Debug)]
 pub struct Gps(HashMap<i64, InsertGpsPoint>);
 
-
 impl Gps {
     /// Extracts waypoints from all tracks and segments of a Gpx file
     pub fn insert_from_gpx_file(&mut self, filepath: &str) {
@@ -89,7 +88,8 @@ impl Gps {
                 for point in segment.points {
                     let soul = InsertGpsPoint {
                         id: None,
-                        trekkie_run: Uuid::parse_str("00000000-0000-0000-0000-000000000000").unwrap(),
+                        trekkie_run: Uuid::parse_str("00000000-0000-0000-0000-000000000000")
+                            .unwrap(),
                         lat: point.point().y(), // according to gpx crate team x and y are less
                         lon: point.point().x(), // ambiguous for coordinates on a map
                         elevation: point.elevation,
