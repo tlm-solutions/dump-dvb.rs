@@ -28,9 +28,9 @@ impl From<i32> for Role {
     }
 }
 
-impl Into<i32> for Role {
-    fn into(self) -> i32 {
-        match self {
+impl From<Role> for i32 {
+    fn from(val: Role) -> Self {
+        match val {
             Role::Administrator => 0,
             Role::User => 6,
             Role::Trekkie => 9,
