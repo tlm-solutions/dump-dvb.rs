@@ -58,7 +58,16 @@ pub struct R09Telegram {
 /// it is enriched with meta information about the receiver that caught this telegram
 /// first or at which time this telegram was transmitted.
 #[derive(
-    Clone, PartialEq, Eq, Debug, Deserialize, Serialize, Insertable, Associations, FieldNamesAsArray,
+    Clone,
+    PartialEq,
+    Eq,
+    Debug,
+    Deserialize,
+    Serialize,
+    Insertable,
+    Associations,
+    FieldNamesAsArray,
+    Queryable,
 )]
 #[diesel(table_name = r09_telegrams)]
 #[diesel(belongs_to(Station, foreign_key = station))]
