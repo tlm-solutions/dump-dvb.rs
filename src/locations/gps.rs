@@ -40,7 +40,7 @@ pub struct GpsPoint {
 
 /// struct for inserting a gps point into the database and utilise
 /// the auto increment functions from postgres
-#[derive(Debug, Copy, Clone, Serialize, Deserialize, Insertable, Queryable)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize, Insertable)]
 #[diesel(table_name = gps_points)]
 pub struct InsertGpsPoint {
     /// primary key bigserial
@@ -68,6 +68,23 @@ pub struct InsertGpsPoint {
 /// Hasmap of gps unix timestamps to [`GpsPoint`]
 #[derive(Clone, Debug)]
 pub struct Gps(HashMap<i64, InsertGpsPoint>);
+
+impl From<GpsPoint> for InsertGpsPoint {
+    fn from(val: GpsPoint) -> Self {
+        Self {
+            id: Some(val.id),
+            trekkie_run: val.trekkie_run,
+            timestamp: val.timestamp,
+            lat: val.lat,
+            lon: val.lon,
+            elevation: val.elevation,
+            accuracy: val.accuracy,
+            vertical_accuracy: val.vertical_accuracy,
+            bearing: val.bearing,
+            speed: val.speed,
+        }
+    }
+}
 
 impl Gps {
     /// Extracts waypoints from all tracks and segments of a Gpx file
