@@ -69,6 +69,21 @@ pub struct InsertGpsPoint {
 #[derive(Clone, Debug)]
 pub struct Gps(HashMap<i64, InsertGpsPoint>);
 
+impl From<Vec<InsertGpsPoint>> for Gps {
+    fn from(val: Vec<InsertGpsPoint>) -> Self {
+        val.into_iter()
+            .map(|v| (v.timestamp.timestamp(), v))
+            .collect::<HashMap<i64, InsertGpsPoint>>()
+            .into()
+    }
+}
+
+impl From<HashMap<i64, InsertGpsPoint>> for Gps {
+    fn from(val: HashMap<i64, InsertGpsPoint>) -> Gps {
+        Gps(val)
+    }
+}
+
 impl From<GpsPoint> for InsertGpsPoint {
     fn from(val: GpsPoint) -> Self {
         Self {
