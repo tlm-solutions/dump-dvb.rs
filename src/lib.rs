@@ -8,6 +8,7 @@
 //!
 
 #![deny(missing_docs)]
+#![warn(rustdoc::broken_intra_doc_links)]
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
