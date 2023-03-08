@@ -11,7 +11,6 @@
 #![warn(rustdoc::broken_intra_doc_links)]
 #[macro_use]
 extern crate diesel;
-extern crate dotenv;
 extern crate num_derive;
 
 ///
