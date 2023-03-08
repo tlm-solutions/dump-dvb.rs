@@ -1,16 +1,14 @@
-//! 
-//! TLMS.rs is the crate for the Transit Live Mapping Solutions. 
+//!
+//! TLMS.rs is the crate for the Transit Live Mapping Solutions.
 //!
 //! **Contact:** <hello@tlm.solutions>
 //!
-//! This crate exports a lot of structs, schemas and functionality that is used by the project and 
+//! This crate exports a lot of structs, schemas and functionality that is used by the project and
 //! its services and programs.
 //!
 
 #![deny(missing_docs)]
 #[macro_use]
-
-/// Crate includes so we can access the macros 
 extern crate diesel;
 extern crate dotenv;
 extern crate num_derive;
@@ -27,36 +25,36 @@ pub mod telegrams;
 #[cfg(feature = "schema")]
 pub mod schema;
 
-/// 
-/// This module exports information about locations this includes region informatiom but also 
-/// mappings from reporting point to gps position.
+///
+/// This module exports information about locations. This includes region information and mappings
+/// from reporting point to gps position.
 ///
 #[cfg(feature = "locations")]
 pub mod locations;
 
-/// 
-/// Exports the configuration for a Station / Receiver
+///
+/// Exports the configuration for a Station a.k.a. Receiver
 ///
 #[cfg(feature = "receivers")]
 pub mod receivers;
 
 ///
-/// This module / feature exports structs that are required for managing the services like User,
-/// Station, Region and a lot of Enums that are used like AntennaType or Architecture of the
-/// Station.
+/// This module exports structs like User, Station, and Region that are required for managing the
+/// services. The module also contains Enums like AntennaType or Architecture that are used to
+/// describe the Station.
 ///
 #[cfg(feature = "management")]
 pub mod management;
 
-/// 
-/// This module / feature exports structs that are used for measurements that are then later
-/// submitted to trekkie.
+///
+/// This module exports structs that are used by trekkie service for processing and storing
+/// measurements.
 ///
 #[cfg(feature = "measurements")]
 pub mod measurements;
 
 ///
-/// Trekkie is a service which receives live gps positions, recorded gps measurements 
+/// Trekkie is a service which receives live gps positions, recorded gps measurements.
 /// and correlates them with the r09_telegrams to generate the stops mapping.
 ///
 /// This module exports the database structures how trekkie measurements runs are saved in postgres
