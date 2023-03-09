@@ -1,3 +1,7 @@
+//!
+//! This modul contains structs, exchange formats and implementations for R09 Telegrams.
+//!
+
 use crate::management::Station;
 use crate::schema::r09_telegrams;
 use crate::locations::R09Types;
