@@ -164,7 +164,7 @@ pub fn hash_password(password: &String) -> Option<String> {
     }
 }
 
-/// Function that takes plain text passwords and the pbkdf2 hash from the database and returns true 
+/// Function that takes plain text passwords and the pbkdf2 hash from the database and returns true
 /// if the they correspond to the same password.
 pub fn verify_password(password: &String, hashed_password: &str) -> bool {
     let password_hash = match PasswordHash::parse(hashed_password, Encoding::B64) {

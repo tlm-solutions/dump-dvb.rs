@@ -14,11 +14,11 @@ pub struct Region {
     /// Unique region identifier this is really just an arbitrery number.
     #[diesel(deserialize_as = i64)]
     pub id: i64,
-    /// Name of the region / city 
+    /// Name of the region / city
     pub name: String,
     /// Name of the operator in the city e.g DVB.
     pub transport_company: String,
-    /// Name of the Regional operator e.g. VVO (Verkehrs Verbund Oberelbe) 
+    /// Name of the Regional operator e.g. VVO (Verkehrs Verbund Oberelbe)
     /// which encompasses the transport_companty
     pub regional_company: Option<String>,
     /// The frequency the operator sends it VDV 420 traffic.
@@ -32,7 +32,7 @@ pub struct Region {
     pub deactivated: bool,
 }
 
-/// This struct is the same as [`Region`] but with the difference that id is optional 
+/// This struct is the same as [`Region`] but with the difference that id is optional
 /// this is required to use the auto increment function from postgres
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
 #[diesel(table_name = regions)]
@@ -40,11 +40,11 @@ pub struct InsertRegion {
     /// Unqiue region identifier which is nullable to let postgres set a value for us.
     #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
-    /// Name of the region / city 
+    /// Name of the region / city
     pub name: String,
     /// Name of the operator in the city e.g DVB.
     pub transport_company: String,
-    /// Name of the Regional operator e.g. VVO (Verkehrs Verbund Oberelbe) 
+    /// Name of the Regional operator e.g. VVO (Verkehrs Verbund Oberelbe)
     /// which encompasses the transport_companty
     pub regional_company: Option<String>,
     /// The frequency the operator sends it VDV 420 traffic.
@@ -58,10 +58,9 @@ pub struct InsertRegion {
     pub deactivated: bool,
 }
 
-
-/// This is the struct for a station / receiver which receives VDV420 R09 Telegrams and sends them 
+/// This is the struct for a station / receiver which receives VDV420 R09 Telegrams and sends them
 /// to [data-accumulator](https://github.com/tlm-solutions/data-accumulator) for collection and
-/// further processing. This struct is used for token based authentication inside data-accumulator. 
+/// further processing. This struct is used for token based authentication inside data-accumulator.
 #[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations)]
 #[diesel(table_name = stations)]
 #[diesel(belongs_to(User, foreign_key = owner))]
@@ -207,9 +206,9 @@ pub enum Antenna {
 pub enum Encoding {
     /// Unknown or Unlisted Data Encoding
     Other = 0,
-    /// Enum variant for On-Off-Keying 
+    /// Enum variant for On-Off-Keying
     OnOffKeying = 1,
-    /// Enum variant for Nemo encoding 
+    /// Enum variant for Nemo encoding
     Nemo = 2,
 }
 
