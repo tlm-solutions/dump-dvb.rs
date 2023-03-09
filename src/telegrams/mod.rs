@@ -76,3 +76,11 @@ impl Hash for TelegramType {
         (self.clone() as u8).hash(state);
     }
 }
+
+/// Returns [`TelegramType`] of an implemented telegram type.
+pub trait GetTelegramType {
+    /// Returns [`TelegramType`] of an implemented telegram type.
+    fn get_type(&self) -> TelegramType
+    where
+        Self: Sized;
+}
