@@ -1,3 +1,6 @@
+//! This module contains implementaion of raw telegram type. AKA intercepted bytes that
+//! we still cannot parse.
+
 use super::super::schema::raw_telegrams;
 use super::{AuthenticationMeta, GetTelegramType, TelegramMetaInformation, TelegramType};
 
