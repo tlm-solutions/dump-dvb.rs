@@ -4,11 +4,9 @@ use uuid::Uuid;
 
 use crate::schema::trekkie_runs;
 
-///
-/// This saves a measurment of a vehicle for later corraltion
-/// This struct tells when the vehicle was measured and which vehicle (line and run)
-/// The gps_table references trekkie_runs for the all  the saves gps locations
-///
+/// This saves a measurement of a vehicle for later correlation. This struct tells when the vehicle
+/// was measured and what are line and run number. The gps_table references trekkie_runs for all
+/// the saved gps locations
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable)]
 #[diesel(table_name = trekkie_runs)]
 pub struct TrekkieRun {
@@ -22,7 +20,7 @@ pub struct TrekkieRun {
     pub run: i32,
     /// integer representing the integer
     pub region: i64,
-    /// uuid of the user that made the trekkie run
+    /// UUID of the user that made the trekkie run
     pub owner: Uuid,
     /// flag that tell if the trekkie run is finished or still in progress
     pub finished: bool,
