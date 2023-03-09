@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-/// This is the format of the configuration file that is fed to **telgram-decoder**.
+/// This is the format of the configuration file for **telgram-decoder**.
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct RadioReceiver {
     /// UUID of the station, which can be taken from [`Station`](crate::management::Station).
