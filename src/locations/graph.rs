@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;
 
-/// Struct saving locations in Epsg3857 format which is used by openstreet map.
+/// Struct saving locations in Epsg3857 format which is used by openstreetmap.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Epsg3857 {
     /// position on the x - axis
@@ -11,8 +11,8 @@ pub struct Epsg3857 {
     pub y: f32,
 }
 
-/// Struct saving a position with extra properties, which could contain extra information about
-/// this location.
+/// Struct saving a position with extra properties, which could contain information about this
+/// location.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Position {
     /// latitude of the position
@@ -23,7 +23,7 @@ pub struct Position {
     pub properties: HashMap<String, serde_json::Value>,
 }
 
-/// This Data Structure is a intermediate representation used in lofi for generating the graph
+/// This Data Structure is an intermediate representation used in lofi for generating the graph.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct Edge {
     /// when last updated.
@@ -33,13 +33,13 @@ pub struct Edge {
     /// next expected reporting point when following the edge.
     pub next_reporting_point: u32,
     /// hashmap of positions along the track the string encodes the percentage of the path
-    /// traveled. So possible value maybe 33 -> Position this would mean after 33% of the time 
+    /// traveled. So possible value maybe 33 -> Position this would mean after 33% of the time
     /// the vehicle is expected to be at this position.
     pub positions: HashMap<String, Position>,
 }
 
 /// This struct encodes position between reporting points with relative times so they can be used
-/// to interpolate the position of the vehilce between reporting_points.
+/// to interpolate the position of the vehicle between reporting_points.
 #[derive(Serialize, Deserialize, Clone, PartialEq, Debug)]
 pub struct LineSegment {
     /// historical time in milli-seconds that was required to traverse this edge.
@@ -47,12 +47,12 @@ pub struct LineSegment {
     /// next expected reporting point when following the edge.
     pub next_reporting_point: i32,
     /// hashmap of positions along the track the string encodes the percentage of the path
-    /// traveled. So possible value maybe 33 -> Position this would mean after 33% of the time 
+    /// traveled. So possible value maybe 33 -> Position this would mean after 33% of the time
     /// the vehicle is expected to be at this position.
     pub positions: HashMap<String, Position>,
 }
 
-/// departure reporting_point -> destiation reporting_point -> Vec<GPS>
+/// departure reporting_point -> destination reporting_point -> Vec<GPS>
 pub type RegionGraph = HashMap<i32, Vec<LineSegment>>;
 
 /// region_id -> region graph positions
