@@ -36,21 +36,34 @@ pub use tlms::{R09GrpcTelegram, ReturnCode};
 pub struct R09Telegram {
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
     pub telegram_type: R09Types,
-    /// delay of the vehicle can range from -9 min to +9 mins
+    /// delay of the vehicle can range from -7 min to +7 mins
     pub delay: Option<i32>,
-    /// TODO: marenz
+    /// Unique identifier of a location which can be decomposed into junction, direction and
+    /// request_status.
     pub reporting_point: u32,
-    /// TODO: marenz
-    pub junction: u32, //derived from  reporting_point
-    pub direction: u8,      //derived from reporting_point
-    pub request_status: u8, //derived from reporting_point
+    /// Identifier of a traffic light.
+    pub junction: u32,
+    /// Which direction the vehicle wants to drive.
+    pub direction: u8,
+    /// Enum in which state of registration this vehicle is see
+    /// [RequestStatus][crate::locations::RequestStatus] for more information.
+    pub request_status: u8,
+    /// If the vehicle requests priority or not.
     pub priority: Option<u8>,
+    /// TODO: marenz I am not standing up to get the paper now NOO !
     pub direction_request: Option<u8>,
+    /// Line (ger. linie) of the vehicle.
     pub line: Option<u32>,
+    /// Run Number (ger. Kurs Nummer) of the vehicle.
     pub run_number: Option<u32>,
+    /// Number identifing last stop on the track.
     pub destination_number: Option<u32>,
+    /// Number of individual carriages. Normally this value is 0 because modern
+    /// low-floor vehicles dont have seperate carriages.
     pub train_length: Option<u8>,
+    /// Number identifing the vehicle (only in >= R09.16).
     pub vehicle_number: Option<u32>,
+    /// Number identifing different operators (only in R09.18).
     pub operator: Option<u8>,
 }
 
@@ -72,28 +85,50 @@ pub struct R09Telegram {
 #[diesel(table_name = r09_telegrams)]
 #[diesel(belongs_to(Station, foreign_key = station))]
 pub struct R09SaveTelegram {
+    /// Unique Identifier for a telegram.
     #[serde(deserialize_with = "csv::invalid_option")]
     #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
-
+    
+    /// Timepoint when the telegram was received this assumes UTC.
     pub time: NaiveDateTime,
+    /// UUID of the station that received this telegram.
     pub station: Uuid,
-
+    
+    /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
     pub telegram_type: i64,
     #[serde(deserialize_with = "csv::invalid_option")]
+
+    /// delay of the vehicle can range from -7 min to +7 mins
     pub delay: Option<i32>,
+    /// Unique identifier of a location which can be decomposed into junction, direction and
+    /// request_status.
     pub reporting_point: i32,
-    pub junction: i32,       //derived from  reporting_point
-    pub direction: i16,      //derived from reporting_point
-    pub request_status: i16, //derived from reporting_point
+    /// Identifier of a traffic light.
+    pub junction: i32,
+    /// Which direction the vehicle wants to drive.
+    pub direction: i16,
+    /// Enum in which state of registration this vehicle is see
+    /// [RequestStatus][crate::locations::RequestStatus] for more information.
+    pub request_status: i16,
+    /// If the vehicle requests priority or not.
     pub priority: Option<i16>,
+    /// TODO: marenz I am not standing up to get the paper now NOO !
     pub direction_request: Option<i16>,
+    /// Line (ger. linie) of the vehicle.
     pub line: Option<i32>,
+    /// Run Number (ger. Kurs Nummer) of the vehicle.
     pub run_number: Option<i32>,
+    /// Number identifing last stop on the track.
     pub destination_number: Option<i32>,
+    /// Number of individual carriages. Normally this value is 0 because modern
+    /// low-floor vehicles dont have seperate carriages.
     pub train_length: Option<i16>,
+    /// Number identifing the vehicle (only in >= R09.16).
     pub vehicle_number: Option<i32>,
+    /// Number identifing different operators (only in R09.18).
     pub operator: Option<i16>,
+    /// Region where the telegram was received.
     pub region: i64,
 }
 
@@ -101,9 +136,11 @@ pub struct R09SaveTelegram {
 /// It is enrichted with data for authentication like your secret token or the station identifier.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct R09ReceiveTelegram {
+    /// struct that holds all relevant authentication information of a telegram. Most importantly
+    /// Station UUID and Station Token which are checked by data-accumulator.
     #[serde(flatten)]
     pub auth: AuthenticationMeta,
-
+    /// R09 Telegram Data
     #[serde(flatten)]
     pub data: R09Telegram,
 }
@@ -238,6 +275,7 @@ impl Serialize for R09GrpcTelegram {
 }
 
 impl R09GrpcTelegram {
+    /// Creates a R09GrpcTelegram from a raw R09Telegram and Meta Information.
     pub fn from(telegram: R09Telegram, meta: TelegramMetaInformation) -> R09GrpcTelegram {
         R09GrpcTelegram {
             time: meta.time.timestamp() as u64,
