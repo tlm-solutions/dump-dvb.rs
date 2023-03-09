@@ -9,21 +9,31 @@ use num_derive::FromPrimitive;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+/// Struct that is sent with the telegram itself to **data-accumulator**. It encodes extra
+/// information which is not directly contained in the telegram itself.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TelegramMetaInformation {
+    /// When the telegram was received.
     pub time: NaiveDateTime,
+    /// UUID of the Station it was received.
     pub station: Uuid,
-    pub region: i64, // foreign key references regions
+    /// Region Information
+    pub region: i64,
 }
 
+/// Telegram struct with embedded auth information that is sent to **data-accumulator**
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct AuthenticationMeta {
+    /// UUID of the station that sent the telegram.
     pub station: Uuid,
+    /// Secret Token of the registered station.
     pub token: String,
+    /// When the telegram was received.
     pub time: NaiveDateTime,
 }
 
-/// All the different Telegram flawors
+#[allow(missing_docs)]
+/// All the different Telegram flavors
 #[derive(Serialize, Deserialize, FromPrimitive, Debug, Clone)]
 pub enum TelegramType {
     R00 = 0,
@@ -35,6 +45,7 @@ pub enum TelegramType {
     R06 = 6,
     R07 = 7,
     R08 = 8,
+    /// The actually interesting and currently only telegram which gets properly decoded.
     R09 = 9,
     R10 = 10,
     R11 = 11,
@@ -66,7 +77,9 @@ impl Hash for TelegramType {
     }
 }
 
+/// Returns [`TelegramType`] of an implemented telegram type.
 pub trait GetTelegramType {
+    /// Returns [`TelegramType`] of an implemented telegram type.
     fn get_type(&self) -> TelegramType
     where
         Self: Sized;

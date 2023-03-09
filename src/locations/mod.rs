@@ -1,7 +1,4 @@
-//! This module deals with transmission loctions
-
 pub mod gps;
-/// This module contains definition of the graph used for interpolation
 pub mod graph;
 mod tests;
 
@@ -23,19 +20,22 @@ use std::path::PathBuf;
 pub const SCHEMA: &str = "1"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
 
 /// Default region cache lifetime in seconds (24h)
-const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
+pub const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
 /// Name for a cache file
-const REGION_CACHE_FILE: &str = "region_cache.json";
+pub const REGION_CACHE_FILE: &str = "region_cache.json";
 /// maximum distance in meters
-const SANE_INTERPOLATION_DISTANCE: i32 = 50;
+pub const SANE_INTERPOLATION_DISTANCE: i32 = 50;
 /// Mean earth radius, required for calcuation of distances between the GPS points
-const MEAN_EARTH_RADIUS: u32 = 6_371_000;
+pub const MEAN_EARTH_RADIUS: u32 = 6_371_000;
 
 /// Enum for different telegram format
 #[derive(Debug, PartialEq, Clone)]
 pub enum R09Types {
+    /// ditto
     R14 = 14,
+    /// ditto
     R16 = 16,
+    /// ditto
     R18 = 18,
 }
 
@@ -115,17 +115,25 @@ pub struct LocationsJsonMergeStats {
     pub skipped: u64,
 }
 
+/// The struct that deserializes into json containing cache for region meta information. See
+/// [`RegionMetaInformation`] for details.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegionMetaCache {
+    /// Hashmap of region ID to corresponding metadata
     pub metadata: HashMap<i64, RegionMetaInformation>,
+    /// Timestamp when the cache was last refreshed
     pub modified: DateTime<Utc>,
 }
 
-/// Error enum for [`LocationsJson`] methods and associated funcitons
+/// Error enum for [`LocationsJson`] methods and associated funcitons. Right now it just returns
+/// original error wrapped into an enum variant.
 #[derive(Debug)]
 pub enum LocationsJsonError {
+    /// See [`serde_json::Error`]
     SerdeJsonError(serde_json::Error),
+    /// See [`reqwest::Error`]
     ReqwestError(reqwest::Error),
+    /// See [`std::io::Error`]
     IOError(std::io::Error),
 }
 
@@ -184,7 +192,7 @@ impl LocationsJson {
             .expect("cannot write to file!");
     }
 
-    /// Populates document metainformation
+    /// Populates document metainformation.
     pub fn update_metadata(
         &mut self,
         generator: Option<String>,
@@ -198,7 +206,7 @@ impl LocationsJson {
         };
     }
 
-    /// refreshes the region data cache from the datacare API unconditionaly
+    /// refreshes the region data cache from the datacare API unconditionaly.
     pub fn get_region_cache(
         datacare_api: &str,
         cache_dir: PathBuf,
@@ -223,7 +231,7 @@ impl LocationsJson {
         Ok(timestamped_region_cache)
     }
 
-    /// Read local region cache
+    /// Read region cache from local cache path.
     pub fn read_region_cache(cache_dir: PathBuf) -> Result<RegionMetaCache, LocationsJsonError> {
         let mut cache_file_path = cache_dir;
         cache_file_path.push(REGION_CACHE_FILE);
@@ -234,7 +242,7 @@ impl LocationsJson {
     }
 
     /// Gets the cache for the region data. First looks if it exists already, if not (or if it is
-    /// older than REGION_CACHE_EXPIRATION) tries to update it. Any Errs are propagated up.
+    /// older than [`REGION_CACHE_EXPIRATION`]) tries to update it. Any Errs are propagated up.
     pub fn update_region_cache(
         datacare_api: &str,
         cache_dir: PathBuf,

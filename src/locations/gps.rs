@@ -1,3 +1,5 @@
+//! This module holds replresentations for geolocation data used all over the TLMS services
+
 use crate::schema::*;
 use chrono::NaiveDateTime;
 use gpx::Gpx;
@@ -12,13 +14,13 @@ use std::io::BufReader;
 /// primary key
 pub const NO_ID: i64 = -0xDEADBABE;
 
-/// Gps trackpoint representation used in database for Gps data
+/// Gps trackpoint representation used in database.
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, Queryable)]
 #[diesel(table_name = gps_points)]
 pub struct GpsPoint {
     /// primary key bigserial
     pub id: i64,
-    // foreign key referencing the corresponding trekkie run
+    /// foreign key referencing the corresponding trekkie run
     pub trekkie_run: Uuid,
     /// point's timestamp
     pub timestamp: NaiveDateTime,
@@ -38,14 +40,14 @@ pub struct GpsPoint {
     pub speed: Option<f64>,
 }
 
-/// struct for inserting a gps point into the database and utilise
-/// the auto increment functions from postgres
+/// Struct for inserting a gps point into the database and utilise the auto increment functions
+/// from postgres.
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, Insertable)]
 #[diesel(table_name = gps_points)]
 pub struct InsertGpsPoint {
     /// primary key bigserial
     pub id: Option<i64>,
-    // foreign key referencing the corresponding trekkie run
+    /// foreign key referencing the corresponding trekkie run
     pub trekkie_run: Uuid,
     /// point's timestamp
     pub timestamp: NaiveDateTime,
@@ -111,7 +113,7 @@ impl Gps {
     }
 
     // GPX WayPoint & soul extractor
-    /// Gets Gpx type object and extracts all Waypoints from it, Returns gps::Gps.
+    /// Gets Gpx type object and extracts all Waypoints from it, Returns [`gps::Gps`].
     fn insert_from_gpx(&mut self, gpx: Gpx) {
         // I feel like my IQ dropping around here, but dunno how to do it, especially given time
         // situation in gpx crate

@@ -9,12 +9,17 @@ use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 
+/// Enum representing the role a user has inside our systems.
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug)]
 pub enum Role {
-    Trekkie = 9,
-    User = 6,
-    Administrator = 0,
+    /// Unkown Role is a fallback for errors and has 0 privileges
     Unknown = 64,
+    /// This Role is given to users which use the stasi app so they can submit data to trekkie
+    Trekkie = 9,
+    /// The Default user role u can manage create stations and trekkie runs.
+    User = 6,
+    /// Admin can do everything.
+    Administrator = 0,
 }
 
 impl From<i32> for Role {
@@ -39,52 +44,76 @@ impl From<Role> for i32 {
     }
 }
 
-/// Schema implementation
+/// Database struct holding user information
 #[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
 #[diesel(table_name = users)]
 pub struct User {
+    /// Unique identifier for a user.
     pub id: Uuid,
+    /// Name of the user.
     pub name: Option<String>,
+    /// Email of the user.
     pub email: Option<String>,
+    /// Password of the user.
     pub password: String,
+    /// Which role the user has inside the system take a look at [`Role`] for more information.
     pub role: i32,
+    /// This value is interesting for newsletters and other notifications that are distributed via
+    /// mail.
     pub email_setting: Option<i32>,
+    /// If the user struct is deleted is kept for database consistency.
     pub deactivated: bool,
 }
 
 /// Minimal User mainly used for trekkie
+#[deprecated(since = "0.8.1", note = "Is removed because it was not used anywhere.")]
 #[derive(Debug, Clone, Deserialize, Queryable)]
 #[diesel(table_name = users)]
 pub struct MinimalUser {
+    /// Unique ID of the user
     pub id: Uuid,
+    /// Which role the user has inside the system take a look at [`Role`] for more information.
     pub role: i32,
+    /// If the user struct is deleted is kept for database consistency.
     pub deactivated: bool,
 }
 
-/// Fully Registered User created by clicky-bunty server
+/// Fully Registered User created by datacare
+#[deprecated(since = "0.8.1", note = "Is removed because it was not used anywhere.")]
 #[derive(Debug, Clone, Deserialize, Queryable)]
 #[diesel(table_name = users)]
 pub struct RegisteredUser {
+    /// Unique identifier for a user.
     pub id: Uuid,
+    /// Name of the user.
     pub name: String,
+    /// Email of the user.
     pub email: String,
+    /// Password of the user.
     pub password: String,
+    /// Which role the user has inside the system take a look at [`Role`] for more information.
     pub role: i32,
+    /// This value is interesting for newsletters and other notifications that are distributed via
+    /// mail.
     pub email_setting: i32,
+    /// If the user struct is deleted is kept for database consistency.
     pub deactivated: bool,
 }
 
 impl User {
+    /// Returns if the user has role admin.
     pub fn is_admin(&self) -> bool {
         Role::from(self.role) == Role::Administrator
     }
 }
 
 impl RegisteredUser {
+    /// Returns if the user has rolea admin.
     pub fn is_admin(&self) -> bool {
         Role::from(self.role) == Role::Administrator
     }
 
+    /// Converts a regular user to a registered user if possible.
     pub fn from_user(user: &User) -> Option<RegisteredUser> {
         if user.name.is_none() || user.email.is_none() || user.email_setting.is_none() {
             return None;
@@ -118,6 +147,7 @@ impl Serialize for User {
     }
 }
 
+/// Function that takes the plain text passwords and returns the corresponding pbkdf2 hash.
 pub fn hash_password(password: &String) -> Option<String> {
     let default_salt_path = String::from("/run/secrets/clicky_bunty_salt");
     let salt_path = std::env::var("SALT_PATH").unwrap_or(default_salt_path);
@@ -134,6 +164,8 @@ pub fn hash_password(password: &String) -> Option<String> {
     }
 }
 
+/// Function that takes plain text passwords and the pbkdf2 hash from the database and returns true
+/// if the they correspond to the same password.
 pub fn verify_password(password: &String, hashed_password: &str) -> bool {
     let password_hash = match PasswordHash::parse(hashed_password, Encoding::B64) {
         Ok(data) => data,

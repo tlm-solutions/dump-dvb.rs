@@ -1,3 +1,4 @@
+/// This module contains user structs and security functions.
 pub mod user;
 
 use crate::schema::*;
@@ -7,54 +8,99 @@ use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 
+/// Struct holding the information for a region.
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
 pub struct Region {
+    /// Unique region identifier this is really just an arbitrery number.
     #[diesel(deserialize_as = i64)]
     pub id: i64,
+    /// Name of the region / city
     pub name: String,
+    /// Name of the operator in the city e.g DVB.
     pub transport_company: String,
+    /// Name of the Regional operator e.g. VVO (Verkehrs Verbund Oberelbe)
+    /// which encompasses the transport_companty
     pub regional_company: Option<String>,
+    /// The frequency the operator sends it VDV 420 traffic.
     pub frequency: Option<i64>,
+    /// Which R09 types are used look at [`R09Types`][crate::locations::R09Types] for possible
+    /// values
     pub r09_type: Option<i32>,
+    /// Which encoding this regions used look at [`Encoding`] for possible values.
     pub encoding: Option<i32>,
+    /// This value is set to true if the region is deleted.
     pub deactivated: bool,
 }
 
+/// This struct is the same as [`Region`] but with the difference that id is optional
+/// this is required to use the auto increment function from postgres
 #[derive(Debug, Clone, Serialize, Deserialize, Insertable)]
 #[diesel(table_name = regions)]
 pub struct InsertRegion {
+    /// Unqiue region identifier which is nullable to let postgres set a value for us.
     #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
+    /// Name of the region / city
     pub name: String,
+    /// Name of the operator in the city e.g DVB.
     pub transport_company: String,
+    /// Name of the Regional operator e.g. VVO (Verkehrs Verbund Oberelbe)
+    /// which encompasses the transport_companty
     pub regional_company: Option<String>,
+    /// The frequency the operator sends it VDV 420 traffic.
     pub frequency: Option<i64>,
+    /// Which R09 types are used look at [`R09Types`][crate::locations::R09Types] for possible
+    /// values
     pub r09_type: Option<i32>,
+    /// Which encoding this regions used look at [`Encoding`] for possible values.
     pub encoding: Option<i32>,
+    /// This value is set to true if the region is deleted.
     pub deactivated: bool,
 }
 
+/// This is the struct for a station / receiver which receives VDV420 R09 Telegrams and sends them
+/// to [data-accumulator](https://github.com/tlm-solutions/data-accumulator) for collection and
+/// further processing. This struct is used for token based authentication inside data-accumulator.
 #[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations)]
 #[diesel(table_name = stations)]
 #[diesel(belongs_to(User, foreign_key = owner))]
 #[diesel(belongs_to(Region, foreign_key = region))]
 pub struct Station {
+    /// Unique identifier for a station.
     pub id: Uuid,
+    /// Secret token for a station which is send with every telegram for authentication.
     pub token: Option<String>,
+    /// Name of the Station.
     pub name: String,
+    /// Latitude of the Station.
     pub lat: f64,
+    /// Longtitude of the Station.
     pub lon: f64,
+    /// In which region the station is located.
     pub region: i64,
+    /// Uuid of the owner of the station referecing a [`User`]
     pub owner: Uuid,
+    /// If the station is approved to submit data into the system.
     pub approved: bool,
+    /// Tells if the station is deleted or not. Is keept around for database consistentcy.
     pub deactivated: bool,
+    /// If the station is public so information is this struct can be shared. Data from this
+    /// station is shared regardless of this flag.
     pub public: bool,
+    /// Radio enum helps users to keep track which radio was put into the Station take a look at
+    /// [`Radio`] enum for more information.
     pub radio: Option<i32>,
+    /// Which Processor Architecture the Station has look at [`Architecture`] for more information.
     pub architecture: Option<i32>,
+    /// On which computer model the station runs on look at [`Device`] for more information.
     pub device: Option<i32>,
+    /// Optional value to specify on which elevation the station / antenna is located.
     pub elevation: Option<f64>,
+    /// Antenna type the station uses look at [`Antenna`] for more information.
     pub antenna: Option<i32>,
+    /// Which telegram-decoder-version runs on the station.
     pub telegram_decoder_version: Option<String>,
+    /// Field to add custom notes to your station.
     pub notes: Option<String>,
 }
 
@@ -85,54 +131,88 @@ impl Serialize for Station {
     }
 }
 
+/// On which computer / device the station runs on.
 #[derive(Serialize, Deserialize)]
 pub enum Device {
+    /// Unknown or Unlisted Device
     Other = 0,
+    /// Enum variant for Raspberry Pi 3
     Raspberry3 = 1,
+    /// Enum variant for Raspberry Pi 3b
     Raspberry3b = 2,
+    /// Enum variant for Raspberry Pi 3b+
     Raspberry3bPlus = 3,
+    /// Enum variant for Raspberry Pi 4
     Raspberry4 = 4,
+    /// Enum variant for Odroid C1
     OdroidC1 = 5,
+    /// Enum variant for Odroid C2
     OdroidC2 = 6,
+    /// Enum variant for Odroid C4
     OdroidC4 = 7,
+    /// Enum variant for Odroid N2
     OdroidN2 = 8,
+    /// Enum variant for Odroid U2
     OdroidU2 = 9,
+    /// Enum variant for Odroid U3
     OdroidU3 = 10,
+    /// Enum variant for Pine H64
     PineH64 = 11,
+    /// Enum variant for Pine Rock 64
     PineRock64 = 12,
+    /// Enum variant for Dell Wyse 3040
     DellWyse3040 = 13,
 }
 
+/// Which Software Defined Radio is used by the station.
 #[derive(Serialize, Deserialize)]
 pub enum Radio {
+    /// Unknown or Unlisted Device
     Other = 0,
+    /// Enum variant for Hack Rf Radios
     HackRf = 1,
+    /// Enum variant for RTL SDRs
     RTLSDR = 2,
+    /// Enum variant for NES SDRs
     NESDR = 3,
 }
 
+/// Which CPU Architecture is used by the device the station runs on.
 #[derive(Serialize, Deserialize)]
 pub enum Architecture {
+    /// Unknown or Unlisted Architecture
     Other = 0,
+    /// X86 Maschine
     X86 = 1,
+    /// ARM 8 64 Bit Maschine
     Aarch64 = 2,
 }
 
+/// Enum that encodes antenna types with which r09 telegrams are captured.
 #[derive(Serialize, Deserialize)]
 pub enum Antenna {
+    /// Unknown or Unlisted Antenna Type
     Other = 0,
+    /// Enum variant for Di-Pole Antennas
     Dipole = 1,
+    /// Enum variant for Groundplane Antennas
     GroundPlane = 2,
+    /// Enum variant for Yagi Antennas
     Yagi = 3,
 }
 
+/// With which encoding the data inside the r09 telegrams is encoded.
 #[derive(Serialize, Deserialize)]
 pub enum Encoding {
+    /// Unknown or Unlisted Data Encoding
     Other = 0,
+    /// Enum variant for On-Off-Keying
     OnOffKeying = 1,
+    /// Enum variant for Nemo encoding
     Nemo = 2,
 }
 
+/// function that takes a device enums and converts it into the corresponding string
 pub fn device_to_string(device: &Device) -> String {
     match device {
         Device::Raspberry3 => "rpi3".to_string(),
@@ -144,6 +224,7 @@ pub fn device_to_string(device: &Device) -> String {
     }
 }
 
+/// function that takes a architecture enum and converts it into the corresponding string
 pub fn arch_to_string(arch: &Architecture) -> String {
     match arch {
         Architecture::X86 => "x86_64-linux".to_string(),
