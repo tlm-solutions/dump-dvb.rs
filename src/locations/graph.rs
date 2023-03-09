@@ -2,7 +2,6 @@
 //! This module contains structs that are used for a graph representation of the network.
 //!
 
-
 use serde::{Deserialize, Serialize};
 
 use std::collections::HashMap;

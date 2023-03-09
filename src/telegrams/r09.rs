@@ -2,9 +2,9 @@
 //! This modul contains structs, exchange formats and implementations for R09 Telegrams.
 //!
 
+use crate::locations::R09Types;
 use crate::management::Station;
 use crate::schema::r09_telegrams;
-use crate::locations::R09Types;
 use crate::telegrams::{
     AuthenticationMeta, GetTelegramType, TelegramMetaInformation, TelegramType,
 };
@@ -18,7 +18,6 @@ use struct_field_names_as_array::FieldNamesAsArray;
 use uuid::Uuid;
 
 use std::fmt;
-use std::fs::File;
 use std::hash::Hash;
 use std::hash::Hasher;
 
@@ -93,12 +92,12 @@ pub struct R09SaveTelegram {
     #[serde(deserialize_with = "csv::invalid_option")]
     #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
-    
+
     /// Timepoint when the telegram was received this assumes UTC.
     pub time: NaiveDateTime,
     /// UUID of the station that received this telegram.
     pub station: Uuid,
-    
+
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
     pub telegram_type: i64,
     #[serde(deserialize_with = "csv::invalid_option")]
