@@ -1,7 +1,6 @@
-use crate::locations::R09Types;
 use crate::management::Station;
-
 use crate::schema::r09_telegrams;
+use crate::locations::R09Types;
 use crate::telegrams::{
     AuthenticationMeta, GetTelegramType, TelegramMetaInformation, TelegramType,
 };
@@ -19,6 +18,7 @@ use std::fs::File;
 use std::hash::Hash;
 use std::hash::Hasher;
 
+#[allow(missing_docs)]
 mod tlms {
     tonic::include_proto!("tlms");
 }
@@ -152,6 +152,8 @@ impl GetTelegramType for R09Telegram {
 }
 
 impl R09SaveTelegram {
+    /// Takes a raw R09Telegram and Meta data to create a R09SaveTelegram which then can be written
+    /// to the database.
     pub fn from(telegram: R09Telegram, meta: TelegramMetaInformation) -> R09SaveTelegram {
         R09SaveTelegram {
             id: None,
@@ -174,23 +176,6 @@ impl R09SaveTelegram {
             operator: telegram.operator.map(|x| x as i16),
             region: meta.region,
         }
-    }
-
-    pub fn from_csv(path: &String) -> Result<Vec<R09SaveTelegram>, csv::Error> {
-        let file = File::open(path)?;
-        let mut rdr = csv::Reader::from_reader(file);
-        let mut collection = Vec::new();
-        for result in rdr.deserialize() {
-            match result {
-                Ok(data) => {
-                    collection.push(data);
-                }
-                Err(e) => {
-                    println!("error: {:?}", e);
-                }
-            }
-        }
-        Ok(collection)
     }
 }
 

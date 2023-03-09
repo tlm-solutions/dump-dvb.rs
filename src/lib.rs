@@ -24,6 +24,7 @@ pub mod telegrams;
 /// Rust Diesel Database Schema Definitions
 ///
 #[cfg(feature = "schema")]
+#[allow(missing_docs)]
 pub mod schema;
 
 ///
