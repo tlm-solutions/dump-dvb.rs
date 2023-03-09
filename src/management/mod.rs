@@ -1,3 +1,4 @@
+/// This module contains user structs and security functions.
 pub mod user;
 
 use crate::schema::*;
