@@ -109,7 +109,7 @@ impl Serialize for Station {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("Station", 15).unwrap();
+        let mut s = serializer.serialize_struct("Station", 15)?;
 
         s.serialize_field("id", &self.id)?;
         s.serialize_field("name", &self.name)?;
