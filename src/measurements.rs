@@ -34,7 +34,67 @@ pub struct FinishedMeasurementInterval {
     pub region: i64,
 }
 
+#[allow(missing_docs)] // allowed since enum variants are pretty self-explanatory
+/// This enum signifies error during conversion of [`MeasurementInterval`] into
+/// [`FinishedMeasurementInterval`]. Variants are pretty self-explanatory
+pub enum MeasuerementIntervalError {
+    MissingStartValue,
+    MissingStopValue,
+    MissingLineValue,
+    MissingRunValue,
+    MissingRegionValue,
+}
+
+impl TryFrom<MeasurementInterval> for FinishedMeasurementInterval {
+    type Error = MeasuerementIntervalError;
+    fn try_from(val: MeasurementInterval) -> Result<Self, Self::Error> {
+        // match every value, if any of them is None, return corresponding error
+        let start = match val.start {
+            Some(v) => v,
+            None => {
+                return Err(MeasuerementIntervalError::MissingStartValue);
+            }
+        };
+        let stop = match val.stop {
+            Some(v) => v,
+            None => {
+                return Err(MeasuerementIntervalError::MissingStopValue);
+            }
+        };
+        let line = match val.line {
+            Some(v) => v,
+            None => {
+                return Err(MeasuerementIntervalError::MissingLineValue);
+            }
+        };
+        let run = match val.run {
+            Some(v) => v,
+            None => {
+                return Err(MeasuerementIntervalError::MissingRunValue);
+            }
+        };
+        let region = match val.region {
+            Some(v) => v,
+            None => {
+                return Err(MeasuerementIntervalError::MissingRegionValue);
+            }
+        };
+
+        Ok(FinishedMeasurementInterval {
+            start,
+            stop,
+            line,
+            run,
+            region,
+        })
+    }
+}
+
 impl FinishedMeasurementInterval {
+    #[deprecated(
+        since = "0.8.1",
+        note = "Please use TryFrom<MeasurementInterval> trait from now on!"
+    )]
     /// Converts the intermediate representation into the final measurement.
     pub fn from_measurement(measurement: MeasurementInterval) -> FinishedMeasurementInterval {
         FinishedMeasurementInterval {
