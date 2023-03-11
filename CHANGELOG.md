@@ -5,6 +5,7 @@
 ### Breaking
 
 - Removed Graph Defitions
+- Removed Depreacated Structs
 
 ### Added
 
