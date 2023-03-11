@@ -65,68 +65,10 @@ pub struct User {
     pub deactivated: bool,
 }
 
-/// Minimal User mainly used for trekkie
-#[deprecated(since = "0.8.1", note = "Is removed because it was not used anywhere.")]
-#[derive(Debug, Clone, Deserialize, Queryable)]
-#[diesel(table_name = users)]
-pub struct MinimalUser {
-    /// Unique ID of the user
-    pub id: Uuid,
-    /// Which role the user has inside the system take a look at [`Role`] for more information.
-    pub role: i32,
-    /// If the user struct is deleted is kept for database consistency.
-    pub deactivated: bool,
-}
-
-/// Fully Registered User created by datacare
-#[deprecated(since = "0.8.1", note = "Is removed because it was not used anywhere.")]
-#[derive(Debug, Clone, Deserialize, Queryable)]
-#[diesel(table_name = users)]
-pub struct RegisteredUser {
-    /// Unique identifier for a user.
-    pub id: Uuid,
-    /// Name of the user.
-    pub name: String,
-    /// Email of the user.
-    pub email: String,
-    /// Password of the user.
-    pub password: String,
-    /// Which role the user has inside the system take a look at [`Role`] for more information.
-    pub role: i32,
-    /// This value is interesting for newsletters and other notifications that are distributed via
-    /// mail.
-    pub email_setting: i32,
-    /// If the user struct is deleted is kept for database consistency.
-    pub deactivated: bool,
-}
-
 impl User {
     /// Returns if the user has role admin.
     pub fn is_admin(&self) -> bool {
         Role::from(self.role) == Role::Administrator
-    }
-}
-
-impl RegisteredUser {
-    /// Returns if the user has rolea admin.
-    pub fn is_admin(&self) -> bool {
-        Role::from(self.role) == Role::Administrator
-    }
-
-    /// Converts a regular user to a registered user if possible.
-    pub fn from_user(user: &User) -> Option<RegisteredUser> {
-        if user.name.is_none() || user.email.is_none() || user.email_setting.is_none() {
-            return None;
-        }
-        Some(RegisteredUser {
-            id: user.id,
-            name: user.name.clone().unwrap(),
-            email: user.email.clone().unwrap(),
-            password: user.password.clone(),
-            email_setting: user.email_setting.unwrap(),
-            role: user.role,
-            deactivated: user.deactivated,
-        })
     }
 }
 

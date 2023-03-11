@@ -2,8 +2,23 @@ syntax = "proto3";
 
 package tlms;
 
-service ReceivesTelegrams {
+service Chemo {
   rpc receive_r09 (R09GrpcTelegram) returns (ReturnCode) {}
+  rpc receive_gps (GrpcGpsPoint) returns (ReturnCode) {}
+}
+
+service ReceiveWaypoint {
+  rpc receive_waypoint (GrpcWaypoint) returns (ReturnCode) {}
+
+}
+
+message GrpcGpsPoint {
+    uint64 time = 1;
+    uint32 id = 3;
+    float lat = 4;
+    float lon = 5;
+    int32 line = 6;
+    int32 run = 7;  
 }
 
 message R09GrpcTelegram {
@@ -26,43 +41,15 @@ message R09GrpcTelegram {
     optional int32 operator = 17;
 }
 
-message Epsg3857 {
-    float x = 1;
-    float y = 2;
-}
-
-message Position {
-    float lat = 1;
-    float lon = 2;
-    map<string, Epsg3857> properties = 3;
-}
-
-message Edge {
-    int64 last_update = 1;
-    int32 historical_time = 2;
-    int32 next_reporting_point = 3;
-    map<string, Position> positions = 4;
-}
-
-message R09GrpcTelegramEnriched {
-    uint64 time = 1;
-    string station = 2;
-    int64 region = 3;
-    int32 telegram_type = 4;
-    optional int32 delay = 5;
-    int32 reporting_point = 6;
-    int32 junction = 7;
-    int32 direction = 8;
-    int32 request_status = 9;
-    optional int32 priority = 10;
-    optional int32 direction_request = 11;
-    optional int32 line = 12;
-    optional int32 run_number = 13;
-    optional int32 destination_number = 14;
-    optional int32 train_length = 15;
-    optional int32 vehicle_number = 16;
-    optional int32 operator = 17;
-    Edge enriched = 18;
+message GrpcWaypoint {
+    uint64 id = 1;
+    int32 source = 2;
+    uint64 time = 3;
+    float lat = 4;
+    float lon = 5;  
+    int32 line = 6;
+    int32 run = 7;
+    optional float delayed = 8;
 }
 
 message ReturnCode {
