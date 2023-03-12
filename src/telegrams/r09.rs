@@ -21,12 +21,7 @@ use std::fmt;
 use std::hash::Hash;
 use std::hash::Hasher;
 
-#[allow(missing_docs)]
-mod tlms {
-    tonic::include_proto!("tlms");
-}
-
-pub use tlms::{R09GrpcTelegram, ReturnCode};
+use crate::grpc::R09GrpcTelegram;
 
 /// The R09Telegram is the heart piece it hold the raw information from the received
 /// radio-telegram. The goal was of this struct is to be the smallest denominator
@@ -261,7 +256,7 @@ impl Serialize for R09GrpcTelegram {
 
 impl R09GrpcTelegram {
     /// Creates a R09GrpcTelegram from a raw R09Telegram and Meta Information.
-    pub fn from(telegram: R09Telegram, meta: TelegramMetaInformation) -> R09GrpcTelegram {
+    pub fn create(telegram: R09Telegram, meta: TelegramMetaInformation) -> R09GrpcTelegram {
         R09GrpcTelegram {
             time: meta.time.timestamp() as u64,
             station: meta.station.to_string(),

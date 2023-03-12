@@ -63,3 +63,14 @@ pub mod measurements;
 ///
 #[cfg(feature = "trekkie")]
 pub mod trekkie;
+
+///
+/// This module exports grpc definitions for services and structs that are used to communicate
+/// between services.
+///
+#[cfg(feature = "grpc")]
+#[allow(missing_docs)]
+mod grpc {
+    use tonic;
+    tonic::include_proto!("tlms");
+}

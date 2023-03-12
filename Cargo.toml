@@ -1,6 +1,6 @@
 [package]
 name = "tlms"
-version = "0.8.0"
+version = "0.8.1"
 edition = "2021"
 
 [features]
@@ -23,7 +23,13 @@ locations = [
 
 receivers = []
 
+grpc = [
+    "dep:tonic",
+    "dep:prost",
+]
+
 telegrams = [
+    "grpc",
     "schema",
     "locations",
     "management",
