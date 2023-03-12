@@ -69,7 +69,7 @@ pub mod trekkie;
 ///
 #[cfg(feature = "grpc")]
 #[allow(missing_docs)]
-mod grpc {
+pub mod grpc {
     use tonic;
     tonic::include_proto!("tlms");
 }
