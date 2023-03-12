@@ -1,5 +1,4 @@
 pub mod gps;
-pub mod graph;
 mod tests;
 
 use chrono::prelude::{DateTime, Utc};
