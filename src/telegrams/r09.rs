@@ -60,7 +60,7 @@ pub struct R09Telegram {
     pub destination_number: Option<u32>,
     /// Number of individual carriages. Normally this value is 0 because modern
     /// low-floor vehicles dont have seperate carriages.
-    pub train_length: Option<u8>,
+    pub train_length: Option<i32>,
     /// Number identifing the vehicle (only in >= R09.16).
     pub vehicle_number: Option<u32>,
     /// Number identifing different operators (only in R09.18).
@@ -123,7 +123,7 @@ pub struct R09SaveTelegram {
     pub destination_number: Option<i32>,
     /// Number of individual carriages. Normally this value is 0 because modern
     /// low-floor vehicles dont have seperate carriages.
-    pub train_length: Option<i16>,
+    pub train_length: Option<i32>,
     /// Number identifing the vehicle (only in >= R09.16).
     pub vehicle_number: Option<i32>,
     /// Number identifing different operators (only in R09.18).
@@ -171,7 +171,7 @@ impl R09SaveTelegram {
             line: telegram.line.map(|x| x as i32),
             run_number: telegram.run_number.map(|x| x as i32),
             destination_number: telegram.destination_number.map(|x| x as i32),
-            train_length: telegram.train_length.map(|x| x as i16),
+            train_length: telegram.train_length.map(|x| x as i32),
             vehicle_number: telegram.vehicle_number.map(|x| x as i32),
             operator: telegram.operator.map(|x| x as i16),
             region: meta.region,

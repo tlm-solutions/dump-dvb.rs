@@ -31,10 +31,32 @@ diesel::table! {
         line -> Nullable<Int4>,
         run_number -> Nullable<Int4>,
         destination_number -> Nullable<Int4>,
-        train_length -> Nullable<Int2>,
+        train_length -> Nullable<Int4>,
         vehicle_number -> Nullable<Int4>,
         operator -> Nullable<Int2>,
         region -> Int8,
+    }
+}
+
+diesel::table! {
+    r09_transmission_locations (id) {
+        id -> Int8,
+        region -> Int8,
+        report_location -> Int8,
+        lat -> Float8,
+        lon -> Float8,
+    }
+}
+
+diesel::table! {
+    r09_transmission_locations_raw (id) {
+        id -> Int8,
+        region -> Int8,
+        report_location -> Int8,
+        lat -> Float8,
+        lon -> Float8,
+        trekkie_run -> Uuid,
+        run_owner -> Uuid,
     }
 }
 
@@ -109,7 +131,12 @@ diesel::table! {
 }
 
 diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
+diesel::joinable!(r09_telegrams -> regions (region));
 diesel::joinable!(r09_telegrams -> stations (station));
+diesel::joinable!(r09_transmission_locations -> regions (region));
+diesel::joinable!(r09_transmission_locations_raw -> regions (region));
+diesel::joinable!(r09_transmission_locations_raw -> trekkie_runs (trekkie_run));
+diesel::joinable!(r09_transmission_locations_raw -> users (run_owner));
 diesel::joinable!(raw_telegrams -> stations (station));
 diesel::joinable!(stations -> regions (region));
 diesel::joinable!(stations -> users (owner));
@@ -119,6 +146,8 @@ diesel::joinable!(trekkie_runs -> users (owner));
 diesel::allow_tables_to_appear_in_same_query!(
     gps_points,
     r09_telegrams,
+    r09_transmission_locations,
+    r09_transmission_locations_raw,
     raw_telegrams,
     regions,
     stations,
