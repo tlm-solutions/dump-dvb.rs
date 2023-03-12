@@ -146,7 +146,7 @@ pub struct R09ReceiveTelegram {
 /// Enum for different R09 formats used.
 #[allow(missing_docs)]
 #[derive(Debug, PartialEq, Eq, Clone, AsExpression)]
-#[sql_type = "diesel::sql_types::BigInt"]
+#[diesel(sql_type = diesel::sql_types::BigInt)]
 pub enum R09Type {
     R14 = 14,
     R16 = 16,
@@ -276,7 +276,7 @@ impl R09SaveTelegram {
 
             time: meta.time,
             station: meta.station,
-            telegram_type: telegram.telegram_type.into(),
+            telegram_type: telegram.telegram_type,
             delay: telegram.delay,
             reporting_point: telegram.reporting_point as i32,
             junction: telegram.junction as i32,
@@ -287,7 +287,7 @@ impl R09SaveTelegram {
             line: telegram.line.map(|x| x as i32),
             run_number: telegram.run_number.map(|x| x as i32),
             destination_number: telegram.destination_number.map(|x| x as i32),
-            train_length: telegram.train_length.map(|x| x as i32),
+            train_length: telegram.train_length,
             vehicle_number: telegram.vehicle_number.map(|x| x as i32),
             operator: telegram.operator.map(|x| x as i16),
             region: meta.region,
@@ -394,7 +394,7 @@ impl R09GrpcTelegram {
             line: telegram.line.map(|x| x as i32),
             run_number: telegram.run_number.map(|x| x as i32),
             destination_number: telegram.destination_number.map(|x| x as i32),
-            train_length: telegram.train_length.map(|x| x as i32),
+            train_length: telegram.train_length,
             vehicle_number: telegram.vehicle_number.map(|x| x as i32),
             operator: telegram.operator.map(|x| x as i32),
         }
