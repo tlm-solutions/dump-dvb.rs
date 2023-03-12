@@ -73,3 +73,9 @@ pub mod grpc {
     use tonic;
     tonic::include_proto!("tlms");
 }
+
+///
+/// This module contains shared structs, which are used to communicate with the database. Those are
+/// used by at least two of the modules above.
+///
+pub mod structs;
