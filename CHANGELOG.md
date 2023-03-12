@@ -6,11 +6,16 @@
 
 - Removed Graph Defitions
 - Removed Depreacated Structs
+- schema and type for train_length to be consistent with the database schema
 
 ### Added
 
 - Waypoints
 - Chemo Service
+
+#### DB Tables
+- r09_transmission_locations
+- r09_transmission_locations_raw
 
 ### Fixed
 
