@@ -50,4 +50,3 @@ pub struct InsertRegion {
     /// This value is set to true if the region is deleted.
     pub deactivated: bool,
 }
-

@@ -1,17 +1,15 @@
 pub mod gps;
 mod tests;
 
+use crate::telegrams::r09::R09Type;
+
 use chrono::prelude::{DateTime, Utc};
 use reqwest;
 use serde::{Deserialize, Serialize};
 
 use std::collections::{HashMap, HashSet};
-use std::convert::TryFrom;
-use std::fmt;
 use std::fs;
 use std::fs::File;
-use std::hash::Hash;
-use std::hash::Hasher;
 use std::io::Write;
 use std::path::PathBuf;
 
@@ -27,30 +25,6 @@ pub const SANE_INTERPOLATION_DISTANCE: i32 = 50;
 /// Mean earth radius, required for calcuation of distances between the GPS points
 pub const MEAN_EARTH_RADIUS: u32 = 6_371_000;
 
-/// Enum for different telegram format
-#[derive(Debug, PartialEq, Clone)]
-pub enum R09Types {
-    /// ditto
-    R14 = 14,
-    /// ditto
-    R16 = 16,
-    /// ditto
-    R18 = 18,
-}
-
-/// Enum of 4 possible different telegrams which can be send from one location.
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub enum RequestStatus {
-    /// Pre-Registration telegram is sent approximately 150m before the traffic light.
-    PreRegistration = 0,
-    /// Registration telegram is sent when the vehicle reaches the traffic light.
-    Registration = 1,
-    /// Deregistration is sent after vehicle passes the intersection.
-    DeRegistration = 2,
-    /// Door Closed is sent when vehicle leaves the stop.
-    DoorClosed = 3,
-}
-
 /// Meta inforamtion about region.
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct RegionMetaInformation {
@@ -59,7 +33,7 @@ pub struct RegionMetaInformation {
     /// Human-readable name of the region
     pub city_name: Option<String>,
     /// Type of R09 telegram used in the region
-    pub type_r09: Option<R09Types>,
+    pub type_r09: Option<R09Type>,
     /// Latitude of the Region, degrees
     pub lat: Option<f64>,
     /// Longitude of the Region, degrees
@@ -366,168 +340,6 @@ impl LocationsJson {
             lat,
             lon,
             properties: serde_json::Value::Null,
-        }
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for R09Types {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct R09TypesVisitor;
-
-        impl<'de> serde::de::Visitor<'de> for R09TypesVisitor {
-            type Value = R09Types;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                write!(formatter, "an integer or string representing a R09Type")
-            }
-
-            fn visit_str<E: serde::de::Error>(self, s: &str) -> Result<R09Types, E> {
-                Ok(match s {
-                    "R09.14" => R09Types::R14,
-                    "R09.16" => R09Types::R16,
-                    "R09.18" => R09Types::R18,
-                    _ => return Err(E::invalid_value(serde::de::Unexpected::Str(s), &self)),
-                })
-            }
-
-            fn visit_u64<E: serde::de::Error>(self, n: u64) -> Result<R09Types, E> {
-                Ok(match n {
-                    14 => R09Types::R14,
-                    16 => R09Types::R16,
-                    18 => R09Types::R18,
-                    _ => return Err(E::invalid_value(serde::de::Unexpected::Unsigned(n), &self)),
-                })
-            }
-        }
-
-        deserializer.deserialize_any(R09TypesVisitor)
-    }
-}
-
-impl Serialize for R09Types {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: ::serde::Serializer,
-    {
-        // Serialize the enum as a string.
-        serializer.serialize_i16(match *self {
-            R09Types::R14 => 14,
-            R09Types::R16 => 16,
-            R09Types::R18 => 18,
-        })
-    }
-}
-
-impl fmt::Display for R09Types {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            R09Types::R14 => formatter.write_str("R09.14"),
-            R09Types::R16 => formatter.write_str("R09.16"),
-            R09Types::R18 => formatter.write_str("R09.18"),
-        }
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for RequestStatus {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        struct RequestStatusVisitor;
-
-        impl<'de> serde::de::Visitor<'de> for RequestStatusVisitor {
-            type Value = RequestStatus;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                write!(formatter, "an integer or string representing a R09Type")
-            }
-            fn visit_u64<E: serde::de::Error>(self, n: u64) -> Result<RequestStatus, E> {
-                Ok(match n {
-                    0 => RequestStatus::PreRegistration,
-                    1 => RequestStatus::Registration,
-                    2 => RequestStatus::DeRegistration,
-                    3 => RequestStatus::DoorClosed,
-                    _ => return Err(E::invalid_value(serde::de::Unexpected::Unsigned(n), &self)),
-                })
-            }
-
-            fn visit_str<E: serde::de::Error>(self, s: &str) -> Result<RequestStatus, E> {
-                Ok(match s {
-                    "pre_registration" => RequestStatus::PreRegistration,
-                    "registration" => RequestStatus::Registration,
-                    "de_registration" => RequestStatus::DeRegistration,
-                    "door_close" => RequestStatus::DoorClosed,
-                    _ => return Err(E::invalid_value(serde::de::Unexpected::Str(s), &self)),
-                })
-            }
-        }
-        deserializer.deserialize_any(RequestStatusVisitor)
-    }
-}
-
-impl Serialize for RequestStatus {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: ::serde::Serializer,
-    {
-        // Serialize the enum as a string.
-        serializer.serialize_i16(match *self {
-            RequestStatus::PreRegistration => 0,
-            RequestStatus::Registration => 1,
-            RequestStatus::DeRegistration => 2,
-            RequestStatus::DoorClosed => 3,
-        })
-    }
-}
-
-impl ReportLocation {
-    /// Updates property field with epsg3857 coordinates, calculated from `loc` and `lon` fileds of
-    /// the struct. If field doesn't exist, creates it.
-    pub fn update_epsg3857(&mut self) {
-        // Convert the coords to pseudo-mercator (epsg3857)
-        const EARTH_RADIUS_M: f64 = 6_378_137_f64;
-        let x = EARTH_RADIUS_M * self.lon.to_radians();
-        let y =
-            ((self.lat.to_radians() / 2. + std::f64::consts::PI / 4.).tan()).ln() * EARTH_RADIUS_M;
-
-        // serialize value
-        if let Ok(epsg_val) = serde_json::from_str(&format!("{{ \"x\":{x}, \"y\":{y} }}")) {
-            self.properties["epsg3857"] = epsg_val;
-        } else {
-            eprintln!("epsg3857 property update skipped: Could not serialize {x} and {y} into json Value!");
-        }
-    }
-}
-
-impl TryFrom<i16> for RequestStatus {
-    type Error = (); // TODO: proper errors
-    fn try_from(value: i16) -> Result<Self, Self::Error> {
-        match value {
-            0 => Ok(RequestStatus::PreRegistration),
-            1 => Ok(RequestStatus::Registration),
-            2 => Ok(RequestStatus::DeRegistration),
-            3 => Ok(RequestStatus::DoorClosed),
-            _ => Err(()),
-        }
-    }
-}
-
-#[allow(clippy::derive_hash_xor_eq)]
-impl Hash for R09Types {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        match self {
-            R09Types::R14 => {
-                14i32.hash(state);
-            }
-            R09Types::R16 => {
-                16i32.hash(state);
-            }
-            R09Types::R18 => {
-                18i32.hash(state);
-            }
         }
     }
 }
