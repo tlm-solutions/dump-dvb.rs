@@ -11,6 +11,7 @@
         username = "postgres";
         password = "password";
         database = "database";
+        migrations_dir = "migrations-based";
       in makeTest {
         name = "test-diesel-migration";
         nodes = {
@@ -30,10 +31,9 @@
             };
 
             systemd.services.postgresql.postStart = lib.mkAfter ''
-              ${pkgs.diesel-cli}/bin/diesel migration run --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/migrations
-              # TODO: add this back
-              # ${pkgs.diesel-cli}/bin/diesel migration redo --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/migrations
-              # ${pkgs.diesel-cli}/bin/diesel migration run --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/migrations
+              ${pkgs.diesel-cli}/bin/diesel migration run --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
+              ${pkgs.diesel-cli}/bin/diesel migration redo --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
+              ${pkgs.diesel-cli}/bin/diesel migration run --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
             '';
           };
         };
@@ -50,7 +50,7 @@
 
       packages.${system} = {
         update-schema = pkgs.writeScriptBin "update-schema" ''
-          # nix build ${self}#checks.${system}.test-diesel-migration
+          nix build ${self}#checks.${system}.test-diesel-migration
           BUILD_DIR=$(nix build ${self}#checks.${system}.test-diesel-migration --no-link --print-out-paths)
           rm -rf src/schema.rs
           cp $BUILD_DIR/schema.rs src/schema.rs
