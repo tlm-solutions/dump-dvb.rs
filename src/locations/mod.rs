@@ -1,6 +1,7 @@
 pub mod gps;
 mod tests;
 
+use crate::schema::*;
 use crate::telegrams::r09::R09Type;
 
 use chrono::prelude::{DateTime, Utc};
@@ -14,7 +15,7 @@ use std::io::Write;
 use std::path::PathBuf;
 
 /// Version of the [`LocationsJson`] shcema used.
-pub const SCHEMA: &str = "1"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
+pub const SCHEMA: &str = "2"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
 
 /// Default region cache lifetime in seconds (24h)
 pub const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
@@ -24,6 +25,83 @@ pub const REGION_CACHE_FILE: &str = "region_cache.json";
 pub const SANE_INTERPOLATION_DISTANCE: i32 = 50;
 /// Mean earth radius, required for calcuation of distances between the GPS points
 pub const MEAN_EARTH_RADIUS: u32 = 6_371_000;
+
+/// This struct is used to query R09 telegram transmission positions from the database. Every entry
+/// corresponds to unique transmission location, that is inferred over multiple measurements. For
+/// raw per-measurement data see [`TransmissionLocationRaw`]
+#[derive(Debug, Clone, Queryable)]
+#[diesel(table_name = r09_transmission_locations)]
+pub struct TransmissionLocation {
+    /// Primary key
+    pub id: i64,
+    /// ID of the region where telegram was transmitted
+    pub region: i64,
+    /// Report location (*meldepunkt*) ID
+    pub report_location: i64,
+    /// Report location latitude
+    pub lat: f64,
+    /// Report location longitude
+    pub lon: f64,
+}
+
+/// This struct is used to insert R09 telegram transmission positions to the database. Every entry
+/// corresponds to unique transmission location, that is inferred over multiple measurements. For
+/// raw per-measurement data see [`InsertTransmissionLocationRaw`]
+#[derive(Debug, Clone, Insertable)]
+#[diesel(table_name = r09_transmission_locations)]
+pub struct InsertTransmissionLocation {
+    /// Primary key. During INSERT should be [`None`] so DB can auto-increment it
+    pub id: Option<i64>,
+    /// ID of the region where telegram was transmitted
+    pub region: i64,
+    /// Report location (*meldepunkt*) ID
+    pub report_location: i64,
+    /// Report location latitude
+    pub lat: f64,
+    /// Report location longitude
+    pub lon: f64,
+}
+
+/// This struct queries the database for transmission locations inferred from every single trekkie
+/// run. This is useful if you want to refine the position of [`TransmissionLocation`]
+#[derive(Debug, Clone, Queryable)]
+#[diesel(table_name = r09_transmission_locations_raw)]
+pub struct TransmissionLocationRaw {
+    /// Primary key
+    pub id: i64,
+    /// ID of the region where telegram was transmitted
+    pub region: i64,
+    /// Report location (*meldepunkt*) ID
+    pub report_location: i64,
+    /// Report location latitude
+    pub lat: f64,
+    /// Report location longitude
+    pub lon: f64,
+    /// Trekkie run from which this undeduped location was inferred
+    pub trekkie_run: uuid::Uuid,
+    /// User, from whose trekkie run this undeduped location was inferred
+    pub run_owner: uuid::Uuid,
+}
+
+/// This struct inserts into the table corresponding to [`TransmissionLocationRaw`]
+#[derive(Debug, Clone, Insertable)]
+#[diesel(table_name = r09_transmission_locations_raw)]
+pub struct InsertTransmissionLocationRaw {
+    /// Primary key. During INSERT should be [`None`] so DB can auto-increment it
+    pub id: Option<i64>,
+    /// ID of the region where telegram was transmitted
+    pub region: i64,
+    /// Report location (*meldepunkt*) ID
+    pub report_location: i64,
+    /// Report location latitude
+    pub lat: f64,
+    /// Report location longitude
+    pub lon: f64,
+    /// Trekkie run from which this undeduped location was inferred
+    pub trekkie_run: uuid::Uuid,
+    /// User, from whose trekkie run this undeduped location was inferred
+    pub run_owner: uuid::Uuid,
+}
 
 /// Meta inforamtion about region.
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]

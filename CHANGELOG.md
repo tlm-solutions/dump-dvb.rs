@@ -13,16 +13,15 @@
 - type renamed `R09Types` -> `R09Type`
 - `R09Type` moved to `telegrams::R09`
 - `R09SaveTelegram.telegram_type` now uses `R09Type` instead of `i64`
-- custom diesel \[de\]serializer for the `R09Type`
 
 ### Added
 
 - Waypoints
 - Chemo Service
-
-#### DB Tables
+- custom diesel \[de\]serializer for the `R09Type`
 - r09_transmission_locations
 - r09_transmission_locations_raw
+- `TransmissionLocation`, `TransmissionLocationRaw`, `InsertTransmissionLocationRaw`, `InsertTransmissionLocation` for tables above
 
 ### Fixed
 
