@@ -31,7 +31,7 @@ pub const MEAN_EARTH_RADIUS: u32 = 6_371_000;
 /// This struct is used to query R09 telegram transmission positions from the database. Every entry
 /// corresponds to unique transmission location, that is inferred over multiple measurements. For
 /// raw per-measurement data see [`TransmissionLocationRaw`]
-#[derive(Debug, Clone, Queryable)]
+#[derive(Debug, Clone, Queryable, Identifiable, AsChangeset)]
 #[diesel(table_name = r09_transmission_locations)]
 pub struct TransmissionLocation {
     /// Primary key
@@ -72,7 +72,7 @@ pub struct InsertTransmissionLocation {
 
 /// This struct queries the database for transmission locations inferred from every single trekkie
 /// run. This is useful if you want to refine the position of [`TransmissionLocation`]
-#[derive(Debug, Clone, Queryable)]
+#[derive(Debug, Clone, Queryable, Identifiable, AsChangeset)]
 #[diesel(table_name = r09_transmission_locations_raw)]
 pub struct TransmissionLocationRaw {
     /// Primary key
