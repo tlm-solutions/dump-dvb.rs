@@ -325,11 +325,7 @@ impl fmt::Display for R09Telegram {
         write!(
             f,
             "Type {:?} Line {:#?} Run {:#?} Destination {:#?} - {}",
-            self.r09_type,
-            self.line,
-            self.run_number,
-            self.destination_number,
-            self.request_status
+            self.r09_type, self.line, self.run_number, self.destination_number, self.request_status
         )
     }
 }

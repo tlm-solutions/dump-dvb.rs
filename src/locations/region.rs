@@ -1,3 +1,7 @@
+//! This module holds structs and associated stuff for storing the region metadata ([`Region`] and
+//! [`InsertRegion`], as well as some region-related structs that are employed for caching the
+//! region data.
+
 use crate::schema::*;
 use crate::telegrams::r09::R09Type;
 use serde::{Deserialize, Serialize};

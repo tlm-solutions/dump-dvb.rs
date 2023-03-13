@@ -1,6 +1,7 @@
 pub mod gps;
-pub mod waypoint;
+pub mod region;
 mod tests;
+pub mod waypoint;
 
 use crate::schema::*;
 use crate::telegrams::r09::R09Type;

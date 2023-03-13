@@ -1,8 +1,8 @@
 /// This module contains user structs and security functions.
 pub mod user;
 
+use crate::locations::region::Region;
 use crate::schema::*;
-use crate::structs::Region;
 use user::User;
 
 use serde::ser::SerializeStruct;

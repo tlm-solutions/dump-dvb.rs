@@ -5,6 +5,5 @@ pub enum WayPointType {
     /// position deduced from received r09 telegram
     R09Telegram = 0,
     /// position submitted via trekkie service
-    TrekkieGPS = 1
+    TrekkieGPS = 1,
 }
-
