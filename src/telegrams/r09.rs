@@ -2,7 +2,6 @@
 //! This modul contains structs, exchange formats and implementations for R09 Telegrams.
 //!
 
-use crate::locations::R09Types;
 use crate::management::Station;
 use crate::schema::r09_telegrams;
 use crate::telegrams::{
@@ -11,6 +10,9 @@ use crate::telegrams::{
 
 use chrono::NaiveDateTime;
 use csv;
+use diesel::deserialize::{self, FromSql};
+use diesel::pg::Pg;
+use diesel::serialize::{self, Output, ToSql};
 use diesel::Insertable;
 use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
@@ -30,7 +32,7 @@ use crate::grpc::R09GrpcTelegram;
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct R09Telegram {
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
-    pub telegram_type: R09Types,
+    pub telegram_type: R09Type,
     /// delay of the vehicle can range from -7 min to +7 mins
     pub delay: Option<i32>,
     /// Unique identifier of a location which can be decomposed into junction, direction and
@@ -91,7 +93,8 @@ pub struct R09SaveTelegram {
     pub station: Uuid,
 
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
-    pub telegram_type: i64,
+    #[diesel(deserialize_as = i64)]
+    pub telegram_type: R09Type,
     #[serde(deserialize_with = "csv::invalid_option")]
 
     /// delay of the vehicle can range from -7 min to +7 mins
@@ -140,6 +143,124 @@ pub struct R09ReceiveTelegram {
     pub data: R09Telegram,
 }
 
+/// Enum for different R09 formats used.
+#[allow(missing_docs)]
+#[derive(Debug, PartialEq, Eq, Clone, AsExpression)]
+#[diesel(sql_type = diesel::sql_types::BigInt)]
+pub enum R09Type {
+    R14 = 14,
+    R16 = 16,
+    R18 = 18,
+}
+
+impl fmt::Display for R09Type {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            R09Type::R14 => formatter.write_str("R09.14"),
+            R09Type::R16 => formatter.write_str("R09.16"),
+            R09Type::R18 => formatter.write_str("R09.18"),
+        }
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for R09Type {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct R09TypeVisitor;
+
+        impl<'de> serde::de::Visitor<'de> for R09TypeVisitor {
+            type Value = R09Type;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(formatter, "an integer or string representing a R09Type")
+            }
+
+            fn visit_str<E: serde::de::Error>(self, s: &str) -> Result<R09Type, E> {
+                Ok(match s {
+                    "R09.14" => R09Type::R14,
+                    "R09.16" => R09Type::R16,
+                    "R09.18" => R09Type::R18,
+                    _ => return Err(E::invalid_value(serde::de::Unexpected::Str(s), &self)),
+                })
+            }
+
+            fn visit_u64<E: serde::de::Error>(self, n: u64) -> Result<R09Type, E> {
+                Ok(match n {
+                    14 => R09Type::R14,
+                    16 => R09Type::R16,
+                    18 => R09Type::R18,
+                    _ => return Err(E::invalid_value(serde::de::Unexpected::Unsigned(n), &self)),
+                })
+            }
+        }
+
+        deserializer.deserialize_any(R09TypeVisitor)
+    }
+}
+
+impl Serialize for R09Type {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: ::serde::Serializer,
+    {
+        // Serialize the enum as a string.
+        serializer.serialize_i16(match *self {
+            R09Type::R14 => 14,
+            R09Type::R16 => 16,
+            R09Type::R18 => 18,
+        })
+    }
+}
+
+impl TryFrom<i64> for R09Type {
+    type Error = String;
+    fn try_from(value: i64) -> Result<Self, Self::Error> {
+        match value {
+            14 => Ok(Self::R14),
+            16 => Ok(Self::R16),
+            18 => Ok(Self::R18),
+            _ => Err("No such R09 type!".to_string()),
+        }
+    }
+}
+
+impl FromSql<diesel::sql_types::BigInt, Pg> for R09Type {
+    fn from_sql(bytes: diesel::backend::RawValue<'_, Pg>) -> deserialize::Result<Self> {
+        //<R09Type as deserialize::FromSql<diesel::sql_types::BigInt, Pg>>::from_sql(bytes).map(|i| R09Type::from(i))
+        let v: i64 = i64::from_sql(bytes)?;
+        let res: R09Type = v.try_into()?;
+        Ok(res)
+    }
+}
+
+impl ToSql<diesel::sql_types::BigInt, Pg> for R09Type {
+    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
+        match self {
+            R09Type::R14 => <i64 as ToSql<diesel::sql_types::BigInt, Pg>>::to_sql(&14_i64, out),
+            R09Type::R16 => <i64 as ToSql<diesel::sql_types::BigInt, Pg>>::to_sql(&16_i64, out),
+            R09Type::R18 => <i64 as ToSql<diesel::sql_types::BigInt, Pg>>::to_sql(&18_i64, out),
+        }
+    }
+}
+
+impl Hash for R09Type {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        match self {
+            R09Type::R14 => {
+                14i32.hash(state);
+            }
+            R09Type::R16 => {
+                16i32.hash(state);
+            }
+            R09Type::R18 => {
+                18i32.hash(state);
+            }
+        }
+    }
+}
+
 impl GetTelegramType for R09Telegram {
     fn get_type(&self) -> TelegramType {
         TelegramType::R09
@@ -155,7 +276,7 @@ impl R09SaveTelegram {
 
             time: meta.time,
             station: meta.station,
-            telegram_type: telegram.telegram_type as i64,
+            telegram_type: telegram.telegram_type,
             delay: telegram.delay,
             reporting_point: telegram.reporting_point as i32,
             junction: telegram.junction as i32,
@@ -166,7 +287,7 @@ impl R09SaveTelegram {
             line: telegram.line.map(|x| x as i32),
             run_number: telegram.run_number.map(|x| x as i32),
             destination_number: telegram.destination_number.map(|x| x as i32),
-            train_length: telegram.train_length.map(|x| x as i32),
+            train_length: telegram.train_length,
             vehicle_number: telegram.vehicle_number.map(|x| x as i32),
             operator: telegram.operator.map(|x| x as i16),
             region: meta.region,
@@ -273,7 +394,7 @@ impl R09GrpcTelegram {
             line: telegram.line.map(|x| x as i32),
             run_number: telegram.run_number.map(|x| x as i32),
             destination_number: telegram.destination_number.map(|x| x as i32),
-            train_length: telegram.train_length.map(|x| x as i32),
+            train_length: telegram.train_length,
             vehicle_number: telegram.vehicle_number.map(|x| x as i32),
             operator: telegram.operator.map(|x| x as i32),
         }
