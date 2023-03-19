@@ -38,7 +38,7 @@ CREATE TABLE stations (
     elevation DOUBLE PRECISION,
     antenna INT,
     telegram_decoder_version TEXT,
-    notes TEXT 
+    notes TEXT
 );
 
 CREATE TABLE trekkie_runs (

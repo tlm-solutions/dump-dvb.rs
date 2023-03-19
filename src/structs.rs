@@ -1,4 +1,5 @@
 use crate::schema::*;
+use crate::telegrams::r09::R09Type;
 use serde::{Deserialize, Serialize};
 
 /// Struct holding the information for a region.
@@ -16,10 +17,10 @@ pub struct Region {
     pub regional_company: Option<String>,
     /// The frequency the operator sends it VDV 420 traffic.
     pub frequency: Option<i64>,
-    /// Which R09 types are used look at [`R09Types`][crate::locations::R09Types] for possible
+    /// Which R09 types are used look at [`R09Type`][crate::telegrams::r09::R09Type] for possible
     /// values
-    pub r09_type: Option<i32>,
-    /// Which encoding this regions used look at [`Encoding`] for possible values.
+    pub r09_type: Option<R09Type>,
+    /// Which encoding this regions uses. Look at [`Encoding`] for possible values.
     pub encoding: Option<i32>,
     /// This value is set to true if the region is deleted.
     pub deactivated: bool,
@@ -42,9 +43,9 @@ pub struct InsertRegion {
     pub regional_company: Option<String>,
     /// The frequency the operator sends it VDV 420 traffic.
     pub frequency: Option<i64>,
-    /// Which R09 types are used look at [`R09Types`][crate::locations::R09Types] for possible
+    /// Which R09 types are used look at [`R09Type`][crate::telegrams::r09::R09Type] for possible
     /// values
-    pub r09_type: Option<i32>,
+    pub r09_type: Option<R09Type>,
     /// Which encoding this regions used look at [`Encoding`] for possible values.
     pub encoding: Option<i32>,
     /// This value is set to true if the region is deleted.

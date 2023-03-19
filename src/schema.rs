@@ -77,7 +77,7 @@ diesel::table! {
         transport_company -> Text,
         regional_company -> Nullable<Text>,
         frequency -> Nullable<Int8>,
-        r09_type -> Nullable<Int4>,
+        r09_type -> Nullable<Int8>,
         encoding -> Nullable<Int4>,
         deactivated -> Bool,
     }
