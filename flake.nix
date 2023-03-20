@@ -56,39 +56,9 @@
           cp $BUILD_DIR/schema.rs src/schema.rs
         '';
 
-        run-migration = pkgs.writeScriptBin "run-migration" ''
-          ${pkgs.diesel-cli}/bin/diesel migration run --migration-dir ${self}/migrations
-        '';
-
         run-migration-based = pkgs.writeScriptBin "run-migration" ''
           ${pkgs.diesel-cli}/bin/diesel migration run --migration-dir ${self}/migrations-based
         '';
-
-        yeet-data = pkgs.writeScriptBin "yeet-data" ''
-          set -e
-          export PSQL=${pkgs.postgresql_14}/bin/psql
-
-          mkdir -p /var/lib/postgres-backup
-          chown postgres /var/lib/postgres-backup
-          chmod 700 /var/lib/postgres-backup
-
-          $PSQL -d dvbdump -c "COPY users TO '/var/lib/postgres-backup/users.csv'  WITH DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY regions TO '/var/lib/postgres-backup/regions.csv'  WITH DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY stations TO '/var/lib/postgres-backup/stations.csv'  WITH DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY trekkie_runs TO '/var/lib/postgres-backup/trekkie_runs.csv'  WITH DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY gps_points TO '/var/lib/postgres-backup/gps_points.csv'  WITH DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY raw_telegrams TO '/var/lib/postgres-backup/raw_telegrams.csv'  WITH DELIMITER ',' CSV HEADER;"
-          $PSQL -d dvbdump -c "COPY r09_telegrams TO '/var/lib/postgres-backup/r09_telegrams.csv'  WITH DELIMITER ',' CSV HEADER;"
-
-          $PSQL -d tlms -c "COPY users FROM '/var/lib/postgres-backup/users.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d tlms -c "COPY regions FROM '/var/lib/postgres-backup/regions.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d tlms -c "COPY stations FROM '/var/lib/postgres-backup/stations.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d tlms -c "COPY trekkie_runs FROM '/var/lib/postgres-backup/trekkie_runs.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d tlms -c "COPY gps_points FROM '/var/lib/postgres-backup/gps_points.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d tlms -c "COPY raw_telegrams FROM '/var/lib/postgres-backup/raw_telegrams.csv' DELIMITER ',' CSV HEADER;"
-          $PSQL -d tlms -c "COPY r09_telegrams FROM '/var/lib/postgres-backup/r09_telegrams.csv' DELIMITER ',' CSV HEADER;"
-        '';
-
       };
 
       devShells."x86_64-linux".default = pkgs.mkShell {
