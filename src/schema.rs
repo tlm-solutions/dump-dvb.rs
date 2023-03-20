@@ -20,7 +20,7 @@ diesel::table! {
         id -> Int8,
         time -> Timestamp,
         station -> Uuid,
-        telegram_type -> Int8,
+        r09_type -> Int8,
         delay -> Nullable<Int4>,
         reporting_point -> Int4,
         junction -> Int4,
@@ -42,7 +42,7 @@ diesel::table! {
     r09_transmission_locations (id) {
         id -> Int8,
         region -> Int8,
-        report_location -> Int8,
+        reporting_point -> Int8,
         lat -> Float8,
         lon -> Float8,
     }
@@ -52,7 +52,7 @@ diesel::table! {
     r09_transmission_locations_raw (id) {
         id -> Int8,
         region -> Int8,
-        report_location -> Int8,
+        reporting_point -> Int8,
         lat -> Float8,
         lon -> Float8,
         trekkie_run -> Uuid,

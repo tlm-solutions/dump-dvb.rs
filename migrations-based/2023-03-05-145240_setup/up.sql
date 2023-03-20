@@ -77,7 +77,7 @@ CREATE TABLE r09_telegrams (
     id BIGSERIAL PRIMARY KEY,
     time TIMESTAMP NOT NULL,
     station UUID REFERENCES stations(id) NOT NULL,
-    telegram_type BIGINT NOT NULL,
+    r09_type BIGINT NOT NULL,
     delay INT,
     reporting_point INT NOT NULL,
     junction INT NOT NULL,
