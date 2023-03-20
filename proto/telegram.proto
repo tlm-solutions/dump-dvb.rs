@@ -15,8 +15,8 @@ service ReceiveWaypoint {
 message GrpcGpsPoint {
     uint64 time = 1;
     uint32 id = 3;
-    float lat = 4;
-    float lon = 5;
+    double lat = 4;
+    double lon = 5;
     int32 line = 6;
     int32 run = 7;  
 }
