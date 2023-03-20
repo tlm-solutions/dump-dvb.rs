@@ -12,5 +12,4 @@ Cargo.lock
 result
 
 # direnv-related files
-.envrc
 .direnv
