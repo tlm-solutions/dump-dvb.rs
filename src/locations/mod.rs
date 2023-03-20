@@ -1,4 +1,5 @@
 pub mod gps;
+pub mod waypoint;
 mod tests;
 
 use crate::schema::*;
