@@ -13,6 +13,8 @@
 - type renamed `R09Types` -> `R09Type`
 - `R09Type` moved to `telegrams::R09`
 - `R09SaveTelegram.telegram_type` now uses `R09Type` instead of `i64`
+- `telegram_type` is not named `r09_type` everywhere
+- lat and lon are now everywhere f64
 
 ### Added
 

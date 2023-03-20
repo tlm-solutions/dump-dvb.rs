@@ -25,7 +25,7 @@ message R09GrpcTelegram {
     uint64 time = 1;
     string station = 2;
     int64 region = 3;
-    int32 telegram_type = 4;
+    int32 r09_type = 4;
     optional int32 delay = 5;
     int32 reporting_point = 6;
     int32 junction = 7;
@@ -45,8 +45,8 @@ message GrpcWaypoint {
     uint64 id = 1;
     int32 source = 2;
     uint64 time = 3;
-    float lat = 4;
-    float lon = 5;  
+    double lat = 4;
+    double lon = 5;  
     int32 line = 6;
     int32 run = 7;
     optional float delayed = 8;

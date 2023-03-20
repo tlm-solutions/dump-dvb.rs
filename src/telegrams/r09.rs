@@ -32,7 +32,7 @@ use crate::grpc::R09GrpcTelegram;
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct R09Telegram {
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
-    pub telegram_type: R09Type,
+    pub r09_type: R09Type,
     /// delay of the vehicle can range from -7 min to +7 mins
     pub delay: Option<i32>,
     /// Unique identifier of a location which can be decomposed into junction, direction and
@@ -94,7 +94,7 @@ pub struct R09SaveTelegram {
 
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
     #[diesel(deserialize_as = i64)]
-    pub telegram_type: R09Type,
+    pub r09_type: R09Type,
     #[serde(deserialize_with = "csv::invalid_option")]
 
     /// delay of the vehicle can range from -7 min to +7 mins
@@ -276,7 +276,7 @@ impl R09SaveTelegram {
 
             time: meta.time,
             station: meta.station,
-            telegram_type: telegram.telegram_type,
+            r09_type: telegram.r09_type,
             delay: telegram.delay,
             reporting_point: telegram.reporting_point as i32,
             junction: telegram.junction as i32,
@@ -303,7 +303,7 @@ impl Hash for R09ReceiveTelegram {
 
 impl Hash for R09Telegram {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.telegram_type.hash(state);
+        self.r09_type.hash(state);
         self.delay.hash(state);
         self.reporting_point.hash(state);
         self.junction.hash(state);
@@ -325,7 +325,7 @@ impl fmt::Display for R09Telegram {
         write!(
             f,
             "Type {:?} Line {:#?} Run {:#?} Destination {:#?} - {}",
-            self.telegram_type,
+            self.r09_type,
             self.line,
             self.run_number,
             self.destination_number,
@@ -344,7 +344,7 @@ impl Serialize for R09GrpcTelegram {
         s.serialize_field("time", &self.time)?;
         s.serialize_field("station", &self.station)?;
         s.serialize_field("region", &self.region)?;
-        s.serialize_field("telegram_type", &self.telegram_type)?;
+        s.serialize_field("r09_type", &self.r09_type)?;
 
         self.delay
             .map(|value| s.serialize_field("delay", &value).ok());
@@ -383,7 +383,7 @@ impl R09GrpcTelegram {
             station: meta.station.to_string(),
             region: meta.region,
 
-            telegram_type: telegram.telegram_type as i32,
+            r09_type: telegram.r09_type as i32,
             delay: telegram.delay,
             reporting_point: telegram.reporting_point as i32,
             junction: telegram.junction as i32,

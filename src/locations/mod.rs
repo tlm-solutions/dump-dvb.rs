@@ -36,8 +36,8 @@ pub struct TransmissionLocation {
     pub id: i64,
     /// ID of the region where telegram was transmitted
     pub region: i64,
-    /// Report location (*meldepunkt*) ID
-    pub report_location: i64,
+    /// Reporting Point inside the r09 telegram (*meldepunkt*) ID
+    pub reporting_point: i32,
     /// Report location latitude
     pub lat: f64,
     /// Report location longitude
@@ -54,8 +54,8 @@ pub struct InsertTransmissionLocation {
     pub id: Option<i64>,
     /// ID of the region where telegram was transmitted
     pub region: i64,
-    /// Report location (*meldepunkt*) ID
-    pub report_location: i64,
+    /// Reporting Point inside the r09 telegram (*meldepunkt*) ID
+    pub reporting_point: i32,
     /// Report location latitude
     pub lat: f64,
     /// Report location longitude
@@ -71,8 +71,8 @@ pub struct TransmissionLocationRaw {
     pub id: i64,
     /// ID of the region where telegram was transmitted
     pub region: i64,
-    /// Report location (*meldepunkt*) ID
-    pub report_location: i64,
+    /// Reporting Point inside the r09 telegram (*meldepunkt*) ID
+    pub reporting_point: i32,
     /// Report location latitude
     pub lat: f64,
     /// Report location longitude
@@ -91,8 +91,8 @@ pub struct InsertTransmissionLocationRaw {
     pub id: Option<i64>,
     /// ID of the region where telegram was transmitted
     pub region: i64,
-    /// Report location (*meldepunkt*) ID
-    pub report_location: i64,
+    /// Reporting Point inside the r09 telegram (*meldepunkt*) ID
+    pub reporting_point: i32,
     /// Report location latitude
     pub lat: f64,
     /// Report location longitude
