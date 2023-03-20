@@ -4,7 +4,7 @@
 CREATE TABLE r09_transmission_locations (
 	id BIGSERIAL PRIMARY KEY,
 	region BIGSERIAL REFERENCES regions(id) NOT NULL,
-	reporting_point BIGINT NOT NULL,
+	reporting_point INT NOT NULL,
 	lat DOUBLE PRECISION NOT NULL,
 	lon DOUBLE PRECISION NOT NULL
 );
@@ -14,7 +14,7 @@ CREATE TABLE r09_transmission_locations (
 CREATE TABLE r09_transmission_locations_raw (
 	id BIGSERIAL PRIMARY KEY,
 	region BIGSERIAL REFERENCES regions(id) NOT NULL,
-	reporting_point BIGINT NOT NULL,
+	reporting_point INT NOT NULL,
 	lat DOUBLE PRECISION NOT NULL,
 	lon DOUBLE PRECISION NOT NULL,
 	trekkie_run UUID REFERENCES trekkie_runs(id) NOT NULL,
