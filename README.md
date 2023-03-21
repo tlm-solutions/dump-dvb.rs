@@ -43,7 +43,7 @@ List of rust features this crate exposes: `schema`, `management`, `locations`,
 erDiagram
 	gps_points {
 		Int8 id PK
-		Uuid trekkie_run
+		Uuid trekkie_run FK
 		Timestamp timestamp
 		Float8 lat
 		Float8 lon
@@ -57,22 +57,22 @@ erDiagram
 	r09_telegrams {
 		Int8 id PK
 		Timestamp time
-		Uuid station
+		Uuid station FK
 		Int8 r09_type
-		Int4 delay "optional"
+		Int4 delay              "optional"
 		Int4 reporting_point
 		Int4 junction
 		Int2 direction
 		Int2 request_status
-		Int2 priority "optional"
-		Int2 direction_request "optional"
-		Int4 line "optional"
-		Int4 run_number "optional"
+		Int2 priority           "optional"
+		Int2 direction_request  "optional"
+		Int4 line               "optional"
+		Int4 run_number         "optional"
 		Int4 destination_number "optional"
-		Int4 train_length "optional"
-		Int4 vehicle_number "optional"
-		Int2 operator "optional"
-		Int8 region "optional"
+		Int4 train_length       "optional"
+		Int4 vehicle_number     "optional"
+		Int2 operator           "optional"
+		Int8 region FK          "optional"
 	}
 
 	r09_transmission_locations {
@@ -85,18 +85,18 @@ erDiagram
 
 	r09_transmission_locations_raw {
 		Int8 id PK
-		Int8 region
+		Int8 region FK
 		Int4 reporting_point
 		Float8 lat
 		Float8 lon
-		Uuid trekkie_run
-		Uuid run_owner
+		Uuid trekkie_run FK
+		Uuid run_owner FK
 	}
 
 	raw_telegrams {
 		Int8 id PK
 		Timestamp time
-		Uuid station
+		Uuid station FK
 		Int8 telegram_type
 		Bytea data
 	}
@@ -105,31 +105,31 @@ erDiagram
 		Int8 id PK
 		Text name
 		Text transport_company
-		Text regional_company "optional"
-		Int8 frequency "optional"
-		Int8 r09_type "optional"
-		Int4 encoding "optional"
+		Text regional_company   "optional"
+		Int8 frequency          "optional"
+		Int8 r09_type           "optional"
+		Int4 encoding           "optional"
 		Bool deactivated
 	}
 
 	stations {
 		Uuid id PK
-		Varchar token "optional"
+		Varchar token                 "optional"
 		Text name
 		Float8 lat
 		Float8 lon
-		Int8 region
-		Uuid owner
+		Int8 region FK
+		Uuid owner FK
 		Bool approved
 		Bool deactivated
 		Bool public
-		Int4 radio "optional"
-		Int4 architecture "optional"
-		Int4 device "optional"
-		Float8 elevation "optional"
-		Int4 antenna "optional"
+		Int4 radio                    "optional"
+		Int4 architecture             "optional"
+		Int4 device                   "optional"
+		Float8 elevation              "optional"
+		Int4 antenna                  "optional"
 		Text telegram_decoder_version "optional"
-		Text notes "optional"
+		Text notes                    "optional"
 	}
 
 	trekkie_runs {
@@ -140,16 +140,29 @@ erDiagram
 		Int8 region
 		Uuid owner
 		Bool finished
-		Uuid id
+		Uuid id PK
 	}
 
 	users {
-		Uuid id
-		Text name "optional"
-		Text email "optional"
+		Uuid id PK
+		Text name          "optional"
+		Text email         "optional"
 		Varchar password
 		Int4 role
 		Int4 email_setting "optional"
 		Bool deactivated
 	}
+
+  gps_points }|--|| trekkie_runs : ""
+  r09_telegrams }|--o| regions : ""
+  r09_telegrams }|--|| stations : ""
+  r09_transmission_locations }|--|| regions : ""
+  r09_transmission_locations_raw }|--|| regions : ""
+  r09_transmission_locations_raw }|--||trekkie_runs : ""
+  r09_transmission_locations_raw }|--|| users : ""
+  raw_telegrams }|--|| stations : ""
+  stations }|--|| regions : ""
+  stations }|--||users : ""
+  trekkie_runs }|--|| regions : ""
+  trekkie_runs }|--|| users : ""
 ```
