@@ -37,4 +37,22 @@ soon-ish ;).
 List of rust features this crate exposes: `schema`, `management`, `locations`,
 `telegrams`, `measurements`, `receivers`, `trekkie`, `gps`
 
+## Entity Relationship diagram
 
+```
+mermaid
+
+erDiagram
+	gps_points {
+		Int8 id PK
+		Uuid trekkie_run FK
+		Timestamp timestamp
+		Float8 lat
+		Float8 lon
+		Nullable<Float8> elevation
+		Nullable<Float8> accuracy
+		Nullable<Float8> vertical_accuracy
+		Nullable<Float8> bearing
+		Nullable<Float8> speed
+	}
+```
