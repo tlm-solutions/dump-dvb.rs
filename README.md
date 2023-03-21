@@ -77,7 +77,7 @@ erDiagram
 
 	r09_transmission_locations {
 		Int8 id PK
-		Int8 region
+		Int8 region FK
 		Int4 reporting_point
 		Float8 lat
 		Float8 lon
