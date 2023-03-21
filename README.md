@@ -39,9 +39,7 @@ List of rust features this crate exposes: `schema`, `management`, `locations`,
 
 ## Entity Relationship diagram
 
-```
-mermaid
-
+```mermaid
 erDiagram
 	gps_points {
 		Int8 id PK
