@@ -43,7 +43,7 @@ List of rust features this crate exposes: `schema`, `management`, `locations`,
 erDiagram
 	gps_points {
 		Int8 id PK
-		Uuid trekkie_run FK
+		Uuid trekkie_run
 		Timestamp timestamp
 		Float8 lat
 		Float8 lon
