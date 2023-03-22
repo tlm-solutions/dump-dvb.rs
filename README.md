@@ -154,15 +154,15 @@ erDiagram
 	}
 
   gps_points }|--|| trekkie_runs : "contains"
-  r09_telegrams }|--|| regions : ""
-  r09_telegrams }|--|| stations : ""
+  r09_telegrams }|--|| regions : "received in"
+  r09_telegrams }|--|| stations : "received"
   r09_transmission_locations }|--|| regions : "has"
   r09_transmission_locations_raw }|--|| regions : ""
-  r09_transmission_locations_raw }|--||trekkie_runs : ""
+  r09_transmission_locations_raw }|--|| trekkie_runs : "contains"
   r09_transmission_locations_raw }|--|| users : ""
-  raw_telegrams }|--|| stations : ""
+  raw_telegrams }|--|| stations : "received"
   stations }|--|| regions : "contains"
-  stations }|--|| users : "own"
-  trekkie_runs }|--|| regions : ""
-  trekkie_runs }|--|| users : ""
+  stations }|--|| users : "owns"
+  trekkie_runs }|--|| regions : "in"
+  trekkie_runs }|--|| users : "from"
 ```
