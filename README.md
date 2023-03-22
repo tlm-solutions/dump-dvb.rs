@@ -42,127 +42,127 @@ List of rust features this crate exposes: `schema`, `management`, `locations`,
 ```mermaid
 erDiagram
 	gps_points {
-		Int8 id PK
-		Uuid trekkie_run FK
-		Timestamp timestamp
-		Float8 lat
-		Float8 lon
-		Float8 elevation         "optional"
-		Float8 accuracy          "optional"
-		Float8 vertical_accuracy "optional"
-		Float8 bearing           "optional"
-		Float8 speed             "optional"
+		BIGSERIAL id PK
+		UUID trekkie_run FK "trekkie_runs(id)"
+		TIMESTAMP timestamp
+		DOUBLE lat
+		DOUBLE lon
+		DOUBLE elevation         "optional"
+		DOUBLE accuracy          "optional"
+		DOUBLE vertical_accuracy "optional"
+		DOUBLE bearing           "optional"
+		DOUBLE speed             "optional"
 	}
 
 	r09_telegrams {
-		Int8 id PK
-		Timestamp time
-		Uuid station FK
-		Int8 r09_type
-		Int4 delay              "optional"
-		Int4 reporting_point
-		Int4 junction
-		Int2 direction
-		Int2 request_status
-		Int2 priority           "optional"
-		Int2 direction_request  "optional"
-		Int4 line               "optional"
-		Int4 run_number         "optional"
-		Int4 destination_number "optional"
-		Int4 train_length       "optional"
-		Int4 vehicle_number     "optional"
-		Int2 operator           "optional"
-		Int8 region FK          "optional"
+		BIGSERIAL id PK
+		TIMESTAMP time
+		UUID station FK "stations(id)"
+		BIGINT r09_type
+		INT delay              "optional"
+		INT reporting_point
+		INT junction
+		SMALLINT direction
+		SMALLINT request_status
+		SMALLINT priority           "optional"
+		SMALLINT direction_request  "optional"
+		INT line               "optional"
+		INT run_number         "optional"
+		INT destination_number "optional"
+		INT train_length       "optional"
+		INT vehicle_number     "optional"
+		SMALLINT operator           "optional"
+		BIGINT region FK "regions(id)"
 	}
 
 	r09_transmission_locations {
-		Int8 id PK
-		Int8 region FK
-		Int4 reporting_point
-		Float8 lat
-		Float8 lon
+		BIGSERIAL id PK
+		BIGINT region FK "regions(id)"
+		INT reporting_point
+		DOUBLE lat
+		DOUBLE lon
 	}
 
 	r09_transmission_locations_raw {
-		Int8 id PK
-		Int8 region FK
-		Int4 reporting_point
-		Float8 lat
-		Float8 lon
-		Uuid trekkie_run FK
-		Uuid run_owner FK
+		BIGSERIAL id PK
+		BIGINT region FK "regions(id)"
+		INT reporting_point
+		DOUBLE lat
+		DOUBLE lon
+		UUID trekkie_run FK "trekkie_runs(id)"
+		UUID run_owner FK "users(id)"
 	}
 
 	raw_telegrams {
-		Int8 id PK
-		Timestamp time
-		Uuid station FK
-		Int8 telegram_type
-		Bytea data
+		BIGSERIAL id PK
+		TIMESTAMP time
+		UUID station FK "stations(id)"
+		BIGINT telegram_type
+		BYTEA data
 	}
 
 	regions {
-		Int8 id PK
-		Text name
-		Text transport_company
-		Text regional_company   "optional"
-		Int8 frequency          "optional"
-		Int8 r09_type           "optional"
-		Int4 encoding           "optional"
-		Bool deactivated
+		BIGSERIAL id PK
+		TEXT name
+		TEXT transport_company
+		TEXT regional_company   "optional"
+		BIGINT frequency          "optional"
+		BIGINT r09_type           "optional"
+		INT encoding           "optional"
+		BOOLEAN deactivated
 	}
 
 	stations {
-		Uuid id PK
-		Varchar token                 "optional"
-		Text name
-		Float8 lat
-		Float8 lon
-		Int8 region FK
-		Uuid owner FK
-		Bool approved
-		Bool deactivated
-		Bool public
-		Int4 radio                    "optional"
-		Int4 architecture             "optional"
-		Int4 device                   "optional"
-		Float8 elevation              "optional"
-		Int4 antenna                  "optional"
-		Text telegram_decoder_version "optional"
-		Text notes                    "optional"
+		UUID id PK
+		VARCHAR(36) token                 "optional"
+		TEXT name
+		DOUBLE lat
+		DOUBLE lon
+		BIGSERIAL region FK "regions(id)"
+		UUID owner FK "users(id)"
+		BOOLEAN approved
+		BOOLEAN deactivated
+		BOOLEAN public
+		INT radio                    "optional"
+		INT architecture             "optional"
+		INT device                   "optional"
+		DOUBLE elevation              "optional"
+		INT antenna                  "optional"
+		TEXT telegram_decoder_version "optional"
+		TEXT notes                    "optional"
 	}
 
 	trekkie_runs {
-		Timestamp start_time
-		Timestamp end_time
-		Int4 line
-		Int4 run
-		Int8 region
-		Uuid owner
-		Bool finished
-		Uuid id PK
+		TIMESTAMP start_time
+		TIMESTAMP end_time
+		INT line
+		INT run
+		BIGSERIAL region FK "regions(id)"
+		UUID owner FK "users(id)"
+		BOOLEAN finished
+		UUID id PK
 	}
 
 	users {
-		Uuid id PK
-		Text name          "optional"
-		Text email         "optional"
-		Varchar password
-		Int4 role
-		Int4 email_setting "optional"
-		Bool deactivated
+		UUID id PK
+		TEXT name          "optional"
+		TEXT email         "optional"
+		VARCHAR(100) password
+		INT role
+		INT email_setting "optional"
+		BOOLEAN deactivated
 	}
 
-  gps_points }|--|| trekkie_runs : ""
-  r09_telegrams }|--o| regions : ""
+  gps_points }|--|| trekkie_runs : "contains"
+  r09_telegrams }|--|| regions : ""
   r09_telegrams }|--|| stations : ""
-  r09_transmission_locations }|--|| regions : ""
+  r09_transmission_locations }|--|| regions : "has"
   r09_transmission_locations_raw }|--|| regions : ""
   r09_transmission_locations_raw }|--||trekkie_runs : ""
   r09_transmission_locations_raw }|--|| users : ""
   raw_telegrams }|--|| stations : ""
-  stations }|--|| regions : ""
-  stations }|--||users : ""
+  stations }|--|| regions : "contains"
+  stations }|--|| users : "own"
   trekkie_runs }|--|| regions : ""
   trekkie_runs }|--|| users : ""
 ```
