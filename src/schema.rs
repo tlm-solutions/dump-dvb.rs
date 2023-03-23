@@ -18,7 +18,7 @@ diesel::table! {
 diesel::table! {
     org_users_relation (id) {
         id -> Uuid,
-        organisation -> Uuid,
+        organization -> Uuid,
         user_id -> Uuid,
         role -> Int4,
     }
@@ -150,7 +150,7 @@ diesel::table! {
 }
 
 diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
-diesel::joinable!(org_users_relation -> organization (organisation));
+diesel::joinable!(org_users_relation -> organization (organization));
 diesel::joinable!(org_users_relation -> users (user_id));
 diesel::joinable!(r09_telegrams -> regions (region));
 diesel::joinable!(r09_telegrams -> stations (station));

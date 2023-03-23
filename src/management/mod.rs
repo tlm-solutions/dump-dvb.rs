@@ -54,7 +54,7 @@ pub struct Station {
     /// Field to add custom notes to your station.
     pub notes: Option<String>,
     /// Organization that this station belongs to.
-    pub organization: Uuid
+    pub organization: Uuid,
 }
 
 impl Serialize for Station {

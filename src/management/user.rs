@@ -11,7 +11,10 @@ use uuid::Uuid;
 
 use diesel::deserialize::{self, FromSql};
 use diesel::serialize::{self, Output, ToSql};
-use diesel::{AsExpression, Insertable, Queryable, QueryDsl, ExpressionMethods, RunQueryDsl, PgConnection, pg::Pg};
+use diesel::{
+    pg::Pg, AsExpression, ExpressionMethods, Insertable, PgConnection, QueryDsl, Queryable,
+    RunQueryDsl,
+};
 use std::collections::HashMap;
 
 /// Enum representing the role a user has inside our systems. Values are pretty self-explanatory
@@ -75,15 +78,33 @@ impl FromSql<diesel::sql_types::Integer, Pg> for Role {
 impl ToSql<diesel::sql_types::Integer, Pg> for Role {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
         match self {
-            Role::EditCompanyStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&0_i32, out),
-            Role::CreateCompanyStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&1_i32, out),
-            Role::DeleteCompanyStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&2_i32, out),
-            Role::EditMaintainedStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&3_i32, out),
-            Role::CreateMaintainedStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&4_i32, out),
-            Role::DeleteMaintainedStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&5_i32, out),
-            Role::EditOrgUserRoles => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&6_i32, out),
-            Role::EditOwnCompany => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&7_i32, out),
-            Role::ApproveStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&8_i32, out),
+            Role::EditCompanyStations => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&0_i32, out)
+            }
+            Role::CreateCompanyStations => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&1_i32, out)
+            }
+            Role::DeleteCompanyStations => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&2_i32, out)
+            }
+            Role::EditMaintainedStations => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&3_i32, out)
+            }
+            Role::CreateMaintainedStations => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&4_i32, out)
+            }
+            Role::DeleteMaintainedStations => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&5_i32, out)
+            }
+            Role::EditOrgUserRoles => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&6_i32, out)
+            }
+            Role::EditOwnCompany => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&7_i32, out)
+            }
+            Role::ApproveStations => {
+                <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&8_i32, out)
+            }
         }
     }
 }
@@ -117,7 +138,7 @@ pub struct OrgUsersRelation {
     /// Primary key
     id: Uuid,
     /// For which org the role is set
-    organisation: Uuid,
+    organization: Uuid,
     /// For which user within org the role is set
     user_id: Uuid,
     /// The role itself, see [`Roles`] enum for possible values
@@ -130,7 +151,7 @@ pub struct AuthorizedUser {
     /// User Struct
     pub user: User,
     /// Roles that the user has depending on the organization
-    pub roles: HashMap<Uuid, Vec<Role>>
+    pub roles: HashMap<Uuid, Vec<Role>>,
 }
 
 /// The UUID of special "community" organization, which is used for crowdsourced stations
@@ -148,16 +169,11 @@ pub struct Organization {
     public: bool,
 }
 
-
-
 impl AuthorizedUser {
     /// takes a cookie and returnes the corresponging user struct
-    pub fn from_postgres(
-        user_id: &Uuid,
-        database_connection: &mut PgConnection,
-    ) -> Option<Self> {
-        use crate::management::users::dsl::users;
+    pub fn from_postgres(user_id: &Uuid, database_connection: &mut PgConnection) -> Option<Self> {
         use crate::management::org_users_relation::dsl::org_users_relation;
+        use crate::management::users::dsl::users;
         use crate::schema::users::id;
 
         // user struct from currently authenticated user
@@ -172,28 +188,28 @@ impl AuthorizedUser {
                     .load::<OrgUsersRelation>(database_connection)
                     .unwrap_or(Vec::new());
 
-                let mut roles = HashMap::new();
+                let mut roles: HashMap<Uuid, Vec<Role>> = HashMap::new();
 
                 for association in associations {
                     roles
-                        .entry(&association.organization)                   
+                        .entry(association.organization)
                         .or_insert_with(Vec::new)
-                        .push(association.role);
+                        .push(Role::try_from(association.role).unwrap());
                 }
 
                 Some(AuthorizedUser {
                     user: found_user,
-                    roles 
+                    roles,
                 })
-            },
+            }
             Err(_) => None,
         }
     }
 
+    /// returns if the given user is an administrator or not
     pub fn is_admin(&self) -> bool {
         self.user.admin
     }
-
 }
 
 /// custom serializer so we dont accidentailly leak password to the outside

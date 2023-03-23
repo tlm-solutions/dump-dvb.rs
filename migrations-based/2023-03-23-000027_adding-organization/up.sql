@@ -8,7 +8,7 @@ CREATE TABLE organization (
 
 CREATE TABLE org_users_relation (
 	    id UUID PRIMARY KEY,
-	    organisation UUID REFERENCES organization(id) NOT NULL,
+	    organization UUID REFERENCES organization(id) NOT NULL,
 	    user_id UUID REFERENCES users(id) NOT NULL,
 	    ROLE INT NOT NULL
 );

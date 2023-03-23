@@ -145,12 +145,18 @@ pub struct R09ReceiveTelegram {
 
 /// Enum for different R09 formats used.
 #[allow(missing_docs)]
-#[derive(Debug, PartialEq, Eq, Clone, AsExpression)]
+#[derive(Debug, Eq, Clone, AsExpression)]
 #[diesel(sql_type = diesel::sql_types::BigInt)]
 pub enum R09Type {
     R14 = 14,
     R16 = 16,
     R18 = 18,
+}
+
+impl PartialEq for R09Type {
+    fn eq(&self, other: &Self) -> bool {
+        (self.clone() as i64) == (other.clone() as i64)
+    }
 }
 
 impl fmt::Display for R09Type {
