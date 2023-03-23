@@ -53,6 +53,8 @@ pub struct Station {
     pub telegram_decoder_version: Option<String>,
     /// Field to add custom notes to your station.
     pub notes: Option<String>,
+    /// Organization that this station belongs to.
+    pub organization: Uuid
 }
 
 impl Serialize for Station {
