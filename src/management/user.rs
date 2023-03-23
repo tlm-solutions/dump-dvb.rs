@@ -9,10 +9,10 @@ use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 
-use diesel::{AsExpression, Insertable, Queryable};
 use diesel::deserialize::{self, FromSql};
-use diesel::pg::Pg;
 use diesel::serialize::{self, Output, ToSql};
+use diesel::{AsExpression, Insertable, Queryable, QueryDsl, ExpressionMethods, RunQueryDsl, PgConnection, pg::Pg};
+use std::collections::HashMap;
 
 /// Enum representing the role a user has inside our systems. Values are pretty self-explanatory
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression)]
@@ -121,7 +121,16 @@ pub struct OrgUsersRelation {
     /// For which user within org the role is set
     user_id: Uuid,
     /// The role itself, see [`Roles`] enum for possible values
-    role: Role,
+    role: i32,
+}
+
+/// Struct used for authenticating users
+#[derive(Debug, Clone)]
+pub struct AuthorizedUser {
+    /// User Struct
+    pub user: User,
+    /// Roles that the user has depending on the organization
+    pub roles: HashMap<Uuid, Vec<Role>>
 }
 
 /// The UUID of special "community" organization, which is used for crowdsourced stations
@@ -137,6 +146,54 @@ pub struct Organization {
     name: String,
     /// If Company information is public
     public: bool,
+}
+
+
+
+impl AuthorizedUser {
+    /// takes a cookie and returnes the corresponging user struct
+    pub fn from_postgres(
+        user_id: &Uuid,
+        database_connection: &mut PgConnection,
+    ) -> Option<Self> {
+        use crate::management::users::dsl::users;
+        use crate::management::org_users_relation::dsl::org_users_relation;
+        use crate::schema::users::id;
+
+        // user struct from currently authenticated user
+        // TODO maybe smart doing some little join here
+        match users
+            .filter(id.eq(user_id))
+            .first::<User>(database_connection)
+        {
+            Ok(found_user) => {
+                let associations = org_users_relation
+                    .filter(crate::schema::org_users_relation::user_id.eq(user_id))
+                    .load::<OrgUsersRelation>(database_connection)
+                    .unwrap_or(Vec::new());
+
+                let mut roles = HashMap::new();
+
+                for association in associations {
+                    roles
+                        .entry(&association.organization)                   
+                        .or_insert_with(Vec::new)
+                        .push(association.role);
+                }
+
+                Some(AuthorizedUser {
+                    user: found_user,
+                    roles 
+                })
+            },
+            Err(_) => None,
+        }
+    }
+
+    pub fn is_admin(&self) -> bool {
+        self.user.admin
+    }
+
 }
 
 /// custom serializer so we dont accidentailly leak password to the outside
