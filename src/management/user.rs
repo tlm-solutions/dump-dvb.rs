@@ -10,6 +10,9 @@ use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 
 use diesel::{AsExpression, Insertable, Queryable};
+use diesel::deserialize::{self, FromSql};
+use diesel::pg::Pg;
+use diesel::serialize::{self, Output, ToSql};
 
 /// Enum representing the role a user has inside our systems. Values are pretty self-explanatory
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression)]
@@ -57,6 +60,30 @@ impl From<Role> for i32 {
             Role::EditOrgUserRoles => 6,
             Role::EditOwnCompany => 7,
             Role::ApproveStations => 8,
+        }
+    }
+}
+
+impl FromSql<diesel::sql_types::Integer, Pg> for Role {
+    fn from_sql(bytes: diesel::backend::RawValue<'_, Pg>) -> deserialize::Result<Self> {
+        let v: i32 = i32::from_sql(bytes)?;
+        let res: Self = v.try_into()?;
+        Ok(res)
+    }
+}
+
+impl ToSql<diesel::sql_types::BigInt, Pg> for Role {
+    fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
+        match self {
+            Role::EditCompanyStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&0_i32, out),
+            Role::CreateCompanyStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&1_i32, out),
+            Role::DeleteCompanyStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&2_i32, out),
+            Role::EditMaintainedStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&3_i32, out),
+            Role::CreateMaintainedStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&4_i32, out),
+            Role::DeleteMaintainedStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&5_i32, out),
+            Role::EditOrgUserRoles => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&6_i32, out),
+            Role::EditOwnCompany => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&7_i32, out),
+            Role::ApproveStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&8_i32, out),
         }
     }
 }
