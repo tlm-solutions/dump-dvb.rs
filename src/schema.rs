@@ -16,6 +16,23 @@ diesel::table! {
 }
 
 diesel::table! {
+    org_users_relation (id) {
+        id -> Uuid,
+        organisation -> Uuid,
+        user_id -> Uuid,
+        role -> Int4,
+    }
+}
+
+diesel::table! {
+    organization (id) {
+        id -> Uuid,
+        name -> Text,
+        public -> Bool,
+    }
+}
+
+diesel::table! {
     r09_telegrams (id) {
         id -> Int8,
         time -> Timestamp,
@@ -45,6 +62,7 @@ diesel::table! {
         reporting_point -> Int4,
         lat -> Float8,
         lon -> Float8,
+        ground_truth -> Bool,
     }
 }
 
@@ -102,6 +120,7 @@ diesel::table! {
         antenna -> Nullable<Int4>,
         telegram_decoder_version -> Nullable<Text>,
         notes -> Nullable<Text>,
+        organization -> Uuid,
     }
 }
 
@@ -124,13 +143,15 @@ diesel::table! {
         name -> Nullable<Text>,
         email -> Nullable<Text>,
         password -> Varchar,
-        role -> Int4,
         email_setting -> Nullable<Int4>,
         deactivated -> Bool,
+        admin -> Bool,
     }
 }
 
 diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
+diesel::joinable!(org_users_relation -> organization (organisation));
+diesel::joinable!(org_users_relation -> users (user_id));
 diesel::joinable!(r09_telegrams -> regions (region));
 diesel::joinable!(r09_telegrams -> stations (station));
 diesel::joinable!(r09_transmission_locations -> regions (region));
@@ -138,6 +159,7 @@ diesel::joinable!(r09_transmission_locations_raw -> regions (region));
 diesel::joinable!(r09_transmission_locations_raw -> trekkie_runs (trekkie_run));
 diesel::joinable!(r09_transmission_locations_raw -> users (run_owner));
 diesel::joinable!(raw_telegrams -> stations (station));
+diesel::joinable!(stations -> organization (organization));
 diesel::joinable!(stations -> regions (region));
 diesel::joinable!(stations -> users (owner));
 diesel::joinable!(trekkie_runs -> regions (region));
@@ -145,6 +167,8 @@ diesel::joinable!(trekkie_runs -> users (owner));
 
 diesel::allow_tables_to_appear_in_same_query!(
     gps_points,
+    org_users_relation,
+    organization,
     r09_telegrams,
     r09_transmission_locations,
     r09_transmission_locations_raw,
