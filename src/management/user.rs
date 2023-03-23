@@ -24,6 +24,7 @@ pub enum Role {
     DeleteMaintainedStations = 5,
     EditOrgUserRoles = 6,
     EditOwnCompany = 7,
+    ApproveStations = 8,
 }
 
 impl TryFrom<i32> for Role {
@@ -38,6 +39,7 @@ impl TryFrom<i32> for Role {
             5 => Ok(Role::DeleteMaintainedStations),
             6 => Ok(Role::EditOrgUserRoles),
             7 => Ok(Role::EditOwnCompany),
+            8 => Ok(Role::ApproveStations),
             _ => Err("No role corresponding to {role} value!"),
         }
     }
@@ -54,6 +56,7 @@ impl From<Role> for i32 {
             Role::DeleteMaintainedStations => 5,
             Role::EditOrgUserRoles => 6,
             Role::EditOwnCompany => 7,
+            Role::ApproveStations => 8,
         }
     }
 }
