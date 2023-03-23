@@ -9,8 +9,11 @@ use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
 
+use diesel::{AsExpression, Insertable, Queryable};
+
 /// Enum representing the role a user has inside our systems. Values are pretty self-explanatory
-#[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug)]
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression)]
+#[diesel(sql_type = diesel::sql_types::Integer)]
 #[allow(missing_docs)]
 pub enum Role {
     EditCompanyStations = 0,
@@ -72,6 +75,38 @@ pub struct User {
     pub email_setting: Option<i32>,
     /// If the user struct is deleted is kept for database consistency.
     pub deactivated: bool,
+    /// If user is tlms-wide administrator
+    pub admin: bool,
+}
+
+/// Database struct holding the relations between organizations and users. Keeps track of user
+/// roles within organization
+#[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
+#[diesel(table_name = org_users_relation)]
+pub struct OrgUsersRelation {
+    /// Primary key
+    id: Uuid,
+    /// For which org the role is set
+    organisation: Uuid,
+    /// For which user within org the role is set
+    user_id: Uuid,
+    /// The role itself, see [`Roles`] enum for possible values
+    role: Role,
+}
+
+/// The UUID of special "community" organization, which is used for crowdsourced stations
+pub const COMMUNITY_ORG_ID: Uuid = Uuid::from_u128(0x53e643d7_c300_4de7_ab48_540d08a0cbc6);
+
+/// Database struct holding the information about organizations
+#[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
+#[diesel(table_name = organization)]
+pub struct Organization {
+    /// Primary Key
+    id: Uuid,
+    /// Company Name
+    name: String,
+    /// If Company information is public
+    public: bool,
 }
 
 /// custom serializer so we dont accidentailly leak password to the outside
