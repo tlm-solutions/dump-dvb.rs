@@ -72,7 +72,7 @@ impl FromSql<diesel::sql_types::Integer, Pg> for Role {
     }
 }
 
-impl ToSql<diesel::sql_types::BigInt, Pg> for Role {
+impl ToSql<diesel::sql_types::Integer, Pg> for Role {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
         match self {
             Role::EditCompanyStations => <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&0_i32, out),
