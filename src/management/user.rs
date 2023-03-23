@@ -110,7 +110,7 @@ impl ToSql<diesel::sql_types::Integer, Pg> for Role {
 }
 
 /// Database struct holding user information
-#[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
+#[derive(Debug, Clone, Deserialize, Queryable, Insertable, AsChangeset, Identifiable)]
 #[diesel(table_name = users)]
 pub struct User {
     /// Unique identifier for a user.
@@ -132,7 +132,7 @@ pub struct User {
 
 /// Database struct holding the relations between organizations and users. Keeps track of user
 /// roles within organization
-#[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
+#[derive(Debug, Clone, Deserialize, Queryable, Insertable, AsChangeset, Identifiable)]
 #[diesel(table_name = org_users_relation)]
 pub struct OrgUsersRelation {
     /// Primary key
