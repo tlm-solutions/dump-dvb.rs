@@ -80,11 +80,10 @@ impl Serialize for User {
     where
         S: Serializer,
     {
-        let mut s = serializer.serialize_struct("User", 6)?;
+        let mut s = serializer.serialize_struct("User", 5)?;
         s.serialize_field("id", &self.id.to_string())?;
         s.serialize_field("name", &self.name)?;
         s.serialize_field("email", &self.email)?;
-        s.serialize_field("role", &self.role)?;
         s.serialize_field("email_setting", &self.email_setting)?;
         s.serialize_field("deactivated", &self.deactivated)?;
         s.end()
