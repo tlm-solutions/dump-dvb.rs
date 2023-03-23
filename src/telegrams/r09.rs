@@ -93,13 +93,7 @@ pub struct R09SaveTelegram {
     pub station: Uuid,
 
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
-<<<<<<< HEAD
-    #[diesel(deserialize_as = i64)]
     pub r09_type: R09Type,
-    #[serde(deserialize_with = "csv::invalid_option")]
-=======
-    pub telegram_type: R09Type,
->>>>>>> ab523b6 (minor fixes)
 
     /// delay of the vehicle can range from -7 min to +7 mins
     #[serde(deserialize_with = "csv::invalid_option")]
