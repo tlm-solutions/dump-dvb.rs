@@ -72,7 +72,7 @@ pub struct InsertRegion {
 }
 
 /// The struct that deserializes into json containing cache for region meta information. See
-/// [`RegionMetaInformation`] for details.
+/// [`Region`] for details.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegionCache {
     /// Hashmap of region ID to corresponding metadata
