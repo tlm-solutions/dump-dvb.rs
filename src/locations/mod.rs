@@ -44,6 +44,9 @@ pub struct TransmissionLocation {
     pub lat: f64,
     /// Report location longitude
     pub lon: f64,
+    /// If this transmission postion inserted from absolute data, and all the inference for it
+    /// should be ignored
+    pub ground_truth: bool,
 }
 
 /// This struct is used to insert R09 telegram transmission positions to the database. Every entry
@@ -62,6 +65,9 @@ pub struct InsertTransmissionLocation {
     pub lat: f64,
     /// Report location longitude
     pub lon: f64,
+    /// If this transmission postion inserted from absolute data, and all the inference for it
+    /// should be ignored
+    pub ground_truth: bool,
 }
 
 /// This struct queries the database for transmission locations inferred from every single trekkie
