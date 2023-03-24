@@ -217,8 +217,8 @@ impl AuthorizedUser {
     }
 
     /// given a organization and a role returns true if the user has this role
-    pub fn authorize(&self, organization: &Uuid, role: &Role) -> bool {
-        self.get_roles(organization).contains(role)
+    pub fn allowed(&self, organization: &Uuid, role: &Role) -> bool {
+        self.admin || self.get_roles(organization).contains(role)
     }
 
     /// returns if the given user is an administrator or not
