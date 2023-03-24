@@ -146,7 +146,7 @@ pub struct OrgUsersRelation {
 }
 
 /// Struct used for authenticating users
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct AuthorizedUser {
     /// User Struct
     pub user: User,
