@@ -206,6 +206,21 @@ impl AuthorizedUser {
         }
     }
 
+    /// returns the roles the users has in this organization
+    pub fn get_roles(&self, organization: &Uuid) -> Vec<Role> {
+        // TODO: optimize useless copy
+        self.roles
+            .clone()
+            .get(organization)
+            .unwrap_or(&Vec::new())
+            .to_vec()
+    }
+
+    /// given a organization and a role returns true if the user has this role
+    pub fn authorize(&self, organization: &Uuid, role: &Role) -> bool {
+        self.get_roles(organization).contains(role)
+    }
+
     /// returns if the given user is an administrator or not
     pub fn is_admin(&self) -> bool {
         self.user.admin
