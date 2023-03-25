@@ -220,7 +220,7 @@ impl AuthorizedUser {
     pub fn allowed(&self, organization: &Uuid, role: &Role) -> bool {
         self.user.admin || self.has_role(organization, role)
     }
-    
+
     /// returns true if the user has the requested role in the organization
     pub fn has_role(&self, organization: &Uuid, role: &Role) -> bool {
         self.get_roles(organization).contains(role)
