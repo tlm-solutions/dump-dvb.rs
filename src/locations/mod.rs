@@ -139,7 +139,7 @@ impl TransmissionLocation {
         input: Vec<TransmissionLocationRaw>,
     ) -> Result<Vec<TransmissionLocationRaw>, TransmissionLocaionError> {
         // Edge case
-        if input.len() == 0 {
+        if input.is_empty() {
             return Err(TransmissionLocaionError::EmptyInput);
         }
 
@@ -158,7 +158,7 @@ impl TransmissionLocation {
             }
         }
 
-        if filtered.len() == 0 {
+        if filtered.is_empty() {
             return Err(TransmissionLocaionError::NoMatches);
         }
 
@@ -172,8 +172,8 @@ impl TransmissionLocation {
     ///
     /// **This is default way for updating the [`TransmissionLocation`]**. The analysis should be
     /// performed on the whole set of raw locations, to prevent biasing the data.
-    pub fn new(raw: Vec<TransmissionLocationRaw>) -> TransmissionLocationResult {
-        if raw.len() == 0 {
+    pub fn try_from_raw(raw: Vec<TransmissionLocationRaw>) -> TransmissionLocationResult {
+        if raw.is_empty() {
             return Err(TransmissionLocaionError::EmptyInput);
         }
         let region = raw[0].region;

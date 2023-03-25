@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 /// Default region cache lifetime in seconds (24h)
 pub const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
 /// Name for a cache file
-pub const REGION_CACHE_FILE: &'static str = "region_cache.json";
+pub const REGION_CACHE_FILE: &str = "region_cache.json";
 /// maximum distance in meters
 pub const SANE_INTERPOLATION_DISTANCE: i32 = 50;
 
