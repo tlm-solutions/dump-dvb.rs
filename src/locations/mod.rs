@@ -5,13 +5,11 @@ pub mod waypoint;
 
 use crate::schema::*;
 
-/// Version of the [`LocationsJson`] shcema used.
-pub const SCHEMA: &str = "2"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
+use std::collections::HashMap;
 
-/// Default region cache lifetime in seconds (24h)
-pub const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
-/// Name for a cache file
-pub const REGION_CACHE_FILE: &str = "region_cache.json";
+/// Version of the [`LocationsJson`] shcema used.
+pub const SCHEMA: &str = "3"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
+
 /// maximum distance in meters
 pub const SANE_INTERPOLATION_DISTANCE: i32 = 50;
 /// Mean earth radius, required for calcuation of distances between the GPS points
@@ -99,6 +97,22 @@ pub struct InsertTransmissionLocationRaw {
     /// User, from whose trekkie run this undeduped location was inferred
     pub run_owner: uuid::Uuid,
 }
+///
+/// The transmission location that get sent out as part of [`LocationsJson`] from datacare API
+pub struct ApiTransmissionLocation {
+    /// latitude
+    pub lat: f64,
+    /// longitude
+    pub lon: f64,
+}
+
+/// The format used by datacare API to send transmission locations out for a given region
+pub struct LocationsJson {
+    /// The region for which the locations returned
+    pub region: crate::locations::region::Region,
+    /// Hasmap of a transmission location to a region
+    pub transmission_locations: HashMap<i64, ApiTransmissionLocation>,
+}
 
 /// Error for associated functions and methods over [`TransmissionLocation`] struct
 pub enum TransmissionLocaionError {
@@ -106,6 +120,11 @@ pub enum TransmissionLocaionError {
     EmptyInput,
     /// Expected the data to be from the same region, got from several instead.
     RegionMismatch,
+    /// Expected the data for specific [`TransmissionLocation.reporting_point`], got from a
+    /// different one instead
+    ReportingPointMismatch,
+    /// Filtering produced no valid matches
+    NoMatches,
 }
 
 type TransmissionLocationResult = Result<InsertTransmissionLocation, TransmissionLocaionError>;
@@ -115,23 +134,35 @@ impl TransmissionLocation {
     // TODO: Should we make this configurable?
     pub const MAX_SANE_DISTANCE: f64 = 50_f64;
 
-    fn filter_outliers(input: Vec<TransmissionLocationRaw>) -> Option<Vec<TransmissionLocationRaw>> {
+    /// This function filters out outliers for specific reporting_point
+    fn filter_outliers(
+        input: Vec<TransmissionLocationRaw>,
+    ) -> Result<Vec<TransmissionLocationRaw>, TransmissionLocaionError> {
         // Edge case
         if input.len() == 0 {
-            return None;
+            return Err(TransmissionLocaionError::EmptyInput);
         }
 
         let (lats, lons): (Vec<f64>, Vec<f64>) = input.iter().map(|s| (s.lat, s.lon)).unzip();
 
-        let (avg_lat, avg_lon) = (lats.iter().sum()/lats.len(), lons.iter().sum()/lons.len());
+        let center_point: (f64, f64) = (
+            lats.iter().sum::<f64>() / (lats.len() as f64),
+            lons.iter().sum::<f64>() / (lons.len() as f64),
+        );
 
-        let filtered: Vec<TransmissionLocationRaw> = Vec::new();
+        let mut filtered: Vec<TransmissionLocationRaw> = Vec::new();
 
         for i in input {
-            
+            if i.distance_from(center_point) < SANE_INTERPOLATION_DISTANCE as f64 {
+                filtered.push(i)
+            }
         }
 
-        Some(filtered)
+        if filtered.len() == 0 {
+            return Err(TransmissionLocaionError::NoMatches);
+        }
+
+        Ok(filtered)
     }
 
     /// This function creates the [`InsertTransmissionLocation`] from the vector of raw
@@ -145,20 +176,33 @@ impl TransmissionLocation {
         if raw.len() == 0 {
             return Err(TransmissionLocaionError::EmptyInput);
         }
-        //let new_location = ;
         let region = raw[0].region;
-        for loc in raw {
+        let reporting_point = raw[0].reporting_point;
+        for loc in &raw {
             if loc.region != region {
                 return Err(TransmissionLocaionError::RegionMismatch);
             }
+            if loc.reporting_point != reporting_point {
+                return Err(TransmissionLocaionError::ReportingPointMismatch);
+            }
         }
-        Err(TransmissionLocaionError::EmptyInput)
-    }
 
-    /// This function refines the existing [`TransmissionLocation`] with new data. Should be used
-    /// with care, since by calling it on already processed runs would bias the data.
-    fn refine(&mut self, raw: Vec<TransmissionLocationRaw>) -> TransmissionLocationResult {
-        todo!("not implemented yet!")
+        let filtered = Self::filter_outliers(raw)?;
+
+        let (lats, lons): (Vec<f64>, Vec<f64>) = filtered.iter().map(|v| (v.lat, v.lon)).unzip();
+        let (lat, lon): (f64, f64) = (
+            lats.iter().sum::<f64>() / (lats.len() as f64),
+            lons.iter().sum::<f64>() / (lons.len() as f64),
+        );
+
+        Ok(InsertTransmissionLocation {
+            id: None,
+            region,
+            reporting_point,
+            lat,
+            lon,
+            ground_truth: false,
+        })
     }
 }
 
@@ -166,5 +210,28 @@ impl TransmissionLocation {
 /// data.
 pub trait DistanceFrom<T> {
     /// This function returns distance in meters between two objects
-    fn distance_from(&self, value: T) -> f64;
+    fn distance_from(&self, other: T) -> f64;
+}
+
+// The impl that does all the heavy lifting
+impl DistanceFrom<(f64, f64)> for (f64, f64) {
+    fn distance_from(&self, other: (f64, f64)) -> f64 {
+        let (self_lat, self_lon) = (self.0.to_radians(), self.1.to_radians());
+        let (other_lat, other_lon) = (other.0.to_radians(), other.1.to_radians());
+
+        let a = (((other_lat - self_lat) / 2_f64).sin()).powi(2)
+            + self_lat.cos() * other_lat.cos() * (((other_lon - self_lon) / 2_f64).sin()).powi(2);
+        let c = 2_f64 * a.sqrt().atan2((1_f64 - a).sqrt());
+
+        MEAN_EARTH_RADIUS as f64 * c
+    }
+}
+
+impl DistanceFrom<(f64, f64)> for TransmissionLocationRaw {
+    fn distance_from(&self, other: (f64, f64)) -> f64 {
+        let lat = self.lat;
+        let lon = self.lon;
+
+        (lat, lon).distance_from(other)
+    }
 }

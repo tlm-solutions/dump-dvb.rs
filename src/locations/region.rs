@@ -6,11 +6,11 @@ use crate::schema::*;
 use crate::telegrams::r09::R09Type;
 
 use std::collections::HashMap;
-use std::path::PathBuf;
 use std::fs;
+use std::path::PathBuf;
 
-use serde::{Deserialize, Serialize};
 use chrono::prelude::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
 /// Default region cache lifetime in seconds (24h)
 pub const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
@@ -18,8 +18,6 @@ pub const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
 pub const REGION_CACHE_FILE: &'static str = "region_cache.json";
 /// maximum distance in meters
 pub const SANE_INTERPOLATION_DISTANCE: i32 = 50;
-/// Mean earth radius, required for calcuation of distances between the GPS points
-pub const MEAN_EARTH_RADIUS: u32 = 6_371_000;
 
 /// Struct holding the information for a region.
 #[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
@@ -116,11 +114,13 @@ impl RegionCache {
         datacare_api: &str,
         cache_dir: PathBuf,
     ) -> Result<Self, RegionCacheError> {
-        let api_url = format!("{datacare_api}{endpoint}", endpoint = Self::REGION_API_ENDPOINT);
+        let api_url = format!(
+            "{datacare_api}{endpoint}",
+            endpoint = Self::REGION_API_ENDPOINT
+        );
         let api_response: String = reqwest::blocking::get(api_url)?.text()?;
 
-        let region_cache: HashMap<i64, Region> =
-            serde_json::from_str(&api_response)?;
+        let region_cache: HashMap<i64, Region> = serde_json::from_str(&api_response)?;
 
         let timestamped_region_cache = Self {
             metadata: region_cache,
