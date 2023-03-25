@@ -22,14 +22,14 @@ use std::collections::HashMap;
 #[diesel(sql_type = diesel::sql_types::Integer)]
 #[allow(missing_docs)]
 pub enum Role {
-    EditCompanyStations = 0,
-    CreateCompanyStations = 1,
-    DeleteCompanyStations = 2,
+    EditOrgnizationStations = 0,
+    CreateOrgnizationStations = 1,
+    DeleteOrgnizationStations = 2,
     EditMaintainedStations = 3,
     CreateMaintainedStations = 4,
     DeleteMaintainedStations = 5,
     EditOrgUserRoles = 6,
-    EditOwnCompany = 7,
+    EditOwnOrgnization = 7,
     ApproveStations = 8,
 }
 
@@ -37,14 +37,14 @@ impl TryFrom<i32> for Role {
     type Error = &'static str;
     fn try_from(role: i32) -> Result<Self, Self::Error> {
         match role {
-            0 => Ok(Role::EditCompanyStations),
-            1 => Ok(Role::CreateCompanyStations),
-            2 => Ok(Role::DeleteCompanyStations),
+            0 => Ok(Role::EditOrgnizationStations),
+            1 => Ok(Role::CreateOrgnizationStations),
+            2 => Ok(Role::DeleteOrgnizationStations),
             3 => Ok(Role::EditMaintainedStations),
             4 => Ok(Role::CreateMaintainedStations),
             5 => Ok(Role::DeleteMaintainedStations),
             6 => Ok(Role::EditOrgUserRoles),
-            7 => Ok(Role::EditOwnCompany),
+            7 => Ok(Role::EditOwnOrgnization),
             8 => Ok(Role::ApproveStations),
             _ => Err("No role corresponding to {role} value!"),
         }
@@ -54,14 +54,14 @@ impl TryFrom<i32> for Role {
 impl From<Role> for i32 {
     fn from(val: Role) -> Self {
         match val {
-            Role::EditCompanyStations => 0,
-            Role::CreateCompanyStations => 1,
-            Role::DeleteCompanyStations => 2,
+            Role::EditOrgnizationStations => 0,
+            Role::CreateOrgnizationStations => 1,
+            Role::DeleteOrgnizationStations => 2,
             Role::EditMaintainedStations => 3,
             Role::CreateMaintainedStations => 4,
             Role::DeleteMaintainedStations => 5,
             Role::EditOrgUserRoles => 6,
-            Role::EditOwnCompany => 7,
+            Role::EditOwnOrgnization => 7,
             Role::ApproveStations => 8,
         }
     }
@@ -78,13 +78,13 @@ impl FromSql<diesel::sql_types::Integer, Pg> for Role {
 impl ToSql<diesel::sql_types::Integer, Pg> for Role {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
         match self {
-            Role::EditCompanyStations => {
+            Role::EditOrgnizationStations => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&0_i32, out)
             }
-            Role::CreateCompanyStations => {
+            Role::CreateOrgnizationStations => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&1_i32, out)
             }
-            Role::DeleteCompanyStations => {
+            Role::DeleteOrgnizationStations => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&2_i32, out)
             }
             Role::EditMaintainedStations => {
@@ -99,7 +99,7 @@ impl ToSql<diesel::sql_types::Integer, Pg> for Role {
             Role::EditOrgUserRoles => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&6_i32, out)
             }
-            Role::EditOwnCompany => {
+            Role::EditOwnOrgnization => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&7_i32, out)
             }
             Role::ApproveStations => {
@@ -136,13 +136,13 @@ pub struct User {
 #[diesel(table_name = org_users_relation)]
 pub struct OrgUsersRelation {
     /// Primary key
-    id: Uuid,
+    pub id: Uuid,
     /// For which org the role is set
-    organization: Uuid,
+    pub organization: Uuid,
     /// For which user within org the role is set
-    user_id: Uuid,
+    pub user_id: Uuid,
     /// The role itself, see [`Roles`] enum for possible values
-    role: i32,
+    pub role: i32,
 }
 
 /// Struct used for authenticating users
@@ -163,9 +163,9 @@ pub const COMMUNITY_ORG_ID: Uuid = Uuid::from_u128(0x53e643d7_c300_4de7_ab48_540
 pub struct Organization {
     /// Primary Key
     id: Uuid,
-    /// Company Name
+    /// Orgnization Name
     name: String,
-    /// If Company information is public
+    /// If Orgnization information is public
     public: bool,
 }
 
