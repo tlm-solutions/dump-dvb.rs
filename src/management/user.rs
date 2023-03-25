@@ -22,14 +22,14 @@ use std::collections::HashMap;
 #[diesel(sql_type = diesel::sql_types::Integer)]
 #[allow(missing_docs)]
 pub enum Role {
-    EditOrgnizationStations = 0,
-    CreateOrgnizationStations = 1,
-    DeleteOrgnizationStations = 2,
+    EditOrganizationStations = 0,
+    CreateOrganizationStations = 1,
+    DeleteOrganizationStations = 2,
     EditMaintainedStations = 3,
     CreateMaintainedStations = 4,
     DeleteMaintainedStations = 5,
     EditOrgUserRoles = 6,
-    EditOwnOrgnization = 7,
+    EditOwnOrganization = 7,
     ApproveStations = 8,
 }
 
@@ -37,14 +37,14 @@ impl TryFrom<i32> for Role {
     type Error = &'static str;
     fn try_from(role: i32) -> Result<Self, Self::Error> {
         match role {
-            0 => Ok(Role::EditOrgnizationStations),
-            1 => Ok(Role::CreateOrgnizationStations),
-            2 => Ok(Role::DeleteOrgnizationStations),
+            0 => Ok(Role::EditOrganizationStations),
+            1 => Ok(Role::CreateOrganizationStations),
+            2 => Ok(Role::DeleteOrganizationStations),
             3 => Ok(Role::EditMaintainedStations),
             4 => Ok(Role::CreateMaintainedStations),
             5 => Ok(Role::DeleteMaintainedStations),
             6 => Ok(Role::EditOrgUserRoles),
-            7 => Ok(Role::EditOwnOrgnization),
+            7 => Ok(Role::EditOwnOrganization),
             8 => Ok(Role::ApproveStations),
             _ => Err("No role corresponding to {role} value!"),
         }
@@ -54,14 +54,14 @@ impl TryFrom<i32> for Role {
 impl From<Role> for i32 {
     fn from(val: Role) -> Self {
         match val {
-            Role::EditOrgnizationStations => 0,
-            Role::CreateOrgnizationStations => 1,
-            Role::DeleteOrgnizationStations => 2,
+            Role::EditOrganizationStations => 0,
+            Role::CreateOrganizationStations => 1,
+            Role::DeleteOrganizationStations => 2,
             Role::EditMaintainedStations => 3,
             Role::CreateMaintainedStations => 4,
             Role::DeleteMaintainedStations => 5,
             Role::EditOrgUserRoles => 6,
-            Role::EditOwnOrgnization => 7,
+            Role::EditOwnOrganization => 7,
             Role::ApproveStations => 8,
         }
     }
@@ -78,13 +78,13 @@ impl FromSql<diesel::sql_types::Integer, Pg> for Role {
 impl ToSql<diesel::sql_types::Integer, Pg> for Role {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, Pg>) -> serialize::Result {
         match self {
-            Role::EditOrgnizationStations => {
+            Role::EditOrganizationStations => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&0_i32, out)
             }
-            Role::CreateOrgnizationStations => {
+            Role::CreateOrganizationStations => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&1_i32, out)
             }
-            Role::DeleteOrgnizationStations => {
+            Role::DeleteOrganizationStations => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&2_i32, out)
             }
             Role::EditMaintainedStations => {
@@ -99,7 +99,7 @@ impl ToSql<diesel::sql_types::Integer, Pg> for Role {
             Role::EditOrgUserRoles => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&6_i32, out)
             }
-            Role::EditOwnOrgnization => {
+            Role::EditOwnOrganization => {
                 <i32 as ToSql<diesel::sql_types::Integer, Pg>>::to_sql(&7_i32, out)
             }
             Role::ApproveStations => {
@@ -163,10 +163,12 @@ pub const COMMUNITY_ORG_ID: Uuid = Uuid::from_u128(0x53e643d7_c300_4de7_ab48_540
 pub struct Organization {
     /// Primary Key
     id: Uuid,
-    /// Orgnization Name
+    /// Organization Name
     name: String,
-    /// If Orgnization information is public
+    /// If Organization information is public
     public: bool,
+    /// Owner of the organization
+    owner: Uuid,
 }
 
 impl AuthorizedUser {

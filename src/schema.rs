@@ -29,6 +29,7 @@ diesel::table! {
         id -> Uuid,
         name -> Text,
         public -> Bool,
+        owner -> Uuid,
     }
 }
 
@@ -152,6 +153,7 @@ diesel::table! {
 diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
 diesel::joinable!(org_users_relation -> organization (organization));
 diesel::joinable!(org_users_relation -> users (user_id));
+diesel::joinable!(organization -> users (owner));
 diesel::joinable!(r09_telegrams -> regions (region));
 diesel::joinable!(r09_telegrams -> stations (station));
 diesel::joinable!(r09_transmission_locations -> regions (region));
