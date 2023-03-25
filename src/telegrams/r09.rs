@@ -1,5 +1,5 @@
 //!
-//! This modul contains structs, exchange formats and implementations for R09 Telegrams.
+//! This module contains structs, exchange formats and implementations for R09 Telegrams.
 //!
 
 use crate::management::Station;
@@ -43,7 +43,7 @@ pub struct R09Telegram {
     /// Which direction the vehicle wants to drive.
     pub direction: u8,
     /// Enum in which state of registration this vehicle is see
-    /// [RequestStatus][crate::locations::RequestStatus] for more information.
+    /// [`RequestStatus`][crate::locations::RequestStatus] for more information.
     pub request_status: u8,
     /// If the vehicle requests priority or not.
     pub priority: Option<u8>,
@@ -93,11 +93,10 @@ pub struct R09SaveTelegram {
     pub station: Uuid,
 
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
-    #[diesel(deserialize_as = i64)]
     pub r09_type: R09Type,
-    #[serde(deserialize_with = "csv::invalid_option")]
 
     /// delay of the vehicle can range from -7 min to +7 mins
+    #[serde(deserialize_with = "csv::invalid_option")]
     pub delay: Option<i32>,
     /// Unique identifier of a location which can be decomposed into junction, direction and
     /// request_status.
@@ -227,7 +226,7 @@ impl TryFrom<i64> for R09Type {
             14 => Ok(Self::R14),
             16 => Ok(Self::R16),
             18 => Ok(Self::R18),
-            _ => Err("No such R09 type!".to_string()),
+            _ => Err("No such R09 type: {value}. Possible values: 14, 16, 18".to_string()),
         }
     }
 }
