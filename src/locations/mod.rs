@@ -104,6 +104,8 @@ pub struct ApiTransmissionLocation {
     pub lat: f64,
     /// longitude
     pub lon: f64,
+    /// any extra information, as long as it is valid JSON
+    pub properties: serde_json::Value,
 }
 
 /// The format used by datacare API to send transmission locations out for a given region
@@ -125,6 +127,25 @@ pub enum TransmissionLocaionError {
     ReportingPointMismatch,
     /// Filtering produced no valid matches
     NoMatches,
+}
+
+impl ApiTransmissionLocation {
+    /// Updates property field with epsg3857 coordinates, calculated from `loc` and `lon` fileds of
+    /// the struct. If field doesn't exist, creates it.
+    pub fn update_epsg3857(&mut self) {
+        // Convert the coords to pseudo-mercator (epsg3857)
+        const EARTH_RADIUS_M: f64 = 6_378_137_f64;
+        let x = EARTH_RADIUS_M * self.lon.to_radians();
+        let y =
+            ((self.lat.to_radians() / 2. + std::f64::consts::PI / 4.).tan()).ln() * EARTH_RADIUS_M;
+
+        // serialize value
+        if let Ok(epsg_val) = serde_json::from_str(&format!("{{ \"x\":{x}, \"y\":{y} }}")) {
+            self.properties["epsg3857"] = epsg_val;
+        } else {
+            eprintln!("epsg3857 property update skipped: Could not serialize {x} and {y} into json Value!");
+        }
+    }
 }
 
 type TransmissionLocationResult = Result<InsertTransmissionLocation, TransmissionLocaionError>;
