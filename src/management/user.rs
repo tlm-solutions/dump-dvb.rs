@@ -8,6 +8,7 @@ use pbkdf2::{
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use uuid::Uuid;
+use std::hash::{Hash, Hasher};
 
 use diesel::deserialize::{self, FromSql};
 use diesel::serialize::{self, Output, ToSql};
@@ -64,6 +65,12 @@ impl From<Role> for i32 {
             Role::EditOwnOrganization => 7,
             Role::ApproveStations => 8,
         }
+    }
+}
+
+impl Hash for Role {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        (self.clone() as i32).hash(state);
     }
 }
 
