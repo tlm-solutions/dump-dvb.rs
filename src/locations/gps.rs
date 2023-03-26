@@ -2,13 +2,8 @@
 
 use crate::schema::*;
 use chrono::NaiveDateTime;
-use gpx::Gpx;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
 
 /// ID value for [`GpsPoint`]'s that are not fetched from database, and therefore do not have a
 /// primary key
@@ -67,25 +62,6 @@ pub struct InsertGpsPoint {
     pub speed: Option<f64>,
 }
 
-/// Hasmap of gps unix timestamps to [`GpsPoint`]
-#[derive(Clone, Debug)]
-pub struct Gps(HashMap<i64, InsertGpsPoint>);
-
-impl From<Vec<InsertGpsPoint>> for Gps {
-    fn from(val: Vec<InsertGpsPoint>) -> Self {
-        val.into_iter()
-            .map(|v| (v.timestamp.timestamp(), v))
-            .collect::<HashMap<i64, InsertGpsPoint>>()
-            .into()
-    }
-}
-
-impl From<HashMap<i64, InsertGpsPoint>> for Gps {
-    fn from(val: HashMap<i64, InsertGpsPoint>) -> Gps {
-        Gps(val)
-    }
-}
-
 impl From<GpsPoint> for InsertGpsPoint {
     fn from(val: GpsPoint) -> Self {
         Self {
@@ -100,79 +76,5 @@ impl From<GpsPoint> for InsertGpsPoint {
             bearing: val.bearing,
             speed: val.speed,
         }
-    }
-}
-
-impl Gps {
-    /// Extracts waypoints from all tracks and segments of a Gpx file
-    pub fn insert_from_gpx_file(&mut self, filepath: &str) {
-        let file = File::open(filepath).expect("Could not open gpx file.");
-        let reader = BufReader::new(file);
-        let gpx = gpx::read(reader).expect("could not parse gpx");
-        Gps::insert_from_gpx(self, gpx)
-    }
-
-    // GPX WayPoint & soul extractor
-    /// Gets Gpx type object and extracts all Waypoints from it, Returns [`gps::Gps`].
-    fn insert_from_gpx(&mut self, gpx: Gpx) {
-        // I feel like my IQ dropping around here, but dunno how to do it, especially given time
-        // situation in gpx crate
-        for track in gpx.tracks {
-            for segment in track.segments {
-                for point in segment.points {
-                    let soul = InsertGpsPoint {
-                        id: None,
-                        trekkie_run: Uuid::parse_str("00000000-0000-0000-0000-000000000000")
-                            .unwrap(),
-                        lat: point.point().y(), // according to gpx crate team x and y are less
-                        lon: point.point().x(), // ambiguous for coordinates on a map
-                        elevation: point.elevation,
-                        timestamp: match point.time {
-                            Some(time) => chrono::naive::NaiveDateTime::parse_from_str(
-                                &time.format().unwrap(),
-                                "%Y-%m-%dT%H:%M:%SZ",
-                            )
-                            .unwrap(),
-                            None => break,
-                        },
-
-                        accuracy: point.pdop,
-                        vertical_accuracy: point.vdop,
-                        bearing: None,
-                        speed: point.speed,
-                    };
-
-                    self.insert(soul.timestamp.timestamp(), soul);
-                }
-            }
-        }
-    }
-
-    // hashmap boilerplate
-    /// Exposes hashmap methods on our type alias
-    #[allow(dead_code)]
-    pub fn iter(&self) -> impl Iterator<Item = (&i64, &InsertGpsPoint)> {
-        self.0.iter()
-    }
-
-    /// Exposes hashmap methods on our type alias
-    #[allow(dead_code)]
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = (&i64, &mut InsertGpsPoint)> {
-        self.0.iter_mut()
-    }
-
-    /// Exposes hashmap methods on our type alias
-    pub fn insert(&mut self, k: i64, v: InsertGpsPoint) -> Option<InsertGpsPoint> {
-        self.0.insert(k, v)
-    }
-
-    /// Exposes hashmap methods on our type alias
-    pub fn get(&self, k: &i64) -> Option<&InsertGpsPoint> {
-        self.0.get(k)
-    }
-
-    /// Exposes hashmap methods on our type alias
-    pub fn empty() -> Gps {
-        Gps(HashMap::new())
     }
 }
