@@ -9,7 +9,8 @@ management = [
     "dep:log",
     "dep:pbkdf2",
     "dep:rand",
-    "dep:regex"
+    "dep:regex",
+    "dep:utoipa"
 ]
 
 locations = [
@@ -63,7 +64,9 @@ pbkdf2 = {version = "0.11", optional = true}
 rand = {version = "0.8", optional = true}
 log = { version = "0.4", optional = true}
 regex = {version = "1.7", optional = true}
+
 reqwest = {version = "0.11", optional = true, features = ["blocking"]}
+utoipa = {version = "3", optional = true}
 
 [build-dependencies]
 tonic-build = "0.7"

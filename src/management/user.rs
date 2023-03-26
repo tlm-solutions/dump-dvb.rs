@@ -17,9 +17,10 @@ use diesel::{
     RunQueryDsl,
 };
 use std::collections::HashMap;
+use utoipa::ToSchema;
 
 /// Enum representing the role a user has inside our systems. Values are pretty self-explanatory
-#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression, FromSqlRow)]
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression, FromSqlRow, ToSchema)]
 #[diesel(sql_type = diesel::sql_types::Integer)]
 #[allow(missing_docs)]
 pub enum Role {
@@ -117,7 +118,7 @@ impl ToSql<diesel::sql_types::Integer, Pg> for Role {
 }
 
 /// Database struct holding user information
-#[derive(Debug, Clone, Deserialize, Queryable, Insertable, AsChangeset, Identifiable)]
+#[derive(Debug, Clone, Deserialize, Queryable, Insertable, AsChangeset, Identifiable, ToSchema)]
 #[diesel(table_name = users)]
 pub struct User {
     /// Unique identifier for a user.
@@ -165,7 +166,7 @@ pub struct AuthorizedUser {
 pub const COMMUNITY_ORG_ID: Uuid = Uuid::from_u128(0x53e643d7_c300_4de7_ab48_540d08a0cbc6);
 
 /// Database struct holding the information about organizations
-#[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable)]
+#[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable, ToSchema)]
 #[diesel(table_name = organizations)]
 pub struct Organization {
     /// Primary Key
