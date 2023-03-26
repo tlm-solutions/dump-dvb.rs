@@ -30,6 +30,7 @@ diesel::table! {
         name -> Text,
         public -> Bool,
         owner -> Uuid,
+        deactivated -> Bool,
     }
 }
 

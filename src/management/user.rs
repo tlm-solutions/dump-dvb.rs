@@ -176,6 +176,8 @@ pub struct Organization {
     pub public: bool,
     /// Owner of the organization
     pub owner: Uuid,
+    /// Flag that tell if this orga is deleted or not
+    pub deactivated: bool
 }
 
 impl AuthorizedUser {
