@@ -5,10 +5,6 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-/// ID value for [`GpsPoint`]'s that are not fetched from database, and therefore do not have a
-/// primary key
-pub const NO_ID: i64 = -0xDEADBABE;
-
 /// Gps trackpoint representation used in database.
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, Queryable)]
 #[diesel(table_name = gps_points)]
