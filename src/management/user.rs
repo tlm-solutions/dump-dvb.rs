@@ -169,13 +169,13 @@ pub const COMMUNITY_ORG_ID: Uuid = Uuid::from_u128(0x53e643d7_c300_4de7_ab48_540
 #[diesel(table_name = organization)]
 pub struct Organization {
     /// Primary Key
-    id: Uuid,
+    pub id: Uuid,
     /// Organization Name
-    name: String,
+    pub name: String,
     /// If Organization information is public
-    public: bool,
+    pub public: bool,
     /// Owner of the organization
-    owner: Uuid,
+    pub owner: Uuid,
 }
 
 impl AuthorizedUser {
