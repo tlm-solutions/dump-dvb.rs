@@ -80,7 +80,7 @@ pub struct TransmissionLocationRaw {
 }
 
 /// This struct inserts into the table corresponding to [`TransmissionLocationRaw`]
-#[derive(Debug, Clone, Insertable)]
+#[derive(Debug, Clone, Insertable, AsChangeset)]
 #[diesel(table_name = r09_transmission_locations_raw)]
 pub struct InsertTransmissionLocationRaw {
     /// Primary key. During INSERT should be [`None`] so DB can auto-increment it
