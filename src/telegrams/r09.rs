@@ -13,7 +13,7 @@ use csv;
 use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
 use diesel::serialize::{self, Output, ToSql};
-use diesel::{ Insertable, Queryable, AsExpression };
+use diesel::{AsExpression, Insertable, Queryable};
 use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
 use struct_field_names_as_array::FieldNamesAsArray;
