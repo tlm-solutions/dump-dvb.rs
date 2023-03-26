@@ -6,6 +6,7 @@ pub mod waypoint;
 use crate::schema::*;
 
 use std::collections::HashMap;
+use serde::{Serialize, Deserialize};
 
 /// Version of the [`LocationsJson`] shcema used.
 pub const SCHEMA: &str = "3"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
@@ -99,6 +100,7 @@ pub struct InsertTransmissionLocationRaw {
 }
 ///
 /// The transmission location that get sent out as part of [`LocationsJson`] from datacare API
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ApiTransmissionLocation {
     /// latitude
     pub lat: f64,
@@ -109,6 +111,7 @@ pub struct ApiTransmissionLocation {
 }
 
 /// The format used by datacare API to send transmission locations out for a given region
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LocationsJson {
     /// The region for which the locations returned
     pub region: crate::locations::region::Region,
