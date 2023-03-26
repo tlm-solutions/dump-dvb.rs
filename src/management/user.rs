@@ -7,8 +7,8 @@ use pbkdf2::{
 };
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
-use uuid::Uuid;
 use std::hash::{Hash, Hasher};
+use uuid::Uuid;
 
 use diesel::deserialize::{self, FromSql};
 use diesel::serialize::{self, Output, ToSql};
