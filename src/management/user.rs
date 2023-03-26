@@ -140,7 +140,7 @@ pub struct User {
 /// Database struct holding the relations between organizations and users. Keeps track of user
 /// roles within organization
 #[derive(Debug, Clone, Deserialize, Queryable, Insertable, AsChangeset, Identifiable)]
-#[diesel(table_name = org_users_relation)]
+#[diesel(table_name = org_users_relations)]
 pub struct OrgUsersRelation {
     /// Primary key
     pub id: Uuid,
@@ -166,7 +166,7 @@ pub const COMMUNITY_ORG_ID: Uuid = Uuid::from_u128(0x53e643d7_c300_4de7_ab48_540
 
 /// Database struct holding the information about organizations
 #[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable)]
-#[diesel(table_name = organization)]
+#[diesel(table_name = organizations)]
 pub struct Organization {
     /// Primary Key
     pub id: Uuid,
@@ -177,13 +177,13 @@ pub struct Organization {
     /// Owner of the organization
     pub owner: Uuid,
     /// Flag that tell if this orga is deleted or not
-    pub deactivated: bool
+    pub deactivated: bool,
 }
 
 impl AuthorizedUser {
     /// takes a cookie and returnes the corresponging user struct
     pub fn from_postgres(user_id: &Uuid, database_connection: &mut PgConnection) -> Option<Self> {
-        use crate::management::org_users_relation::dsl::org_users_relation;
+        use crate::management::org_users_relations::dsl::org_users_relations;
         use crate::management::users::dsl::users;
         use crate::schema::users::id;
 
@@ -194,8 +194,8 @@ impl AuthorizedUser {
             .first::<User>(database_connection)
         {
             Ok(found_user) => {
-                let associations = org_users_relation
-                    .filter(crate::schema::org_users_relation::user_id.eq(user_id))
+                let associations = org_users_relations
+                    .filter(crate::schema::org_users_relations::user_id.eq(user_id))
                     .load::<OrgUsersRelation>(database_connection)
                     .unwrap_or(Vec::new());
 

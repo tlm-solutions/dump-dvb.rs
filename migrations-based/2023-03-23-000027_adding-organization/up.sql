@@ -1,21 +1,21 @@
 -- Your SQL goes here
 
-CREATE TABLE organization (
+CREATE TABLE organizations (
 	    id UUID PRIMARY KEY,
 	    name TEXT NOT NULL,
 	    public BOOLEAN NOT NULL
 );
 
-CREATE TABLE org_users_relation (
+CREATE TABLE org_users_relations (
 	    id UUID PRIMARY KEY,
-	    organization UUID REFERENCES organization(id) NOT NULL,
+	    organization UUID REFERENCES organizations(id) NOT NULL,
 	    user_id UUID REFERENCES users(id) NOT NULL,
 	    ROLE INT NOT NULL
 );
 
-INSERT INTO organization (id, name, public) VALUES ('53e643d7-c300-4de7-ab48-540d08a0cbc6', 'Community Organization', true);
+INSERT INTO organizations (id, name, public) VALUES ('53e643d7-c300-4de7-ab48-540d08a0cbc6', 'Community Organization', true);
 
-ALTER TABLE stations ADD COLUMN organization UUID REFERENCES organization(id);
+ALTER TABLE stations ADD COLUMN organization UUID REFERENCES organizations(id);
 UPDATE stations SET organization='53e643d7-c300-4de7-ab48-540d08a0cbc6';
 ALTER TABLE stations ALTER COLUMN organization SET NOT NULL;
 

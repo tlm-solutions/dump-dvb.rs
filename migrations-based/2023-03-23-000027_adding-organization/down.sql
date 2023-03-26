@@ -4,11 +4,11 @@ ALTER TABLE r09_transmission_locations DROP COLUMN ground_truth;
 
 ALTER TABLE users DROP COLUMN admin;
 
-ALTER TABLE stations DROP COLUMN organization;
+ALTER TABLE stations DROP COLUMN organizations;
 
-DROP TABLE org_users_relation;
+DROP TABLE org_users_relations;
 
-DROP TABLE organization;
+DROP TABLE organizations;
 
 ALTER TABLE users ADD COLUMN role INT;
 UPDATE users SET role=6;

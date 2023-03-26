@@ -1,4 +1,4 @@
 -- This file should undo anything in `up.sql`
-ALTER TABLE organization DROP COLUMN deactivated;
+ALTER TABLE organizations DROP COLUMN deactivated;
 
 

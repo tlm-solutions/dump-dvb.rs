@@ -16,7 +16,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    org_users_relation (id) {
+    org_users_relations (id) {
         id -> Uuid,
         organization -> Uuid,
         user_id -> Uuid,
@@ -25,7 +25,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    organization (id) {
+    organizations (id) {
         id -> Uuid,
         name -> Text,
         public -> Bool,
@@ -152,9 +152,9 @@ diesel::table! {
 }
 
 diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
-diesel::joinable!(org_users_relation -> organization (organization));
-diesel::joinable!(org_users_relation -> users (user_id));
-diesel::joinable!(organization -> users (owner));
+diesel::joinable!(org_users_relations -> organizations (organization));
+diesel::joinable!(org_users_relations -> users (user_id));
+diesel::joinable!(organizations -> users (owner));
 diesel::joinable!(r09_telegrams -> regions (region));
 diesel::joinable!(r09_telegrams -> stations (station));
 diesel::joinable!(r09_transmission_locations -> regions (region));
@@ -162,7 +162,7 @@ diesel::joinable!(r09_transmission_locations_raw -> regions (region));
 diesel::joinable!(r09_transmission_locations_raw -> trekkie_runs (trekkie_run));
 diesel::joinable!(r09_transmission_locations_raw -> users (run_owner));
 diesel::joinable!(raw_telegrams -> stations (station));
-diesel::joinable!(stations -> organization (organization));
+diesel::joinable!(stations -> organizations (organization));
 diesel::joinable!(stations -> regions (region));
 diesel::joinable!(stations -> users (owner));
 diesel::joinable!(trekkie_runs -> regions (region));
@@ -170,8 +170,8 @@ diesel::joinable!(trekkie_runs -> users (owner));
 
 diesel::allow_tables_to_appear_in_same_query!(
     gps_points,
-    org_users_relation,
-    organization,
+    org_users_relations,
+    organizations,
     r09_telegrams,
     r09_transmission_locations,
     r09_transmission_locations_raw,

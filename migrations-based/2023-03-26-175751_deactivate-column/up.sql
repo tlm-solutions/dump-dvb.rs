@@ -1,5 +1,5 @@
 -- Your SQL goes here
 
-ALTER TABLE organization ADD COLUMN deactivated BOOLEAN;
-UPDATE organization SET deactivated=false;
-ALTER TABLE organization ALTER COLUMN deactivated SET NOT NULL;
+ALTER TABLE organizations ADD COLUMN deactivated BOOLEAN;
+UPDATE organizations SET deactivated=false;
+ALTER TABLE organizations ALTER COLUMN deactivated SET NOT NULL;

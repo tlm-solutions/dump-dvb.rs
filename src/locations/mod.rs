@@ -5,8 +5,8 @@ pub mod waypoint;
 
 use crate::schema::*;
 
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 
 /// Version of the [`LocationsJson`] shcema used.
 pub const SCHEMA: &str = "3"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
