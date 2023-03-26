@@ -19,7 +19,7 @@ use diesel::{
 use std::collections::HashMap;
 
 /// Enum representing the role a user has inside our systems. Values are pretty self-explanatory
-#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression)]
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression, FromSqlRow)]
 #[diesel(sql_type = diesel::sql_types::Integer)]
 #[allow(missing_docs)]
 pub enum Role {
@@ -149,7 +149,7 @@ pub struct OrgUsersRelation {
     /// For which user within org the role is set
     pub user_id: Uuid,
     /// The role itself, see [`Roles`] enum for possible values
-    pub role: i32,
+    pub role: Role,
 }
 
 /// Struct used for authenticating users
