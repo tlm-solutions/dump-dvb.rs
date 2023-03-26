@@ -165,7 +165,7 @@ pub struct AuthorizedUser {
 pub const COMMUNITY_ORG_ID: Uuid = Uuid::from_u128(0x53e643d7_c300_4de7_ab48_540d08a0cbc6);
 
 /// Database struct holding the information about organizations
-#[derive(Debug, Clone, Deserialize, Queryable, Insertable)]
+#[derive(Debug, Clone, Deserialize, Serialize, Queryable, Insertable)]
 #[diesel(table_name = organization)]
 pub struct Organization {
     /// Primary Key
