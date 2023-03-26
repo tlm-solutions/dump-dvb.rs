@@ -78,6 +78,7 @@ pub struct R09Telegram {
     Associations,
     FieldNamesAsArray,
     Queryable,
+    Identifiable,
 )]
 #[diesel(table_name = r09_telegrams)]
 #[diesel(belongs_to(Station, foreign_key = station))]
@@ -144,7 +145,7 @@ pub struct R09ReceiveTelegram {
 
 /// Enum for different R09 formats used.
 #[allow(missing_docs)]
-#[derive(Debug, Eq, Clone, AsExpression)]
+#[derive(Debug, Eq, Clone, AsExpression, FromSqlRow)]
 #[diesel(sql_type = diesel::sql_types::BigInt)]
 pub enum R09Type {
     R14 = 14,
