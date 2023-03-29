@@ -36,7 +36,8 @@ telegrams = [
     "dep:csv",
     "dep:struct-field-names-as-array",
     "dep:tonic",
-    "dep:prost"
+    "dep:prost",
+    "dep:utoipa"
 ]
 
 measurements = [

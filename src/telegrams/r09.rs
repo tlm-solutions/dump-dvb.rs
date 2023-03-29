@@ -18,6 +18,7 @@ use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
 use struct_field_names_as_array::FieldNamesAsArray;
 use uuid::Uuid;
+use utoipa::ToSchema;
 
 use std::fmt;
 use std::hash::Hash;
@@ -145,7 +146,7 @@ pub struct R09ReceiveTelegram {
 
 /// Enum for different R09 formats used.
 #[allow(missing_docs)]
-#[derive(Debug, Eq, Clone, AsExpression, FromSqlRow)]
+#[derive(Debug, Eq, Clone, AsExpression, FromSqlRow, ToSchema)]
 #[diesel(sql_type = diesel::sql_types::BigInt)]
 pub enum R09Type {
     R14 = 14,
