@@ -20,7 +20,9 @@ use std::collections::HashMap;
 use utoipa::ToSchema;
 
 /// Enum representing the role a user has inside our systems. Values are pretty self-explanatory
-#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression, FromSqlRow, ToSchema)]
+#[derive(
+    Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Debug, AsExpression, FromSqlRow, ToSchema,
+)]
 #[diesel(sql_type = diesel::sql_types::Integer)]
 #[allow(missing_docs)]
 pub enum Role {

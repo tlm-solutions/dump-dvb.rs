@@ -7,8 +7,8 @@ use user::User;
 
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
-use uuid::Uuid;
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 /// This is the struct for a station / receiver which receives VDV420 R09 Telegrams and sends them
 /// to [data-accumulator](https://github.com/tlm-solutions/data-accumulator) for collection and

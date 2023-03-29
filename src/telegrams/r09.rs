@@ -17,8 +17,8 @@ use diesel::{AsExpression, Insertable, Queryable};
 use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
 use struct_field_names_as_array::FieldNamesAsArray;
-use uuid::Uuid;
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 use std::fmt;
 use std::hash::Hash;
