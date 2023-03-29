@@ -11,6 +11,7 @@ use std::path::PathBuf;
 
 use chrono::prelude::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 /// Default region cache lifetime in seconds (24h)
 pub const REGION_CACHE_EXPIRATION: i64 = 24 * 60 * 60;
@@ -20,7 +21,7 @@ pub const REGION_CACHE_FILE: &str = "region_cache.json";
 pub const SANE_INTERPOLATION_DISTANCE: i32 = 50;
 
 /// Struct holding the information for a region.
-#[derive(Debug, Clone, Serialize, Deserialize, Queryable)]
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable, ToSchema)]
 pub struct Region {
     /// Unique region identifier this is really just an arbitrery number.
     #[diesel(deserialize_as = i64)]

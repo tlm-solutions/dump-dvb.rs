@@ -15,7 +15,8 @@ management = [
 
 locations = [
     "reqwest",
-    "telegrams"
+    "telegrams",
+    "dep:utoipa"
 ]
 
 receivers = []
