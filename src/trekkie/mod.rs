@@ -26,4 +26,6 @@ pub struct TrekkieRun {
     pub finished: bool,
     /// primary key to uniquely identify a trekkie run
     pub id: Uuid,
+    /// flag that tells that the data recorded for this trekkie run is already correlated
+    pub correlated: bool,
 }

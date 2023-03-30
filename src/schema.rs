@@ -136,6 +136,7 @@ diesel::table! {
         owner -> Uuid,
         finished -> Bool,
         id -> Uuid,
+        correlated -> Bool,
     }
 }
 
