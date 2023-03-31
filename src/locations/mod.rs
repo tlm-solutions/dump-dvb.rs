@@ -156,7 +156,7 @@ impl ApiTransmissionLocation {
 }
 
 type TransmissionLocationResult = Result<InsertTransmissionLocation, TransmissionLocaionError>;
-impl TransmissionLocation {
+impl InsertTransmissionLocation {
     /// Maximum distance at which the raw point is considered to be corresponding to the report
     /// location cluster
     // TODO: Should we make this configurable?
