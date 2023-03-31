@@ -44,7 +44,9 @@ measurements = [
     "telegrams"
 ]
 
-trekkie = []
+trekkie = [
+    "dep:utoipa"
+]
 
 [dependencies]
 

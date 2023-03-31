@@ -1,13 +1,14 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use utoipa::ToSchema;
 
 use crate::schema::trekkie_runs;
 
 /// This saves a measurement of a vehicle for later correlation. This struct tells when the vehicle
 /// was measured and what are line and run number. The gps_table references trekkie_runs for all
 /// the saved gps locations
-#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable)]
+#[derive(Debug, Clone, Serialize, Deserialize, Queryable, Insertable, ToSchema)]
 #[diesel(table_name = trekkie_runs)]
 pub struct TrekkieRun {
     /// time when the vehicle was entered
