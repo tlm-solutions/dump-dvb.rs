@@ -103,6 +103,7 @@ diesel::table! {
         lat -> Float8,
         lon -> Float8,
         zoom -> Float8,
+        work_in_progress -> Bool,
     }
 }
 

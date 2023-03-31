@@ -47,7 +47,9 @@ pub struct Region {
     /// longtitude of the city center
     pub lon: f64,
     /// zoom level
-    pub zoom: f64
+    pub zoom: f64,
+    /// if the region is work in progress or not
+    pub work_in_progress: bool
 }
 
 /// This struct is the same as [`Region`] but with the difference that id is optional
