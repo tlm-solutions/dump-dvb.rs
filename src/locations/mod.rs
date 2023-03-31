@@ -44,7 +44,7 @@ pub struct TransmissionLocation {
 /// This struct is used to insert R09 telegram transmission positions to the database. Every entry
 /// corresponds to unique transmission location, that is inferred over multiple measurements. For
 /// raw per-measurement data see [`InsertTransmissionLocationRaw`]
-#[derive(Debug, Clone, Insertable)]
+#[derive(Debug, Clone, Insertable, AsChangeset)]
 #[diesel(table_name = r09_transmission_locations)]
 pub struct InsertTransmissionLocation {
     /// Primary key. During INSERT should be [`None`] so DB can auto-increment it
