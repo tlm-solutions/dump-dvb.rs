@@ -42,6 +42,12 @@ pub struct Region {
     pub encoding: Option<i32>,
     /// This value is set to true if the region is deleted.
     pub deactivated: bool,
+    /// latitude of the city center
+    pub lat: f32,
+    /// longtitude of the city center
+    pub lon: f32,
+    /// zoom level
+    pub zoom: f32
 }
 
 /// This struct is the same as [`Region`] but with the difference that id is optional

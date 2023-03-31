@@ -100,6 +100,9 @@ diesel::table! {
         r09_type -> Nullable<Int8>,
         encoding -> Nullable<Int4>,
         deactivated -> Bool,
+        lat -> Float8,
+        lon -> Float8,
+        zoom -> Float8,
     }
 }
 
