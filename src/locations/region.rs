@@ -49,7 +49,7 @@ pub struct Region {
     /// zoom level
     pub zoom: f64,
     /// if the region is work in progress or not
-    pub work_in_progress: bool
+    pub work_in_progress: bool,
 }
 
 /// This struct is the same as [`Region`] but with the difference that id is optional
@@ -83,7 +83,7 @@ pub struct InsertRegion {
     /// zoom level
     pub zoom: f64,
     /// if the region is work in progress or not
-    pub work_in_progress: bool
+    pub work_in_progress: bool,
 }
 
 /// The struct that deserializes into json containing cache for region meta information. See
