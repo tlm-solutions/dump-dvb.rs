@@ -16,6 +16,10 @@ pub const SANE_INTERPOLATION_DISTANCE: i32 = 50;
 /// Mean earth radius, required for calcuation of distances between the GPS points
 pub const MEAN_EARTH_RADIUS: u32 = 6_371_000;
 
+/// name of the constraint in the r09_transmission_locations, for unique combination of region and
+/// transmission position.
+pub const REGION_POSITION_UNIQUE_CONSTRAINT: &str = "unique_region_position";
+
 /// This struct is used to query R09 telegram transmission positions from the database. Every entry
 /// corresponds to unique transmission location, that is inferred over multiple measurements. For
 /// raw per-measurement data see [`TransmissionLocationRaw`]
