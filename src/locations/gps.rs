@@ -74,3 +74,4 @@ impl From<GpsPoint> for InsertGpsPoint {
         }
     }
 }
+

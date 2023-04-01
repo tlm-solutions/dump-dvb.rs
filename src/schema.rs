@@ -91,6 +91,20 @@ diesel::table! {
 }
 
 diesel::table! {
+    region_statistics (id) {
+        id -> Int8,
+        total_telegrams -> Int8,
+        month_telegrams -> Int8,
+        week_telegrams -> Int8,
+        day_telegrams -> Int8,
+        total_gps -> Int8,
+        month_gps -> Int8,
+        week_gps -> Int8,
+        day_gps -> Int8,
+    }
+}
+
+diesel::table! {
     regions (id) {
         id -> Int8,
         name -> Text,
@@ -104,6 +118,16 @@ diesel::table! {
         lon -> Float8,
         zoom -> Float8,
         work_in_progress -> Bool,
+    }
+}
+
+diesel::table! {
+    station_statistics (id) {
+        id -> Uuid,
+        total_telegrams -> Int8,
+        month_telegrams -> Int8,
+        week_telegrams -> Int8,
+        day_telegrams -> Int8,
     }
 }
 
@@ -145,6 +169,16 @@ diesel::table! {
 }
 
 diesel::table! {
+    user_statistics (id) {
+        id -> Uuid,
+        total_gps -> Int8,
+        month_gps -> Int8,
+        week_gps -> Int8,
+        day_gps -> Int8,
+    }
+}
+
+diesel::table! {
     users (id) {
         id -> Uuid,
         name -> Nullable<Text>,
@@ -167,11 +201,14 @@ diesel::joinable!(r09_transmission_locations_raw -> regions (region));
 diesel::joinable!(r09_transmission_locations_raw -> trekkie_runs (trekkie_run));
 diesel::joinable!(r09_transmission_locations_raw -> users (run_owner));
 diesel::joinable!(raw_telegrams -> stations (station));
+diesel::joinable!(region_statistics -> regions (id));
+diesel::joinable!(station_statistics -> stations (id));
 diesel::joinable!(stations -> organizations (organization));
 diesel::joinable!(stations -> regions (region));
 diesel::joinable!(stations -> users (owner));
 diesel::joinable!(trekkie_runs -> regions (region));
 diesel::joinable!(trekkie_runs -> users (owner));
+diesel::joinable!(user_statistics -> users (id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     gps_points,
@@ -181,8 +218,11 @@ diesel::allow_tables_to_appear_in_same_query!(
     r09_transmission_locations,
     r09_transmission_locations_raw,
     raw_telegrams,
+    region_statistics,
     regions,
+    station_statistics,
     stations,
     trekkie_runs,
+    user_statistics,
     users,
 );

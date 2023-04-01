@@ -48,6 +48,10 @@ trekkie = [
     "dep:utoipa"
 ]
 
+statistics = [
+    "dep:utoipa"
+]
+
 [dependencies]
 
 serde_json = "1.0"
