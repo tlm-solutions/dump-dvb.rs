@@ -93,6 +93,7 @@ diesel::table! {
 diesel::table! {
     region_statistics (id) {
         id -> Int8,
+        last_updated -> Timestamp,
         total_telegrams -> Int8,
         month_telegrams -> Int8,
         week_telegrams -> Int8,
@@ -124,6 +125,7 @@ diesel::table! {
 diesel::table! {
     station_statistics (id) {
         id -> Uuid,
+        last_updated -> Timestamp,
         total_telegrams -> Int8,
         month_telegrams -> Int8,
         week_telegrams -> Int8,
@@ -171,6 +173,7 @@ diesel::table! {
 diesel::table! {
     user_statistics (id) {
         id -> Uuid,
+        last_updated -> Timestamp,
         total_gps -> Int8,
         month_gps -> Int8,
         week_gps -> Int8,

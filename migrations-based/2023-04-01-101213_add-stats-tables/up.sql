@@ -2,6 +2,7 @@
 
 CREATE TABLE region_statistics (
 	id BIGINT PRIMARY KEY REFERENCES regions(id),
+	last_updated TIMESTAMP NOT NULL,
 	total_telegrams BIGINT NOT NULL,
 	month_telegrams BIGINT NOT NULL,
 	week_telegrams BIGINT NOT NULL,
@@ -14,6 +15,7 @@ CREATE TABLE region_statistics (
 
 CREATE TABLE station_statistics (
 	id UUID PRIMARY KEY REFERENCES stations(id),
+	last_updated TIMESTAMP NOT NULL,
 	total_telegrams BIGINT NOT NULL,
 	month_telegrams BIGINT NOT NULL,
 	week_telegrams BIGINT NOT NULL,
@@ -22,6 +24,7 @@ CREATE TABLE station_statistics (
 
 CREATE TABLE user_statistics (
 	id UUID PRIMARY KEY REFERENCES users(id),
+	last_updated TIMESTAMP NOT NULL,
 	total_gps BIGINT NOT NULL,
 	month_gps BIGINT NOT NULL,
 	week_gps BIGINT NOT NULL,
