@@ -7,12 +7,13 @@ use user::User;
 
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 /// This is the struct for a station / receiver which receives VDV420 R09 Telegrams and sends them
 /// to [data-accumulator](https://github.com/tlm-solutions/data-accumulator) for collection and
 /// further processing. This struct is used for token based authentication inside data-accumulator.
-#[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations)]
+#[derive(Debug, Clone, Deserialize, Insertable, Queryable, Associations, ToSchema)]
 #[diesel(table_name = stations)]
 #[diesel(belongs_to(User, foreign_key = owner))]
 #[diesel(belongs_to(Region, foreign_key = region))]
@@ -53,6 +54,8 @@ pub struct Station {
     pub telegram_decoder_version: Option<String>,
     /// Field to add custom notes to your station.
     pub notes: Option<String>,
+    /// Organization that this station belongs to.
+    pub organization: Uuid,
 }
 
 impl Serialize for Station {
@@ -83,7 +86,7 @@ impl Serialize for Station {
 }
 
 /// On which computer / device the station runs on.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub enum Device {
     /// Unknown or Unlisted Device
     Other = 0,
@@ -116,7 +119,7 @@ pub enum Device {
 }
 
 /// Which Software Defined Radio is used by the station.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub enum Radio {
     /// Unknown or Unlisted Device
     Other = 0,
@@ -129,7 +132,7 @@ pub enum Radio {
 }
 
 /// Which CPU Architecture is used by the device the station runs on.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub enum Architecture {
     /// Unknown or Unlisted Architecture
     Other = 0,
@@ -140,7 +143,7 @@ pub enum Architecture {
 }
 
 /// Enum that encodes antenna types with which r09 telegrams are captured.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub enum Antenna {
     /// Unknown or Unlisted Antenna Type
     Other = 0,
@@ -153,7 +156,7 @@ pub enum Antenna {
 }
 
 /// With which encoding the data inside the r09 telegrams is encoded.
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub enum Encoding {
     /// Unknown or Unlisted Data Encoding
     Other = 0,

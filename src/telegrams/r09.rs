@@ -1,5 +1,5 @@
 //!
-//! This modul contains structs, exchange formats and implementations for R09 Telegrams.
+//! This module contains structs, exchange formats and implementations for R09 Telegrams.
 //!
 
 use crate::management::Station;
@@ -13,10 +13,11 @@ use csv;
 use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
 use diesel::serialize::{self, Output, ToSql};
-use diesel::Insertable;
+use diesel::{AsExpression, Insertable, Queryable};
 use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
 use struct_field_names_as_array::FieldNamesAsArray;
+use utoipa::ToSchema;
 use uuid::Uuid;
 
 use std::fmt;
@@ -43,7 +44,7 @@ pub struct R09Telegram {
     /// Which direction the vehicle wants to drive.
     pub direction: u8,
     /// Enum in which state of registration this vehicle is see
-    /// [RequestStatus][crate::locations::RequestStatus] for more information.
+    /// [`RequestStatus`][crate::locations::RequestStatus] for more information.
     pub request_status: u8,
     /// If the vehicle requests priority or not.
     pub priority: Option<u8>,
@@ -78,6 +79,7 @@ pub struct R09Telegram {
     Associations,
     FieldNamesAsArray,
     Queryable,
+    Identifiable,
 )]
 #[diesel(table_name = r09_telegrams)]
 #[diesel(belongs_to(Station, foreign_key = station))]
@@ -93,11 +95,10 @@ pub struct R09SaveTelegram {
     pub station: Uuid,
 
     /// standard the telegram follows (**R09.14**, **R09.16**, **R09.18**)
-    #[diesel(deserialize_as = i64)]
     pub r09_type: R09Type,
-    #[serde(deserialize_with = "csv::invalid_option")]
 
     /// delay of the vehicle can range from -7 min to +7 mins
+    #[serde(deserialize_with = "csv::invalid_option")]
     pub delay: Option<i32>,
     /// Unique identifier of a location which can be decomposed into junction, direction and
     /// request_status.
@@ -145,12 +146,18 @@ pub struct R09ReceiveTelegram {
 
 /// Enum for different R09 formats used.
 #[allow(missing_docs)]
-#[derive(Debug, PartialEq, Eq, Clone, AsExpression)]
+#[derive(Debug, Eq, Clone, AsExpression, FromSqlRow, ToSchema)]
 #[diesel(sql_type = diesel::sql_types::BigInt)]
 pub enum R09Type {
     R14 = 14,
     R16 = 16,
     R18 = 18,
+}
+
+impl PartialEq for R09Type {
+    fn eq(&self, other: &Self) -> bool {
+        (self.clone() as i64) == (other.clone() as i64)
+    }
 }
 
 impl fmt::Display for R09Type {
@@ -221,7 +228,7 @@ impl TryFrom<i64> for R09Type {
             14 => Ok(Self::R14),
             16 => Ok(Self::R16),
             18 => Ok(Self::R18),
-            _ => Err("No such R09 type!".to_string()),
+            _ => Err("No such R09 type: {value}. Possible values: 14, 16, 18".to_string()),
         }
     }
 }

@@ -90,6 +90,12 @@ pub mod measurements;
 pub mod trekkie;
 
 ///
+/// Module which keeps structs used for statistical purposes.
+///
+#[cfg(feature = "statistics")]
+pub mod statistics;
+
+///
 /// This module exports grpc definitions for services and structs that are used to communicate
 /// between services.
 ///

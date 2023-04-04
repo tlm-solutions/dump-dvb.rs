@@ -16,6 +16,25 @@ diesel::table! {
 }
 
 diesel::table! {
+    org_users_relations (id) {
+        id -> Uuid,
+        organization -> Uuid,
+        user_id -> Uuid,
+        role -> Int4,
+    }
+}
+
+diesel::table! {
+    organizations (id) {
+        id -> Uuid,
+        name -> Text,
+        public -> Bool,
+        owner -> Uuid,
+        deactivated -> Bool,
+    }
+}
+
+diesel::table! {
     r09_telegrams (id) {
         id -> Int8,
         time -> Timestamp,
@@ -45,6 +64,7 @@ diesel::table! {
         reporting_point -> Int4,
         lat -> Float8,
         lon -> Float8,
+        ground_truth -> Bool,
     }
 }
 
@@ -71,6 +91,21 @@ diesel::table! {
 }
 
 diesel::table! {
+    region_statistics (id) {
+        id -> Int8,
+        last_updated -> Timestamp,
+        total_telegrams -> Int8,
+        month_telegrams -> Int8,
+        week_telegrams -> Int8,
+        day_telegrams -> Int8,
+        total_gps -> Int8,
+        month_gps -> Int8,
+        week_gps -> Int8,
+        day_gps -> Int8,
+    }
+}
+
+diesel::table! {
     regions (id) {
         id -> Int8,
         name -> Text,
@@ -80,6 +115,21 @@ diesel::table! {
         r09_type -> Nullable<Int8>,
         encoding -> Nullable<Int4>,
         deactivated -> Bool,
+        lat -> Float8,
+        lon -> Float8,
+        zoom -> Float8,
+        work_in_progress -> Bool,
+    }
+}
+
+diesel::table! {
+    station_statistics (id) {
+        id -> Uuid,
+        last_updated -> Timestamp,
+        total_telegrams -> Int8,
+        month_telegrams -> Int8,
+        week_telegrams -> Int8,
+        day_telegrams -> Int8,
     }
 }
 
@@ -102,6 +152,7 @@ diesel::table! {
         antenna -> Nullable<Int4>,
         telegram_decoder_version -> Nullable<Text>,
         notes -> Nullable<Text>,
+        organization -> Uuid,
     }
 }
 
@@ -115,6 +166,18 @@ diesel::table! {
         owner -> Uuid,
         finished -> Bool,
         id -> Uuid,
+        correlated -> Bool,
+    }
+}
+
+diesel::table! {
+    user_statistics (id) {
+        id -> Uuid,
+        last_updated -> Timestamp,
+        total_gps -> Int8,
+        month_gps -> Int8,
+        week_gps -> Int8,
+        day_gps -> Int8,
     }
 }
 
@@ -124,13 +187,16 @@ diesel::table! {
         name -> Nullable<Text>,
         email -> Nullable<Text>,
         password -> Varchar,
-        role -> Int4,
         email_setting -> Nullable<Int4>,
         deactivated -> Bool,
+        admin -> Bool,
     }
 }
 
 diesel::joinable!(gps_points -> trekkie_runs (trekkie_run));
+diesel::joinable!(org_users_relations -> organizations (organization));
+diesel::joinable!(org_users_relations -> users (user_id));
+diesel::joinable!(organizations -> users (owner));
 diesel::joinable!(r09_telegrams -> regions (region));
 diesel::joinable!(r09_telegrams -> stations (station));
 diesel::joinable!(r09_transmission_locations -> regions (region));
@@ -138,19 +204,28 @@ diesel::joinable!(r09_transmission_locations_raw -> regions (region));
 diesel::joinable!(r09_transmission_locations_raw -> trekkie_runs (trekkie_run));
 diesel::joinable!(r09_transmission_locations_raw -> users (run_owner));
 diesel::joinable!(raw_telegrams -> stations (station));
+diesel::joinable!(region_statistics -> regions (id));
+diesel::joinable!(station_statistics -> stations (id));
+diesel::joinable!(stations -> organizations (organization));
 diesel::joinable!(stations -> regions (region));
 diesel::joinable!(stations -> users (owner));
 diesel::joinable!(trekkie_runs -> regions (region));
 diesel::joinable!(trekkie_runs -> users (owner));
+diesel::joinable!(user_statistics -> users (id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     gps_points,
+    org_users_relations,
+    organizations,
     r09_telegrams,
     r09_transmission_locations,
     r09_transmission_locations_raw,
     raw_telegrams,
+    region_statistics,
     regions,
+    station_statistics,
     stations,
     trekkie_runs,
+    user_statistics,
     users,
 );
