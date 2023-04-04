@@ -1,7 +1,7 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use utoipa::ToSchema;
+use uuid::Uuid;
 
 use crate::schema::{region_statistics, station_statistics, user_statistics};
 
@@ -14,7 +14,7 @@ pub struct RegionStatistics {
     /// timestamp when the last update happend
     pub last_updated: NaiveDateTime,
     /// total amount of telegrams received in this region
-    pub total_telegrams:  i64,
+    pub total_telegrams: i64,
     /// amount of telegrams received in this region in the last month
     pub month_telegrams: i64,
     /// amount of telegrams received in this region in the last week
@@ -28,7 +28,7 @@ pub struct RegionStatistics {
     /// amount of gps points received in this region in the last week
     pub week_gps: i64,
     /// amount of gps points received in this region in the last 24h
-    pub day_gps: i64
+    pub day_gps: i64,
 }
 
 /// Statistics for Stations
@@ -40,13 +40,13 @@ pub struct StationStatistics {
     /// timestamp when the last update happend
     pub last_updated: NaiveDateTime,
     /// total amount of telegrams received in this region
-    pub total_telegrams:  i64,
+    pub total_telegrams: i64,
     /// amount of telegrams received in this region in the last month
     pub month_telegrams: i64,
     /// amount of telegrams received in this region in the last week
     pub week_telegrams: i64,
     /// amount of telegrams received in this region in the last 24h
-    pub day_telegrams: i64
+    pub day_telegrams: i64,
 }
 
 /// Statistics for Users
@@ -64,5 +64,5 @@ pub struct UserStatistics {
     /// amount of gps points received in this region in the last week
     pub week_gps: i64,
     /// amount of gps points received in this region in the last 24h
-    pub day_gps: i64
+    pub day_gps: i64,
 }
