@@ -130,6 +130,7 @@ erDiagram
 		INT antenna                  "optional"
 		TEXT telegram_decoder_version "optional"
 		TEXT notes                    "optional"
+        UUID organization FK "organizations(id)"
 	}
 
 	trekkie_runs {
@@ -141,6 +142,7 @@ erDiagram
 		UUID owner FK "users(id)"
 		BOOLEAN finished
 		UUID id PK
+        BOOLEAN correlated
 	}
 
 	users {
@@ -153,6 +155,23 @@ erDiagram
 		BOOLEAN deactivated
 	}
 
+    organizations {
+		UUID id PK
+		TEXT name
+        BOOLEAN public
+        UUID owner FK "users(id)"
+        BOOLEAN deactivated
+	}
+
+    org_users_relations {
+        UUID id PK
+        UUID organization FK "organizations(id)"
+        UUID user_id FK "users(id)"
+        INT role
+    }
+
+
+
   gps_points }|--|| trekkie_runs : "contains"
   r09_telegrams }|--|| regions : "received in"
   r09_telegrams }|--|| stations : "received"
@@ -163,6 +182,10 @@ erDiagram
   raw_telegrams }|--|| stations : "received"
   stations }|--|| regions : "contains"
   stations }|--|| users : "owns"
+  stations }|--|| organizations: "belongs"
+  organizations }|--|| users : "manages"
   trekkie_runs }|--|| regions : "in"
   trekkie_runs }|--|| users : "from"
+  org_users_relations }|--|| users : "has role"
+  org_users_relations }|--|| organizations : "associated key"
 ```
