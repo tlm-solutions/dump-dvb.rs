@@ -81,6 +81,7 @@ erDiagram
 		INT reporting_point
 		DOUBLE lat
 		DOUBLE lon
+        BOOLEAN ground_truth
 	}
 
 	r09_transmission_locations_raw {
@@ -110,7 +111,24 @@ erDiagram
 		BIGINT r09_type           "optional"
 		INT encoding           "optional"
 		BOOLEAN deactivated
+        FLOAT lat
+        FLOAT lon
+        FLOAT zoom
+        FLOAT work_in_progress
 	}
+
+    region_statistics {
+        BIGINT id PK "regions(id)"
+	    TIMESTAMP last_updated
+	    BIGINT total_telegrams
+	    BIGINT month_telegrams
+	    BIGINT week_telegrams
+	    BIGINT day_telegrams
+	    BIGINT total_gps
+	    BIGINT month_gps
+	    BIGINT week_gps
+	    BIGINT day_gps
+    }
 
 	stations {
 		UUID id PK
@@ -133,6 +151,15 @@ erDiagram
         UUID organization FK "organizations(id)"
 	}
 
+    station_statistics {
+        UUID id PK "stations(id)"
+        TIMESTAMP last_updated
+        BIGINT total_telegrams
+        BIGINT month_telegrams
+        BIGINT week_telegrams
+        BIGINT day_telegrams
+    }
+
 	trekkie_runs {
 		TIMESTAMP start_time
 		TIMESTAMP end_time
@@ -150,10 +177,19 @@ erDiagram
 		TEXT name          "optional"
 		TEXT email         "optional"
 		VARCHAR(100) password
-		INT role
 		INT email_setting "optional"
 		BOOLEAN deactivated
+        BOOLEAN admin
 	}
+
+    user_statistics {
+        UUID id PK "users(id)"
+        TIMESTAMP last_updated
+        BIGINT total_gps
+        BIGINT month_gps
+        BIGINT week_gps
+        BIGINT day_gps
+    }
 
     organizations {
 		UUID id PK
@@ -171,21 +207,27 @@ erDiagram
     }
 
 
+  r09_transmission_locations }|--|| regions : "has"
+  region_statistics ||--o| regions : "statistics"
+  r09_telegrams }|--|| regions : "received in"
+  r09_transmission_locations_raw }|--|| regions : ""
+  stations }|--|| regions : "contains"
 
   gps_points }|--|| trekkie_runs : "contains"
-  r09_telegrams }|--|| regions : "received in"
-  r09_telegrams }|--|| stations : "received"
-  r09_transmission_locations }|--|| regions : "has"
-  r09_transmission_locations_raw }|--|| regions : ""
-  r09_transmission_locations_raw }|--|| trekkie_runs : "contains"
-  r09_transmission_locations_raw }|--|| users : ""
-  raw_telegrams }|--|| stations : "received"
-  stations }|--|| regions : "contains"
-  stations }|--|| users : "owns"
-  stations }|--|| organizations: "belongs"
-  organizations }|--|| users : "manages"
-  trekkie_runs }|--|| regions : "in"
   trekkie_runs }|--|| users : "from"
+
+  r09_transmission_locations_raw }|--|| users : ""
+  trekkie_runs }|--|| regions : "in"
+  r09_transmission_locations_raw }|--|| trekkie_runs : "contains"
+
+  r09_telegrams }|--|| stations : "received"
+  raw_telegrams }|--|| stations : "received"
+  stations }|--|| organizations: "belongs"
+  stations }|--|| users : "owns"
+  organizations }|--|| users : "owns"
   org_users_relations }|--|| users : "has role"
   org_users_relations }|--|| organizations : "associated key"
+  station_statistics ||--o| stations : "statistics"
+  user_statistics ||--o| users : "statistics"
+
 ```
