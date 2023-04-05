@@ -7,6 +7,7 @@ use crate::schema::*;
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use utoipa::ToSchema;
 
 /// Version of the [`LocationsJson`] shcema used.
 pub const SCHEMA: &str = "3"; // INCREMENT ME ON ANY BREAKING CHANGE!!!!11111one
@@ -23,7 +24,7 @@ pub const REGION_POSITION_UNIQUE_CONSTRAINT: &str = "unique_region_position";
 /// This struct is used to query R09 telegram transmission positions from the database. Every entry
 /// corresponds to unique transmission location, that is inferred over multiple measurements. For
 /// raw per-measurement data see [`TransmissionLocationRaw`]
-#[derive(Debug, Clone, Queryable, Identifiable, AsChangeset)]
+#[derive(Debug, Clone, Queryable, Identifiable, AsChangeset, ToSchema)]
 #[diesel(table_name = r09_transmission_locations)]
 pub struct TransmissionLocation {
     /// Primary key
@@ -64,7 +65,7 @@ pub struct InsertTransmissionLocation {
 
 /// This struct queries the database for transmission locations inferred from every single trekkie
 /// run. This is useful if you want to refine the position of [`TransmissionLocation`]
-#[derive(Debug, Clone, Queryable, Identifiable, AsChangeset)]
+#[derive(Debug, Clone, Queryable, Identifiable, AsChangeset, ToSchema)]
 #[diesel(table_name = r09_transmission_locations_raw)]
 pub struct TransmissionLocationRaw {
     /// Primary key
@@ -104,7 +105,7 @@ pub struct InsertTransmissionLocationRaw {
 }
 ///
 /// The transmission location that get sent out as part of [`LocationsJson`] from datacare API
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct ApiTransmissionLocation {
     /// latitude
     pub lat: f64,
@@ -115,7 +116,7 @@ pub struct ApiTransmissionLocation {
 }
 
 /// The format used by datacare API to send transmission locations out for a given region
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct LocationsJson {
     /// The region for which the locations returned
     pub region: crate::locations::region::Region,
