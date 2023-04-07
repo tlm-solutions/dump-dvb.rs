@@ -23,8 +23,10 @@ pub struct MeasurementInterval {
 #[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct FinishedMeasurementInterval {
     /// Time the the vehicle was entered.
+    #[serde(serialize_with = "crate::serialize_with_zone")]
     pub start: NaiveDateTime,
     /// Time the vehicle was left.
+    #[serde(serialize_with = "crate::serialize_with_zone")]
     pub stop: NaiveDateTime,
     /// Line (ger. linie) of the tracked vehicle.
     pub line: i32,

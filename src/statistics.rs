@@ -12,6 +12,7 @@ pub struct RegionStatistics {
     /// region identifier
     pub id: i64,
     /// timestamp when the last update happend
+    #[serde(serialize_with = "crate::serialize_with_zone")]
     pub last_updated: NaiveDateTime,
     /// total amount of telegrams received in this region
     pub total_telegrams: i64,
@@ -38,6 +39,7 @@ pub struct StationStatistics {
     /// station identifier
     pub id: Uuid,
     /// timestamp when the last update happend
+    #[serde(serialize_with = "crate::serialize_with_zone")]
     pub last_updated: NaiveDateTime,
     /// total amount of telegrams received in this region
     pub total_telegrams: i64,
@@ -56,6 +58,7 @@ pub struct UserStatistics {
     /// user identifier
     pub id: Uuid,
     /// timestamp when the last update happend
+    #[serde(serialize_with = "crate::serialize_with_zone")]
     pub last_updated: NaiveDateTime,
     /// total amount of gps points received in this region
     pub total_gps: i64,

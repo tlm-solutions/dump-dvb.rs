@@ -40,6 +40,20 @@
 extern crate diesel;
 extern crate num_derive;
 
+use chrono::{DateTime, NaiveDateTime, Utc};
+use serde::{Serialize, Serializer};
+
+/// this is a function that serializes NaiveDateTime as DateTime<Utc> so we also serialize
+/// zone information as welll
+pub fn serialize_with_zone<S>(time: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    let time = DateTime::<Utc>::from_utc(*time, Utc);
+
+    time.serialize(serializer)
+}
+
 ///
 /// VDV 420 Telegram Definitions
 ///

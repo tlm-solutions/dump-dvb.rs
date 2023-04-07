@@ -90,6 +90,7 @@ pub struct R09SaveTelegram {
     pub id: Option<i64>,
 
     /// Timepoint when the telegram was received this assumes UTC.
+    #[serde(serialize_with = "crate::serialize_with_zone")]
     pub time: NaiveDateTime,
     /// UUID of the station that received this telegram.
     pub station: Uuid,
