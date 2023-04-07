@@ -14,7 +14,7 @@ pub struct GpsPoint {
     /// foreign key referencing the corresponding trekkie run
     pub trekkie_run: Uuid,
     /// point's timestamp
-    #[serde(serialize_with = "crate::serialize_with_zone")]
+    #[serde(with = "crate::time_serializer")]
     pub timestamp: NaiveDateTime,
     /// Latitude
     pub lat: f64,
@@ -42,7 +42,7 @@ pub struct InsertGpsPoint {
     /// foreign key referencing the corresponding trekkie run
     pub trekkie_run: Uuid,
     /// point's timestamp
-    #[serde(serialize_with = "crate::serialize_with_zone")]
+    #[serde(with = "crate::time_serializer")]
     pub timestamp: NaiveDateTime,
     /// Latitude
     pub lat: f64,

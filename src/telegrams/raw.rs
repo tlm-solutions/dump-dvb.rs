@@ -31,7 +31,7 @@ pub struct RawSaveTelegram {
     #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
     /// Timestamp of when the [`RawTelegram`] was intercepted
-    #[serde(serialize_with = "crate::serialize_with_zone")]
+    #[serde(with = "crate::time_serializer")]
     pub time: NaiveDateTime,
     /// UUID of intercepting station
     pub station: Uuid,

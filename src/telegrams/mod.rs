@@ -14,6 +14,7 @@ use uuid::Uuid;
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct TelegramMetaInformation {
     /// When the telegram was received.
+    #[serde(with = "crate::time_serializer")]
     pub time: NaiveDateTime,
     /// UUID of the Station it was received.
     pub station: Uuid,
@@ -29,6 +30,7 @@ pub struct AuthenticationMeta {
     /// Secret Token of the registered station.
     pub token: String,
     /// When the telegram was received.
+    #[serde(with = "crate::time_serializer")]
     pub time: NaiveDateTime,
 }
 

@@ -9,7 +9,6 @@ use crate::telegrams::{
 };
 
 use chrono::NaiveDateTime;
-use csv;
 use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
 use diesel::serialize::{self, Output, ToSql};
@@ -85,12 +84,11 @@ pub struct R09Telegram {
 #[diesel(belongs_to(Station, foreign_key = station))]
 pub struct R09SaveTelegram {
     /// Unique Identifier for a telegram.
-    #[serde(deserialize_with = "csv::invalid_option")]
     #[diesel(deserialize_as = i64)]
     pub id: Option<i64>,
 
     /// Timepoint when the telegram was received this assumes UTC.
-    #[serde(serialize_with = "crate::serialize_with_zone")]
+    #[serde(with = "crate::time_serializer")]
     pub time: NaiveDateTime,
     /// UUID of the station that received this telegram.
     pub station: Uuid,
@@ -99,7 +97,6 @@ pub struct R09SaveTelegram {
     pub r09_type: R09Type,
 
     /// delay of the vehicle can range from -7 min to +7 mins
-    #[serde(deserialize_with = "csv::invalid_option")]
     pub delay: Option<i32>,
     /// Unique identifier of a location which can be decomposed into junction, direction and
     /// request_status.

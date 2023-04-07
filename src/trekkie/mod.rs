@@ -12,10 +12,10 @@ use crate::schema::trekkie_runs;
 #[diesel(table_name = trekkie_runs)]
 pub struct TrekkieRun {
     /// time when the vehicle was entered
-    #[serde(serialize_with = "crate::serialize_with_zone")]
+    #[serde(with = "crate::time_serializer")]
     pub start_time: NaiveDateTime,
     /// time when the vehicle was left
-    #[serde(serialize_with = "crate::serialize_with_zone")]
+    #[serde(with = "crate::time_serializer")]
     pub end_time: NaiveDateTime,
     /// line (ger. linie) of the vehicle
     pub line: i32,
