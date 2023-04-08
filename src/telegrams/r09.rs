@@ -380,7 +380,7 @@ impl R09GrpcTelegram {
     /// Creates a R09GrpcTelegram from a raw R09Telegram and Meta Information.
     pub fn create(telegram: R09Telegram, meta: TelegramMetaInformation) -> R09GrpcTelegram {
         R09GrpcTelegram {
-            time: meta.time.timestamp() as u64,
+            time: meta.time.timestamp_millis() as u64,
             station: meta.station.to_string(),
             region: meta.region,
 
