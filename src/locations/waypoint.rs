@@ -28,23 +28,23 @@ impl From<i32> for WayPointType {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Waypoint {
     /// unique identifier of this waypoint
-    id: u64,
+    pub id: u64,
     /// from which data source this waypoint was constructed
-    source: WayPointType,
+    pub source: WayPointType,
     /// unix time stamp in milliseconds
-    time: u64,
+    pub time: u64,
     /// region identifier
-    region: i64,
+    pub region: i64,
     /// latitude
-    lat: f64,
+    pub lat: f64,
     /// longitude
-    lon: f64,
+    pub lon: f64,
     /// line of the vehicle
-    line: i32,
+    pub line: i32,
     /// run (ger. Kurs, -Laufnummer) of the vehicle
-    run: i32,
+    pub run: i32,
     /// optional delay the vehicle has
-    delayed: Option<f32>,
+    pub delayed: Option<f32>,
 }
 
 impl From<GrpcWaypoint> for Waypoint {
