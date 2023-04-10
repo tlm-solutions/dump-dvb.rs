@@ -73,7 +73,7 @@ impl From<Role> for i32 {
 
 impl Hash for Role {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        (self.clone() as i32).hash(state);
+        (*self as i32).hash(state);
     }
 }
 
@@ -208,7 +208,7 @@ impl AuthorizedUser {
                     roles
                         .entry(association.organization)
                         .or_insert_with(Vec::new)
-                        .push(Role::try_from(association.role).unwrap());
+                        .push(association.role);
                 }
 
                 Some(AuthorizedUser {

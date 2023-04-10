@@ -43,8 +43,7 @@ extern crate num_derive;
 /// this mod holds serializer and deserializer for NaiveDateTime
 pub mod time_serializer {
     use chrono::{DateTime, NaiveDateTime, Utc};
-    use serde::{Serialize, Serializer, Deserialize, Deserializer};
-
+    use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
     /// this is a function that serializes NaiveDateTime as DateTime<Utc> so we also serialize
     /// zone information as welll
@@ -57,10 +56,10 @@ pub mod time_serializer {
         time.serialize(serializer)
     }
 
-
     /// this deserializes a DateTime<Utc> into a NaiveDateTime
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error> 
-    where D: Deserializer<'de> 
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
+    where
+        D: Deserializer<'de>,
     {
         DateTime::<Utc>::deserialize(deserializer).map(|x| x.naive_utc())
     }

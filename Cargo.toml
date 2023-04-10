@@ -16,6 +16,7 @@ management = [
 locations = [
     "reqwest",
     "telegrams",
+    "grpc",
     "dep:utoipa"
 ]
 
