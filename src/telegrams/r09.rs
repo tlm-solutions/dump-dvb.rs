@@ -18,6 +18,7 @@ use serde::{Deserialize, Serialize};
 use struct_field_names_as_array::FieldNamesAsArray;
 use utoipa::ToSchema;
 use uuid::Uuid;
+use log::info;
 
 use std::fmt;
 use std::hash::Hash;
@@ -379,8 +380,10 @@ impl Serialize for R09GrpcTelegram {
 impl R09GrpcTelegram {
     /// Creates a R09GrpcTelegram from a raw R09Telegram and Meta Information.
     pub fn create(telegram: R09Telegram, meta: TelegramMetaInformation) -> R09GrpcTelegram {
+        let unix_timestamp = meta.time.timestamp_millis() as u64;
+        info!("going from {:?} to {}", &meta.time, &unix_timestamp);
         R09GrpcTelegram {
-            time: meta.time.timestamp_millis() as u64,
+            time: unix_timestamp,
             station: meta.station.to_string(),
             region: meta.region,
 
