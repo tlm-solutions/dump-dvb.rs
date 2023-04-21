@@ -31,4 +31,8 @@ pub struct TrekkieRun {
     pub id: Uuid,
     /// flag that tells that the data recorded for this trekkie run is already correlated
     pub correlated: bool,
+    /// commit or version of the applicatation that submitted the data
+    pub app_commit: String,
+    /// name of the applicatation that submitted this data
+    pub app_name: String,
 }

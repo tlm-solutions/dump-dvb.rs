@@ -13,12 +13,12 @@ use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
 use diesel::serialize::{self, Output, ToSql};
 use diesel::{AsExpression, Insertable, Queryable};
+use log::info;
 use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};
 use struct_field_names_as_array::FieldNamesAsArray;
 use utoipa::ToSchema;
 use uuid::Uuid;
-use log::info;
 
 use std::fmt;
 use std::hash::Hash;

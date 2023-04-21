@@ -6,47 +6,52 @@
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
       makeTest = pkgs.callPackage "${nixpkgs}/nixos/tests/make-test-python.nix";
-    in {
-      checks.${system}.test-diesel-migration = let
-        username = "postgres";
-        password = "password";
-        database = "database";
-        migrations_dir = "migrations-based";
-      in makeTest {
-        name = "test-diesel-migration";
-        nodes = {
-          server = { lib, config, pkgs, ... }: {
-            services.postgresql = {
-              enable = true;
-              ensureDatabases = [ database ];
-              ensureUsers = [{
-                name = username;
-                ensurePermissions = {
-                  "DATABASE ${database}" = "ALL PRIVILEGES";
+    in
+    {
+      checks.${system}.test-diesel-migration =
+        let
+          username = "postgres";
+          password = "password";
+          database = "database";
+          migrations_dir = "migrations-based";
+        in
+        makeTest
+          {
+            name = "test-diesel-migration";
+            nodes = {
+              server = { lib, config, pkgs, ... }: {
+                services.postgresql = {
+                  enable = true;
+                  ensureDatabases = [ database ];
+                  ensureUsers = [{
+                    name = username;
+                    ensurePermissions = {
+                      "DATABASE ${database}" = "ALL PRIVILEGES";
+                    };
+                  }];
+                  initialScript = pkgs.writeScript "initScript" ''
+                    ALTER USER postgres WITH PASSWORD '${password}';
+                  '';
                 };
-              }];
-              initialScript = pkgs.writeScript "initScript" ''
-                ALTER USER postgres WITH PASSWORD '${password}';
-              '';
-            };
 
-            systemd.services.postgresql.postStart = lib.mkAfter ''
-              ${pkgs.diesel-cli}/bin/diesel migration run --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
-              ${pkgs.diesel-cli}/bin/diesel migration redo --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
-              ${pkgs.diesel-cli}/bin/diesel migration run --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
+                systemd.services.postgresql.postStart = lib.mkAfter ''
+                  ${pkgs.diesel-cli}/bin/diesel migration run --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
+                  ${pkgs.diesel-cli}/bin/diesel migration redo --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
+                  ${pkgs.diesel-cli}/bin/diesel migration run --database-url "postgres://${username}:${password}@localhost/${database}" --migration-dir ${self}/${migrations_dir}
+                '';
+              };
+            };
+            testScript = ''
+              start_all()
+              server.wait_for_unit("postgresql.service")
+              server.succeed("sudo -u postgres -- ${pkgs.diesel-cli}/bin/diesel print-schema --database-url postgres://${username}:${password}@localhost/${database} > schema.rs")
+              server.copy_from_vm("schema.rs", "")
             '';
+          }
+          {
+            inherit pkgs;
+            inherit (pkgs) system;
           };
-        };
-        testScript = ''
-          start_all()
-          server.wait_for_unit("postgresql.service")
-          server.succeed("sudo -u postgres -- ${pkgs.diesel-cli}/bin/diesel print-schema --database-url postgres://${username}:${password}@localhost/${database} > schema.rs")
-          server.copy_from_vm("schema.rs", "")
-        '';
-      } {
-        inherit pkgs;
-        inherit (pkgs) system;
-      };
 
       packages.${system} = {
         update-schema = pkgs.writeScriptBin "update-schema" ''
@@ -62,7 +67,7 @@
       };
 
       devShells."x86_64-linux".default = pkgs.mkShell {
-        nativeBuildInputs = with pkgs; [  grpc protobuf websocketpp pkg-config postgresql_14 openssl diesel-cli ];
+        nativeBuildInputs = with pkgs; [ grpc protobuf websocketpp pkg-config postgresql_14 openssl diesel-cli ];
       };
     };
 }

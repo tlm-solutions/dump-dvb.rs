@@ -167,6 +167,8 @@ diesel::table! {
         finished -> Bool,
         id -> Uuid,
         correlated -> Bool,
+        app_commit -> Varchar,
+        app_name -> Varchar,
     }
 }
 
