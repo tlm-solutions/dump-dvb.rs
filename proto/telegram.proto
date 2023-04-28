@@ -52,6 +52,8 @@ message GrpcWaypoint {
     int32 line = 7;
     int32 run = 8;
     optional float delayed = 9;
+    optional int32 r09_reporting_point = 10;
+    optional int32 r09_destination_number = 11;
 }
 
 message ReturnCode {
