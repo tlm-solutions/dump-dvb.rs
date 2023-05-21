@@ -16,6 +16,7 @@ use diesel::{
     pg::Pg, AsExpression, ExpressionMethods, Insertable, PgConnection, QueryDsl, Queryable,
     RunQueryDsl,
 };
+use securefmt::Debug;
 use std::collections::HashMap;
 use utoipa::ToSchema;
 
@@ -130,6 +131,7 @@ pub struct User {
     /// Email of the user.
     pub email: Option<String>,
     /// Password of the user.
+    #[sensitive]
     pub password: String,
     /// This value is interesting for newsletters and other notifications that are distributed via
     /// mail.

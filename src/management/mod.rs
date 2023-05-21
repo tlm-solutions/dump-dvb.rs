@@ -5,6 +5,7 @@ use crate::locations::region::Region;
 use crate::schema::*;
 use user::User;
 
+use securefmt::Debug;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 use utoipa::ToSchema;
@@ -21,6 +22,7 @@ pub struct Station {
     /// Unique identifier for a station.
     pub id: Uuid,
     /// Secret token for a station which is send with every telegram for authentication.
+    #[sensitive]
     pub token: Option<String>,
     /// Name of the Station.
     pub name: String,

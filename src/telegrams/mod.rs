@@ -1,11 +1,11 @@
 pub mod r09;
 pub mod raw;
 
-use core::fmt::Debug;
 use std::hash::{Hash, Hasher};
 
 use chrono::NaiveDateTime;
 use num_derive::FromPrimitive;
+use securefmt::Debug;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -28,6 +28,7 @@ pub struct AuthenticationMeta {
     /// UUID of the station that sent the telegram.
     pub station: Uuid,
     /// Secret Token of the registered station.
+    #[sensitive]
     pub token: String,
     /// When the telegram was received.
     #[serde(with = "crate::time_serializer")]
