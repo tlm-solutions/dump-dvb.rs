@@ -48,7 +48,7 @@ pub struct Waypoint {
     /// reporting point this waypoint was created from
     pub r09_reporting_point: Option<i32>,
     /// destination number of the r09 telegram
-    pub r09_destination_number: Option<i32>
+    pub r09_destination_number: Option<i32>,
 }
 
 impl From<GrpcWaypoint> for Waypoint {
@@ -64,7 +64,7 @@ impl From<GrpcWaypoint> for Waypoint {
             run: waypoint.run,
             delayed: waypoint.delayed,
             r09_reporting_point: waypoint.r09_reporting_point,
-            r09_destination_number: waypoint.r09_destination_number
+            r09_destination_number: waypoint.r09_destination_number,
         }
     }
 }
