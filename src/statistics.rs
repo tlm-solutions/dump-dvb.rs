@@ -1,4 +1,5 @@
 use chrono::NaiveDateTime;
+use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;

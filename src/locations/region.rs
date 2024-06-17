@@ -10,6 +10,7 @@ use std::fs;
 use std::path::PathBuf;
 
 use chrono::prelude::{DateTime, Utc};
+use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 

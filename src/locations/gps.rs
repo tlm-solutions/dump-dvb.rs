@@ -2,6 +2,7 @@
 
 use crate::schema::*;
 use chrono::NaiveDateTime;
+use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 

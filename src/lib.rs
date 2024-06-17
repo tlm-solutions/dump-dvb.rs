@@ -36,7 +36,6 @@
 
 #![deny(missing_docs)]
 #![warn(rustdoc::broken_intra_doc_links)]
-extern crate diesel;
 extern crate num_derive;
 
 /// this mod holds serializer and deserializer for NaiveDateTime

@@ -8,6 +8,7 @@ use std::fmt;
 use std::hash::{Hash, Hasher};
 
 use chrono::NaiveDateTime;
+use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 use struct_field_names_as_array::FieldNamesAsArray;
 use uuid::Uuid;

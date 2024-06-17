@@ -12,7 +12,7 @@ use chrono::NaiveDateTime;
 use diesel::deserialize::{self, FromSql};
 use diesel::pg::Pg;
 use diesel::serialize::{self, Output, ToSql};
-use diesel::{AsExpression, Insertable, Queryable};
+use diesel::{AsExpression, Associations, FromSqlRow, Identifiable, Insertable, Queryable};
 use log::info;
 use serde::ser::{SerializeStruct, Serializer};
 use serde::{Deserialize, Serialize};

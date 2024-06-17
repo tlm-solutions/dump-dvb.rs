@@ -5,6 +5,7 @@ pub mod waypoint;
 
 use crate::schema::*;
 
+use diesel::{AsChangeset, Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use utoipa::ToSchema;

@@ -5,6 +5,7 @@ use crate::locations::region::Region;
 use crate::schema::*;
 use user::User;
 
+use diesel::{Associations, Insertable, Queryable};
 use securefmt::Debug;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};

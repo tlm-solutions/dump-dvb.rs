@@ -13,8 +13,8 @@ use uuid::Uuid;
 use diesel::deserialize::{self, FromSql};
 use diesel::serialize::{self, Output, ToSql};
 use diesel::{
-    pg::Pg, AsExpression, ExpressionMethods, Insertable, PgConnection, QueryDsl, Queryable,
-    RunQueryDsl,
+    pg::Pg, AsChangeset, AsExpression, ExpressionMethods, FromSqlRow, Identifiable, Insertable,
+    PgConnection, QueryDsl, Queryable, RunQueryDsl,
 };
 use securefmt::Debug;
 use std::collections::HashMap;
